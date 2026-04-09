@@ -11,9 +11,19 @@ export class AiEngineController {
     return this.service.generateInsights(user.userId);
   }
 
+  @Get('training-plan')
+  getTrainingPlan(@CurrentUser() user: { userId: string }) {
+    return this.service.generateTrainingPlan(user.userId);
+  }
+
   @Post('training-plan')
   trainingPlan(@CurrentUser() user: { userId: string }) {
     return this.service.generateTrainingPlan(user.userId);
+  }
+
+  @Get('nutrition-plan')
+  getNutritionPlan(@CurrentUser() user: { userId: string }) {
+    return this.service.generateNutritionPlan(user.userId);
   }
 
   @Post('nutrition-plan')

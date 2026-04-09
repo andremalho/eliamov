@@ -203,8 +203,80 @@ ${JSON.stringify(dataSnapshot, null, 2)}`;
   }
 
   async generateTrainingPlan(userId: string) {
-    const prompt = `Gerar plano de treino semanal para usuário ${userId} considerando fase do ciclo, mood e readiness wearable. Retorne JSON com dias da semana e atividades.`;
-    return this.callClaude(prompt);
+    const [user, currentPhase, moodSummary] = await Promise.all([
+      this.usersRepo.findOne({ where: { id: userId } }),
+      this.cycleService.getCurrentPhase(userId),
+      this.moodService.summary(userId),
+    ]);
+
+    if (!user) {
+      return { text: null, error: 'user_not_found' };
+    }
+
+    const age = user.birthDate
+      ? Math.floor(
+          (Date.now() - new Date(user.birthDate).getTime()) / (1000 * 60 * 60 * 24 * 365.25),
+        )
+      : null;
+
+    const bmi =
+      user.weight && user.height
+        ? +(user.weight / Math.pow(user.height / 100, 2)).toFixed(1)
+        : null;
+
+    if (!this.hasApiKey()) {
+      return {
+        generatedAt: new Date().toISOString(),
+        usingAi: false,
+        text: 'Configure ANTHROPIC_API_KEY em backend/.env para gerar planos de treino personalizados com IA.',
+      };
+    }
+
+    const systemPrompt =
+      'Você é uma personal trainer especializada em saúde feminina do EliaMov. ' +
+      'Crie planos de treino adaptados ao ciclo menstrual, nível de condicionamento e objetivos da usuária. ' +
+      'Use linguagem acolhedora e baseada em evidências. Ajuste intensidade e tipo de exercício conforme a fase do ciclo. ' +
+      'NÃO dê diagnósticos médicos. Sempre sugira consultar um profissional para condições específicas. ' +
+      'Responda em português, em formato JSON válido com a estrutura: ' +
+      '{ "weekPlan": [{ "day": "segunda", "focus": "...", "exercises": [{ "name": "...", "sets": N, "reps": "...", "notes": "..." }], "duration_min": N, "intensity": "low|moderate|high" }], ' +
+      '"cycleAdaptation": "...", "generalTips": ["..."] }';
+
+    const prompt = `Crie um plano de treino semanal personalizado para esta usuária:
+
+Perfil:
+- Nome: ${user.name}
+- Idade: ${age ?? 'não informada'}
+- Peso: ${user.weight ?? 'não informado'} kg
+- Altura: ${user.height ?? 'não informada'} cm
+- IMC: ${bmi ?? 'não calculado'}
+- Nível de atividade: ${user.fitnessLevel ?? 'não informado'}
+- Objetivo principal: ${user.fitnessGoal ?? 'não informado'}
+- Condições de saúde: ${user.healthConditions?.join(', ') || 'nenhuma informada'}
+- Detalhes adicionais do perfil: ${user.profile ? JSON.stringify(user.profile) : 'nenhum'}
+
+Ciclo menstrual:
+- Fase atual: ${currentPhase.phase ?? 'não registrada'}
+- Dia do ciclo: ${currentPhase.dayOfCycle ?? 'desconhecido'}
+- Próxima menstruação: ${currentPhase.nextStart ?? 'desconhecida'}
+
+Humor e bem-estar (últimos 7 dias):
+- Registros: ${moodSummary.count}
+- Energia média: ${moodSummary.avgEnergy}/5
+- Humor médio: ${moodSummary.avgMood}/5
+- Sono médio: ${moodSummary.avgSleep ?? 'não informado'}h
+- Dias com dor: ${moodSummary.painDays}
+
+Adapte o plano à fase do ciclo e ao estado emocional/energético atual. Retorne APENAS o JSON, sem texto adicional.`;
+
+    const result = await this.callClaude(prompt, systemPrompt);
+
+    return {
+      generatedAt: new Date().toISOString(),
+      usingAi: !!result.text,
+      plan: result.text ? this.tryParseJson(result.text) : null,
+      raw: result.text,
+      error: result.error ?? undefined,
+    };
   }
 
   async analyzeLabExam(examData: any) {
@@ -213,8 +285,92 @@ ${JSON.stringify(dataSnapshot, null, 2)}`;
   }
 
   async generateNutritionPlan(userId: string) {
-    const prompt = `Gerar plano alimentar semanal personalizado para usuário ${userId}.`;
-    return this.callClaude(prompt);
+    const [user, currentPhase] = await Promise.all([
+      this.usersRepo.findOne({ where: { id: userId } }),
+      this.cycleService.getCurrentPhase(userId),
+    ]);
+
+    if (!user) {
+      return { text: null, error: 'user_not_found' };
+    }
+
+    const age = user.birthDate
+      ? Math.floor(
+          (Date.now() - new Date(user.birthDate).getTime()) / (1000 * 60 * 60 * 24 * 365.25),
+        )
+      : null;
+
+    const bmi =
+      user.weight && user.height
+        ? +(user.weight / Math.pow(user.height / 100, 2)).toFixed(1)
+        : null;
+
+    if (!this.hasApiKey()) {
+      return {
+        generatedAt: new Date().toISOString(),
+        usingAi: false,
+        text: 'Configure ANTHROPIC_API_KEY em backend/.env para gerar planos nutricionais personalizados com IA.',
+      };
+    }
+
+    const systemPrompt =
+      'Você é uma nutricionista especializada em saúde feminina do EliaMov. ' +
+      'Crie planos alimentares adaptados ao ciclo menstrual, perfil antropométrico e objetivos da usuária. ' +
+      'Use linguagem acolhedora e baseada em evidências. Adapte macro e micronutrientes conforme a fase do ciclo. ' +
+      'NÃO dê diagnósticos médicos. Sempre sugira consultar um nutricionista para ajustes individuais. ' +
+      'Responda em português, em formato JSON válido com a estrutura: ' +
+      '{ "weekPlan": [{ "day": "segunda", "meals": [{ "meal": "café da manhã|lanche|almoço|lanche da tarde|jantar", ' +
+      '"foods": ["..."], "notes": "..." }] }], ' +
+      '"cycleAdaptation": "...", "dailyCalories": N, "macros": { "protein_g": N, "carbs_g": N, "fat_g": N }, ' +
+      '"keyNutrients": ["..."], "generalTips": ["..."] }';
+
+    const prompt = `Crie um plano alimentar semanal personalizado para esta usuária:
+
+Perfil:
+- Nome: ${user.name}
+- Idade: ${age ?? 'não informada'}
+- Peso: ${user.weight ?? 'não informado'} kg
+- Altura: ${user.height ?? 'não informada'} cm
+- IMC: ${bmi ?? 'não calculado'}
+- Nível de atividade: ${user.fitnessLevel ?? 'não informado'}
+- Objetivo principal: ${user.fitnessGoal ?? 'não informado'}
+- Condições de saúde: ${user.healthConditions?.join(', ') || 'nenhuma informada'}
+- Detalhes adicionais do perfil: ${user.profile ? JSON.stringify(user.profile) : 'nenhum'}
+
+Ciclo menstrual:
+- Fase atual: ${currentPhase.phase ?? 'não registrada'}
+- Dia do ciclo: ${currentPhase.dayOfCycle ?? 'desconhecido'}
+- Próxima menstruação: ${currentPhase.nextStart ?? 'desconhecida'}
+
+Adapte o plano à fase do ciclo, priorizando nutrientes relevantes para a fase atual. Retorne APENAS o JSON, sem texto adicional.`;
+
+    const result = await this.callClaude(prompt, systemPrompt);
+
+    return {
+      generatedAt: new Date().toISOString(),
+      usingAi: !!result.text,
+      plan: result.text ? this.tryParseJson(result.text) : null,
+      raw: result.text,
+      error: result.error ?? undefined,
+    };
+  }
+
+  private tryParseJson(text: string): any {
+    try {
+      // Try direct parse first
+      return JSON.parse(text);
+    } catch {
+      // Try extracting JSON from markdown code block
+      const match = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+      if (match) {
+        try {
+          return JSON.parse(match[1].trim());
+        } catch {
+          return null;
+        }
+      }
+      return null;
+    }
   }
 
   async searchPubmed(query: string) {
