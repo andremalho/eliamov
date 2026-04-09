@@ -1,11 +1,8 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 
 export class CreateWearablesDto {
-  @IsString()
-  userId: string;
-
-  @IsString()
-  device: string;
+  @IsEnum(['garmin', 'strava', 'polar', 'oura', 'fitbit', 'apple_health', 'whoop'])
+  provider: string;
 
   @IsOptional()
   @IsString()
@@ -14,4 +11,9 @@ export class CreateWearablesDto {
   @IsOptional()
   @IsString()
   refreshToken?: string;
+}
+
+export class WebhookDataDto {
+  @IsString()
+  provider: string;
 }

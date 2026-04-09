@@ -1,24 +1,28 @@
 import api from './api';
 
-export type WearableDevice =
-  | 'apple_watch'
+export type WearableProvider =
   | 'garmin'
+  | 'strava'
   | 'polar'
-  | 'oura_ring';
+  | 'oura'
+  | 'fitbit'
+  | 'apple_health'
+  | 'whoop';
 
-export const DEVICE_LABELS = [
-  { value: 'apple_watch', label: 'Apple Watch' },
-  { value: 'garmin', label: 'Garmin' },
-  { value: 'polar', label: 'Polar' },
-  { value: 'oura_ring', label: 'Oura Ring' },
-];
+export interface ProviderInfo {
+  id: string;
+  name: string;
+  icon: string;
+}
 
 export interface WearableConnection {
   id: string;
   userId: string;
-  device: WearableDevice;
+  provider: WearableProvider;
+  externalUserId: string | null;
   isActive: boolean;
   lastSyncAt: string | null;
+  createdAt: string;
 }
 
 export interface WearableData {
@@ -36,11 +40,17 @@ export interface WearableData {
 }
 
 export const wearablesApi = {
+  providers: () =>
+    api.get<ProviderInfo[]>('/wearables/providers').then((r) => r.data),
   list: () =>
     api.get<WearableConnection[]>('/wearables').then((r) => r.data),
   listData: () =>
     api.get<WearableData[]>('/wearables/data').then((r) => r.data),
-  create: (dto: { device: WearableDevice }) =>
+  connectUrl: (provider: WearableProvider) =>
+    `${api.defaults.baseURL}/wearables/connect/${provider}`,
+  create: (dto: { provider: WearableProvider }) =>
     api.post<WearableConnection>('/wearables', dto).then((r) => r.data),
+  refreshToken: (id: string) =>
+    api.post(`/wearables/${id}/refresh`).then((r) => r.data),
   remove: (id: string) => api.delete(`/wearables/${id}`).then((r) => r.data),
 };

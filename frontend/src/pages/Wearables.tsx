@@ -3,29 +3,27 @@ import {
   wearablesApi,
   WearableConnection,
   WearableData,
-  WearableDevice,
-  DEVICE_LABELS,
+  ProviderInfo,
 } from '../services/wearables.api';
 import Layout from '../components/Layout';
 import { formatDateTimeBR } from '../utils/format';
 
 export default function Wearables() {
+  const [providers, setProviders] = useState<ProviderInfo[]>([]);
   const [connections, setConnections] = useState<WearableConnection[]>([]);
   const [data, setData] = useState<WearableData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [device, setDevice] = useState<WearableDevice>('apple_watch');
-
-  const deviceLabel = (d: string) =>
-    DEVICE_LABELS.find((x) => x.value === d)?.label ?? d;
+  const connectedParam = new URLSearchParams(window.location.search).get('connected');
 
   const refresh = async () => {
-    const [conns, entries] = await Promise.all([
+    const [provs, conns, entries] = await Promise.all([
+      wearablesApi.providers(),
       wearablesApi.list(),
       wearablesApi.listData(),
     ]);
+    setProviders(provs);
     setConnections(conns);
     setData(entries);
   };
@@ -36,22 +34,18 @@ export default function Wearables() {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setSubmitting(true);
-    try {
-      await wearablesApi.create({ device });
-      await refresh();
-    } catch (err: any) {
-      const msg = err?.response?.data?.message ?? 'Falha ao conectar dispositivo';
-      setError(Array.isArray(msg) ? msg.join(', ') : msg);
-    } finally {
-      setSubmitting(false);
+  const connectedProviders = new Set(connections.map((c) => c.provider));
+
+  const handleConnect = (providerId: string) => {
+    if (providerId === 'apple_health') {
+      setError('Apple Health sincroniza via app mobile.');
+      return;
     }
+    const token = localStorage.getItem('eliamov_token');
+    window.location.href = `${wearablesApi.connectUrl(providerId as any)}?token=${token}`;
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDisconnect = async (id: string) => {
     if (!confirm('Desconectar este dispositivo?')) return;
     try {
       await wearablesApi.remove(id);
@@ -61,112 +55,128 @@ export default function Wearables() {
     }
   };
 
+  const providerName = (id: string) =>
+    providers.find((p) => p.id === id)?.name ?? id;
+
   return (
     <Layout
       title="Wearables"
-      subtitle="Gerencie seus dispositivos conectados e visualize dados recentes."
+      subtitle="Conecte seus dispositivos e visualize dados de saúde."
     >
       {loading ? (
-          <p className="muted">Carregando…</p>
-        ) : (
-          <>
-            <section className="card">
-              <h3>Conectar dispositivo</h3>
-              <form className="form-grid" onSubmit={handleSubmit}>
-                <label>
-                  Dispositivo
-                  <select
-                    value={device}
-                    onChange={(e) => setDevice(e.target.value as WearableDevice)}
+        <p className="muted">Carregando…</p>
+      ) : (
+        <>
+          {connectedParam && (
+            <div className="card" style={{ background: '#ecfdf5', borderColor: '#86efac' }}>
+              <strong>{providerName(connectedParam)}</strong> conectado com sucesso!
+            </div>
+          )}
+
+          {error && <div className="error">{error}</div>}
+
+          <section className="card">
+            <h3>Conectar dispositivo</h3>
+            <p className="muted small" style={{ marginBottom: 16 }}>
+              Escolha um provider para iniciar a conexão via OAuth.
+            </p>
+            <div className="feature-grid">
+              {providers.map((p) => {
+                const isConnected = connectedProviders.has(p.id as any);
+                return (
+                  <button
+                    key={p.id}
+                    type="button"
+                    className="feature-tile"
+                    style={{
+                      ['--accent' as any]: isConnected ? '#16a34a' : '#6d4ac4',
+                      opacity: isConnected ? 0.7 : 1,
+                      cursor: isConnected ? 'default' : 'pointer',
+                    }}
+                    onClick={() => !isConnected && handleConnect(p.id)}
+                    disabled={isConnected}
                   >
-                    {DEVICE_LABELS.map((d) => (
-                      <option key={d.value} value={d.value}>
-                        {d.label}
-                      </option>
-                    ))}
-                  </select>
-                </label>
+                    <span className="feature-tile-title">{p.name}</span>
+                    <span className="muted small">
+                      {isConnected ? 'Conectado' : 'Conectar'}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
 
-                {error && <div className="error">{error}</div>}
+          <section className="card">
+            <h3>Dispositivos conectados</h3>
+            {connections.length === 0 ? (
+              <p className="muted small">Nenhum dispositivo conectado.</p>
+            ) : (
+              <ul className="entry-list">
+                {connections.map((conn) => (
+                  <li key={conn.id}>
+                    <div>
+                      <strong>{providerName(conn.provider)}</strong>
+                      <span className="muted small">
+                        {' • '}
+                        {conn.isActive ? 'Ativo' : 'Inativo'}
+                        {conn.lastSyncAt && ` • Última sinc: ${formatDateTimeBR(conn.lastSyncAt)}`}
+                      </span>
+                    </div>
+                    <button className="link-button" onClick={() => handleDisconnect(conn.id)}>
+                      Desconectar
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
 
-                <button type="submit" disabled={submitting}>
-                  {submitting ? 'Conectando…' : 'Conectar'}
-                </button>
-              </form>
-            </section>
-
-            <section className="card">
-              <h3>Dispositivos conectados</h3>
-              {connections.length === 0 ? (
-                <p className="muted small">Nenhum dispositivo conectado.</p>
-              ) : (
-                <ul className="entry-list">
-                  {connections.map((conn) => (
-                    <li key={conn.id}>
-                      <div>
-                        <strong>{deviceLabel(conn.device)}</strong>
-                        <span className="muted small">
-                          {' • '}
-                          {conn.isActive ? 'Ativo' : 'Inativo'}
-                          {' • Última sinc: '}
-                          {formatDateTimeBR(conn.lastSyncAt)}
-                        </span>
+          <section className="card">
+            <h3>Dados recentes</h3>
+            {data.length === 0 ? (
+              <p className="muted small">Nenhum dado disponível. Conecte um dispositivo para começar.</p>
+            ) : (
+              <ul className="entry-list">
+                {data.map((entry) => (
+                  <li key={entry.id}>
+                    <div>
+                      <strong>{providerName(entry.device)}</strong>
+                      <span className="muted small">
+                        {' • '}
+                        {formatDateTimeBR(entry.recordedAt)}
+                      </span>
+                      <div className="metric-row" style={{ marginTop: 4 }}>
+                        {entry.heartRate != null && (
+                          <div>
+                            <span className="muted small">FC</span>
+                            <strong>{entry.heartRate} bpm</strong>
+                          </div>
+                        )}
+                        {entry.steps != null && (
+                          <div>
+                            <span className="muted small">Passos</span>
+                            <strong>{entry.steps}</strong>
+                          </div>
+                        )}
+                        {entry.sleepScore != null && (
+                          <div>
+                            <span className="muted small">Sono</span>
+                            <strong>{entry.sleepScore}</strong>
+                          </div>
+                        )}
+                        {entry.readinessScore != null && (
+                          <div>
+                            <span className="muted small">Prontidão</span>
+                            <strong>{entry.readinessScore}</strong>
+                          </div>
+                        )}
                       </div>
-                      <button className="link-button" onClick={() => handleDelete(conn.id)}>
-                        Desconectar
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
-
-            <section className="card">
-              <h3>Dados recentes</h3>
-              {data.length === 0 ? (
-                <p className="muted small">Nenhum dado disponível.</p>
-              ) : (
-                <ul className="entry-list">
-                  {data.map((entry) => (
-                    <li key={entry.id}>
-                      <div>
-                        <strong>{deviceLabel(entry.device)}</strong>
-                        <span className="muted small">
-                          {' • '}
-                          {formatDateTimeBR(entry.recordedAt)}
-                        </span>
-                        <div className="metric-row" style={{ marginTop: 4 }}>
-                          {entry.heartRate != null && (
-                            <div>
-                              <span className="muted small">FC</span>
-                              <strong>{entry.heartRate} bpm</strong>
-                            </div>
-                          )}
-                          {entry.steps != null && (
-                            <div>
-                              <span className="muted small">Passos</span>
-                              <strong>{entry.steps}</strong>
-                            </div>
-                          )}
-                          {entry.sleepScore != null && (
-                            <div>
-                              <span className="muted small">Sono</span>
-                              <strong>{entry.sleepScore}</strong>
-                            </div>
-                          )}
-                          {entry.readinessScore != null && (
-                            <div>
-                              <span className="muted small">Prontidão</span>
-                              <strong>{entry.readinessScore}</strong>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
         </>
       )}
     </Layout>

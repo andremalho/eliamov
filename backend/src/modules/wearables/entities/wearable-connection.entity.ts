@@ -2,7 +2,11 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
+
+export type WearableProvider = 'garmin' | 'strava' | 'polar' | 'oura' | 'fitbit' | 'apple_health' | 'whoop';
 
 @Entity('wearable_connections')
 export class WearableConnection {
@@ -14,9 +18,12 @@ export class WearableConnection {
 
   @Column({
     type: 'enum',
-    enum: ['apple_watch', 'garmin', 'polar', 'oura_ring'],
+    enum: ['garmin', 'strava', 'polar', 'oura', 'fitbit', 'apple_health', 'whoop'],
   })
-  device: 'apple_watch' | 'garmin' | 'polar' | 'oura_ring';
+  provider: WearableProvider;
+
+  @Column({ nullable: true })
+  externalUserId: string;
 
   @Column({ nullable: true })
   accessToken: string;
@@ -27,9 +34,18 @@ export class WearableConnection {
   @Column({ type: 'timestamp', nullable: true })
   expiresAt: Date;
 
+  @Column({ type: 'text', nullable: true })
+  scope: string;
+
   @Column({ default: true })
   isActive: boolean;
 
   @Column({ type: 'timestamp', nullable: true })
   lastSyncAt: Date;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }
