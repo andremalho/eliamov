@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, IsNull } from 'typeorm';
 import { CommunityPost } from './entities/community.entity';
 import { CreateCommunityDto } from './dto/create-community.dto';
+import { PaginationDto, paginate } from '../../common/pagination.dto';
 
 @Injectable()
 export class CommunityService {
@@ -10,11 +11,16 @@ export class CommunityService {
     @InjectRepository(CommunityPost) private readonly repo: Repository<CommunityPost>,
   ) {}
 
-  findAll() {
-    return this.repo.find({
+  async findAll(pagination: PaginationDto) {
+    const page = pagination.page ?? 1;
+    const limit = pagination.limit ?? 20;
+    const [data, total] = await this.repo.findAndCount({
       where: { parentId: IsNull() },
       order: { createdAt: 'DESC' },
+      skip: (page - 1) * limit,
+      take: limit,
     });
+    return paginate(data, total, page, limit);
   }
 
   async findOne(id: string) {

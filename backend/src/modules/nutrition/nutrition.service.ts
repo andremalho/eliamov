@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { NutritionEntry } from './entities/nutrition.entity';
 import { CreateNutritionDto } from './dto/create-nutrition.dto';
+import { PaginationDto, paginate } from '../../common/pagination.dto';
 
 @Injectable()
 export class NutritionService {
@@ -10,8 +11,16 @@ export class NutritionService {
     @InjectRepository(NutritionEntry) private readonly repo: Repository<NutritionEntry>,
   ) {}
 
-  findAllForUser(userId: string) {
-    return this.repo.find({ where: { userId }, order: { date: 'DESC', createdAt: 'DESC' } });
+  async findAllForUser(userId: string, pagination: PaginationDto) {
+    const page = pagination.page ?? 1;
+    const limit = pagination.limit ?? 20;
+    const [data, total] = await this.repo.findAndCount({
+      where: { userId },
+      order: { date: 'DESC', createdAt: 'DESC' },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+    return paginate(data, total, page, limit);
   }
 
   async findOneForUser(userId: string, id: string) {

@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ChatMessage } from './entities/chat.entity';
 import { CreateChatDto } from './dto/create-chat.dto';
+import { PaginationDto, paginate } from '../../common/pagination.dto';
 
 @Injectable()
 export class ChatService {
@@ -10,8 +11,16 @@ export class ChatService {
     @InjectRepository(ChatMessage) private readonly repo: Repository<ChatMessage>,
   ) {}
 
-  findAllForUser(userId: string) {
-    return this.repo.find({ where: { userId }, order: { createdAt: 'DESC' } });
+  async findAllForUser(userId: string, pagination: PaginationDto) {
+    const page = pagination.page ?? 1;
+    const limit = pagination.limit ?? 20;
+    const [data, total] = await this.repo.findAndCount({
+      where: { userId },
+      order: { createdAt: 'DESC' },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+    return paginate(data, total, page, limit);
   }
 
   findConversation(userId: string, conversationId: string) {

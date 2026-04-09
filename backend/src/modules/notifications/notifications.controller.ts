@@ -1,15 +1,16 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationsDto } from './dto/create-notifications.dto';
 import { CurrentUser } from '../auth/current-user.decorator';
+import { PaginationDto } from '../../common/pagination.dto';
 
 @Controller('notifications')
 export class NotificationsController {
   constructor(private readonly service: NotificationsService) {}
 
   @Get()
-  findAll(@CurrentUser() user: { userId: string }) {
-    return this.service.findAllForUser(user.userId);
+  findAll(@CurrentUser() user: { userId: string }, @Query() pagination: PaginationDto) {
+    return this.service.findAllForUser(user.userId, pagination);
   }
 
   @Get(':id')

@@ -1,15 +1,16 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { CommunityService } from './community.service';
 import { CreateCommunityDto } from './dto/create-community.dto';
 import { CurrentUser } from '../auth/current-user.decorator';
+import { PaginationDto } from '../../common/pagination.dto';
 
 @Controller('community')
 export class CommunityController {
   constructor(private readonly service: CommunityService) {}
 
   @Get()
-  findAll() {
-    return this.service.findAll();
+  findAll(@Query() pagination: PaginationDto) {
+    return this.service.findAll(pagination);
   }
 
   @Get(':id')

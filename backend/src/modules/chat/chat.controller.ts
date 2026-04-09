@@ -1,15 +1,16 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { CurrentUser } from '../auth/current-user.decorator';
+import { PaginationDto } from '../../common/pagination.dto';
 
 @Controller('chat')
 export class ChatController {
   constructor(private readonly service: ChatService) {}
 
   @Get()
-  findAll(@CurrentUser() user: { userId: string }) {
-    return this.service.findAllForUser(user.userId);
+  findAll(@CurrentUser() user: { userId: string }, @Query() pagination: PaginationDto) {
+    return this.service.findAllForUser(user.userId, pagination);
   }
 
   @Get('conversation/:conversationId')
