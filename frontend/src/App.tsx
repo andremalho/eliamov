@@ -21,6 +21,7 @@ import Profile from './pages/Profile';
 import Admin from './pages/Admin';
 import Community from './pages/Community';
 import Chat from './pages/Chat';
+import Activities from './pages/Activities';
 import NotFound from './pages/NotFound';
 
 const protect = (el: React.ReactNode) => <ProtectedRoute>{el}</ProtectedRoute>;
@@ -36,6 +37,7 @@ export default function App() {
       <Route path="/onboarding" element={protect(<Onboarding />)} />
       <Route path="/cycle" element={protect(<Cycle />)} />
       <Route path="/mood" element={protect(<Mood />)} />
+      <Route path="/activities" element={protect(<Activities />)} />
       <Route path="/training" element={protect(<Training />)} />
       <Route path="/nutrition" element={protect(<Nutrition />)} />
       <Route path="/wearables" element={protect(<Wearables />)} />

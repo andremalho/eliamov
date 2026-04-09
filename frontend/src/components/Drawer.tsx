@@ -38,6 +38,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'Plano',
     items: [
+      { to: '/activities', label: 'Atividades' },
       { to: '/training', label: 'Treino' },
       { to: '/nutrition', label: 'Nutrição' },
       { to: '/lab-exams', label: 'Exames' },

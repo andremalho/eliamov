@@ -32,6 +32,7 @@ import { ConsentModule } from './modules/consent/consent.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { TenantModule } from './modules/tenant/tenant.module';
 import { AiEngineModule } from './modules/ai-engine/ai-engine.module';
+import { ActivitiesModule } from './modules/activities/activities.module';
 
 @Module({
   imports: [
@@ -73,6 +74,7 @@ import { AiEngineModule } from './modules/ai-engine/ai-engine.module';
     NotificationsModule,
     TenantModule,
     AiEngineModule,
+    ActivitiesModule,
   ],
   controllers: [AppController],
   providers: [
