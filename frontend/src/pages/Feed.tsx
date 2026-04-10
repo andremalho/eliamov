@@ -2,8 +2,14 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Layout from '../components/Layout';
 import FeedCard from '../components/FeedCard';
 import CommentsModal from '../components/CommentsModal';
-import { feedApi, FeedPost } from '../services/feed.api';
+import { feedApi, FeedPost, PostType, ReactionType } from '../services/feed.api';
 import { useAuth } from '../contexts/AuthContext';
+
+const POST_TYPE_OPTIONS: { value: PostType; label: string }[] = [
+  { value: 'free', label: 'Texto livre' },
+  { value: 'workout', label: 'Treino' },
+  { value: 'achievement', label: 'Conquista' },
+];
 
 export default function Feed() {
   const { currentUser } = useAuth();
@@ -15,6 +21,7 @@ export default function Feed() {
 
   // Create post
   const [content, setContent] = useState('');
+  const [postType, setPostType] = useState<PostType>('free');
   const [submitting, setSubmitting] = useState(false);
 
   // Comments modal
@@ -74,9 +81,10 @@ export default function Feed() {
     setSubmitting(true);
     setError(null);
     try {
-      const post = await feedApi.createPost({ content: content.trim() });
+      const post = await feedApi.createPost({ postType, content: content.trim() });
       setPosts((prev) => [post, ...prev]);
       setContent('');
+      setPostType('free');
     } catch (err: any) {
       const msg = err?.response?.data?.message ?? 'Falha ao criar publicacao';
       setError(Array.isArray(msg) ? msg.join(', ') : msg);
@@ -122,6 +130,14 @@ export default function Feed() {
     }
   };
 
+  const handleReaction = async (postId: string, reaction: ReactionType) => {
+    try {
+      await feedApi.addReaction(postId, reaction);
+    } catch {
+      /* ignore */
+    }
+  };
+
   const handleDelete = async (postId: string) => {
     try {
       await feedApi.deletePost(postId);
@@ -150,6 +166,19 @@ export default function Feed() {
       <section className="card">
         <h3>Nova publicacao</h3>
         <form className="form-grid" onSubmit={handleSubmit}>
+          {/* Post type selector */}
+          <div className="feed-post-type-selector">
+            {POST_TYPE_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                className={postType === opt.value ? 'active' : ''}
+                onClick={() => setPostType(opt.value)}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
           <label>
             <textarea
               placeholder="O que voce quer compartilhar?"
@@ -182,6 +211,7 @@ export default function Feed() {
               post={post}
               onLike={handleLike}
               onComment={handleComment}
+              onReaction={handleReaction}
               onDelete={handleDelete}
               currentUserId={currentUser?.id ?? ''}
             />

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FeedPost } from '../services/feed.api';
+import { FeedPost, ReactionType } from '../services/feed.api';
 
 const ACTIVITY_TYPE_LABELS: Record<string, string> = {
   run: 'Corrida',
@@ -10,6 +10,20 @@ const ACTIVITY_TYPE_LABELS: Record<string, string> = {
   workout: 'Treino',
   yoga: 'Yoga',
   other: 'Outro',
+};
+
+const CYCLE_PHASE_COLORS: Record<string, string> = {
+  menstrual: '#dc2626',
+  follicular: '#16a34a',
+  ovulatory: '#7c3aed',
+  luteal: '#f59e0b',
+};
+
+const CYCLE_PHASE_LABELS: Record<string, string> = {
+  menstrual: 'Menstrual',
+  follicular: 'Folicular',
+  ovulatory: 'Ovulatoria',
+  luteal: 'Lutea',
 };
 
 function timeAgo(iso: string): string {
@@ -50,6 +64,7 @@ interface FeedCardProps {
   post: FeedPost;
   onLike: (postId: string, liked: boolean) => void;
   onComment: (postId: string) => void;
+  onReaction: (postId: string, reaction: ReactionType) => void;
   onDelete?: (postId: string) => void;
   currentUserId: string;
 }
@@ -76,7 +91,7 @@ const TrashIcon = () => (
   </svg>
 );
 
-export default function FeedCard({ post, onLike, onComment, onDelete, currentUserId }: FeedCardProps) {
+export default function FeedCard({ post, onLike, onComment, onReaction, onDelete, currentUserId }: FeedCardProps) {
   const [animating, setAnimating] = useState(false);
 
   const handleLike = () => {
@@ -91,10 +106,28 @@ export default function FeedCard({ post, onLike, onComment, onDelete, currentUse
   };
 
   const user = post.user;
-  const activity = post.activity;
+  const workout = post.workout;
 
   return (
     <div className="card feed-card">
+      {/* Post type badge */}
+      {post.postType === 'workout' && (
+        <span className="feed-post-type workout">Treino</span>
+      )}
+      {post.postType === 'achievement' && (
+        <span className="feed-post-type achievement">Conquista</span>
+      )}
+
+      {/* Cycle phase badge */}
+      {post.cyclePhase && (
+        <span
+          className="feed-phase-badge"
+          style={{ background: CYCLE_PHASE_COLORS[post.cyclePhase] ?? '#9ca3af' }}
+        >
+          {CYCLE_PHASE_LABELS[post.cyclePhase] ?? post.cyclePhase}
+        </span>
+      )}
+
       {/* Header */}
       <div className="feed-header">
         <div className="feed-avatar">
@@ -113,24 +146,42 @@ export default function FeedCard({ post, onLike, onComment, onDelete, currentUse
       {/* Content */}
       {post.content && <div className="feed-content">{post.content}</div>}
 
-      {/* Activity card */}
-      {activity && (
+      {/* Media */}
+      {post.mediaUrls && post.mediaUrls.length > 0 && (
+        <div className="feed-media-scroll">
+          {post.mediaUrls.map((url, i) => (
+            <img key={i} src={url} alt={`media-${i}`} />
+          ))}
+        </div>
+      )}
+
+      {/* Workout card */}
+      {workout && (
         <div className="feed-activity-card">
           <span className="feed-activity-type">
-            {ACTIVITY_TYPE_LABELS[activity.type] ?? activity.type}
+            {ACTIVITY_TYPE_LABELS[workout.type] ?? workout.type}
           </span>
-          <div style={{ fontWeight: 600, fontSize: 15 }}>{activity.title}</div>
+          <div style={{ fontWeight: 600, fontSize: 15 }}>{workout.title}</div>
           <div className="feed-activity-stats">
-            <span>{formatDuration(activity.duration)}</span>
-            {activity.distance != null && activity.distance > 0 && (
-              <span>{formatDistance(activity.distance)}</span>
+            <span>{formatDuration(workout.duration)}</span>
+            {workout.distance != null && workout.distance > 0 && (
+              <span>{formatDistance(workout.distance)}</span>
             )}
-            {activity.calories != null && activity.calories > 0 && (
-              <span>{activity.calories} kcal</span>
+            {workout.calories != null && workout.calories > 0 && (
+              <span>{workout.calories} kcal</span>
             )}
           </div>
         </div>
       )}
+
+      {/* Reactions */}
+      <div className="feed-reactions">
+        {(['heart', 'fire', 'muscle'] as const).map(r => (
+          <button key={r} type="button" className="feed-reaction-btn" onClick={() => onReaction(post.id, r)}>
+            {r === 'heart' ? '\u2764\uFE0F' : r === 'fire' ? '\uD83D\uDD25' : '\uD83D\uDCAA'}
+          </button>
+        ))}
+      </div>
 
       {/* Actions */}
       <div className="feed-actions">

@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CycleEntry } from '../cycle/entities/cycle.entity';
 import { User } from '../users/entities/user.entity';
 import { Notifications } from '../notifications/entities/notifications.entity';
-import { ActivityPost } from '../feed/entities/activity-post.entity';
+import { Post } from '../feed/entities/post.entity';
 import { GroupWorkout } from './entities/group-workout.entity';
 import { CycleGroupService } from './cycle-group.service';
 import { CycleGroupController } from './cycle-group.controller';
@@ -16,7 +16,7 @@ import { CycleGroupController } from './cycle-group.controller';
       User,
       GroupWorkout,
       Notifications,
-      ActivityPost,
+      Post,
     ]),
   ],
   controllers: [CycleGroupController],

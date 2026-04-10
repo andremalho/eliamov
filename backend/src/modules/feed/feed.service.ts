@@ -5,37 +5,49 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
-import { ActivityPost } from './entities/activity-post.entity';
-import { ActivityLike } from './entities/activity-like.entity';
-import { ActivityComment } from './entities/activity-comment.entity';
+import { Post } from './entities/post.entity';
+import { PostLike } from './entities/post-like.entity';
+import { PostComment } from './entities/post-comment.entity';
+import { PostReaction } from './entities/post-reaction.entity';
+import { CycleEntry } from '../cycle/entities/cycle.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
+import { CreateReactionDto } from './dto/create-reaction.dto';
 import { FeedQueryDto } from './dto/feed-query.dto';
+import { CyclePhaseTag } from './entities/post.entity';
 
 @Injectable()
 export class FeedService {
   constructor(
-    @InjectRepository(ActivityPost)
-    private readonly postRepo: Repository<ActivityPost>,
-    @InjectRepository(ActivityLike)
-    private readonly likeRepo: Repository<ActivityLike>,
-    @InjectRepository(ActivityComment)
-    private readonly commentRepo: Repository<ActivityComment>,
+    @InjectRepository(Post)
+    private readonly postRepo: Repository<Post>,
+    @InjectRepository(PostLike)
+    private readonly likeRepo: Repository<PostLike>,
+    @InjectRepository(PostComment)
+    private readonly commentRepo: Repository<PostComment>,
+    @InjectRepository(PostReaction)
+    private readonly reactionRepo: Repository<PostReaction>,
+    @InjectRepository(CycleEntry)
+    private readonly cycleRepo: Repository<CycleEntry>,
   ) {}
 
-  async getFeed(tenantId: string, userId: string, query: FeedQueryDto) {
+  /* ------------------------------------------------------------------ */
+  /*  Feed                                                               */
+  /* ------------------------------------------------------------------ */
+
+  async getFeed(academyId: string, userId: string, query: FeedQueryDto) {
     const limit = query.limit ?? 15;
 
     const qb = this.postRepo
-      .createQueryBuilder('post')
-      .leftJoinAndSelect('post.user', 'user')
-      .leftJoinAndSelect('post.activity', 'activity')
-      .where('post.tenantId = :tenantId', { tenantId })
-      .orderBy('post.createdAt', 'DESC')
+      .createQueryBuilder('p')
+      .leftJoinAndSelect('p.user', 'u')
+      .leftJoinAndSelect('p.workout', 'w')
+      .where('p.academyId = :academyId', { academyId })
+      .orderBy('p.createdAt', 'DESC')
       .take(limit + 1);
 
     if (query.cursor) {
-      qb.andWhere('post.createdAt < :cursor', {
+      qb.andWhere('p.createdAt < :cursor', {
         cursor: new Date(query.cursor),
       });
     }
@@ -44,6 +56,7 @@ export class FeedService {
     const hasMore = results.length > limit;
     const data = hasMore ? results.slice(0, limit) : results;
 
+    // Check which posts the current user has liked
     const postIds = data.map((p) => p.id);
     const userLikes =
       postIds.length > 0
@@ -71,15 +84,31 @@ export class FeedService {
     };
   }
 
-  async createPost(userId: string, tenantId: string, dto: CreatePostDto) {
+  /* ------------------------------------------------------------------ */
+  /*  Create post                                                        */
+  /* ------------------------------------------------------------------ */
+
+  async createPost(userId: string, academyId: string, dto: CreatePostDto) {
+    const cyclePhase = await this.detectCyclePhase(userId);
+
+    const postType = dto.postType ?? (dto.workoutId ? 'workout' : 'free');
+
     const post = this.postRepo.create({
       userId,
-      tenantId,
-      activityId: dto.activityId ?? null,
+      academyId,
+      postType,
       content: dto.content ?? null,
+      mediaUrls: dto.mediaUrls ?? [],
+      workoutId: dto.workoutId ?? null,
+      cyclePhase,
     });
+
     return this.postRepo.save(post);
   }
+
+  /* ------------------------------------------------------------------ */
+  /*  Likes                                                              */
+  /* ------------------------------------------------------------------ */
 
   async likePost(postId: string, userId: string) {
     const post = await this.postRepo.findOneBy({ id: postId });
@@ -108,6 +137,49 @@ export class FeedService {
 
     return { liked: false };
   }
+
+  /* ------------------------------------------------------------------ */
+  /*  Reactions                                                          */
+  /* ------------------------------------------------------------------ */
+
+  async addReaction(postId: string, userId: string, dto: CreateReactionDto) {
+    const post = await this.postRepo.findOneBy({ id: postId });
+    if (!post) throw new NotFoundException('Post not found');
+
+    const existing = await this.reactionRepo.findOneBy({
+      postId,
+      userId,
+      reaction: dto.reaction,
+    });
+    if (existing) {
+      return existing;
+    }
+
+    const reaction = this.reactionRepo.create({
+      postId,
+      userId,
+      reaction: dto.reaction,
+    });
+    return this.reactionRepo.save(reaction);
+  }
+
+  async removeReaction(postId: string, userId: string, reaction: string) {
+    const existing = await this.reactionRepo.findOneBy({
+      postId,
+      userId,
+      reaction: reaction as any,
+    });
+    if (!existing) {
+      return { removed: true };
+    }
+
+    await this.reactionRepo.remove(existing);
+    return { removed: true };
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  Comments                                                           */
+  /* ------------------------------------------------------------------ */
 
   async getComments(postId: string) {
     return this.commentRepo.find({
@@ -161,6 +233,10 @@ export class FeedService {
     return withUser;
   }
 
+  /* ------------------------------------------------------------------ */
+  /*  Delete post                                                        */
+  /* ------------------------------------------------------------------ */
+
   async deletePost(postId: string, userId: string) {
     const post = await this.postRepo.findOneBy({ id: postId });
     if (!post) throw new NotFoundException('Post not found');
@@ -168,10 +244,58 @@ export class FeedService {
       throw new ForbiddenException('You can only delete your own posts');
     }
 
+    await this.reactionRepo.delete({ postId });
     await this.commentRepo.delete({ postId });
     await this.likeRepo.delete({ postId });
     await this.postRepo.remove(post);
 
     return { deleted: true };
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  Suggest post after workout                                         */
+  /* ------------------------------------------------------------------ */
+
+  async suggestPostAfterWorkout(activityId: string, userId: string) {
+    const cyclePhase = await this.detectCyclePhase(userId);
+
+    return {
+      suggestion: true,
+      postType: 'workout' as const,
+      workoutId: activityId,
+      cyclePhase,
+      prompt: 'Share your workout with the community?',
+    };
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  Helpers                                                            */
+  /* ------------------------------------------------------------------ */
+
+  private async detectCyclePhase(
+    userId: string,
+  ): Promise<CyclePhaseTag> {
+    const entry = await this.cycleRepo.findOne({
+      where: { userId },
+      order: { startDate: 'DESC' },
+    });
+    if (!entry) return null;
+
+    const cycleLength = entry.cycleLength ?? 28;
+    const periodLength = entry.periodLength ?? 5;
+    const start = new Date(entry.startDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    start.setHours(0, 0, 0, 0);
+    const diffDays = Math.floor(
+      (today.getTime() - start.getTime()) / (1000 * 60 * 60 * 24),
+    );
+    const dayIndex = diffDays % cycleLength;
+
+    if (dayIndex < periodLength) return 'menstrual';
+    const ovulationDay = cycleLength - 14;
+    if (dayIndex < ovulationDay - 1) return 'follicular';
+    if (dayIndex <= ovulationDay + 1) return 'ovulatory';
+    return 'luteal';
   }
 }

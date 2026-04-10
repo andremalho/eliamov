@@ -10,6 +10,7 @@ import {
 import { FeedService } from './feed.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
+import { CreateReactionDto } from './dto/create-reaction.dto';
 import { FeedQueryDto } from './dto/feed-query.dto';
 import { CurrentUser } from '../auth/current-user.decorator';
 
@@ -25,7 +26,7 @@ export class FeedController {
     return this.service.getFeed(user.tenantId, user.userId, query);
   }
 
-  @Post()
+  @Post('posts')
   createPost(
     @CurrentUser() user: { userId: string; tenantId: string },
     @Body() dto: CreatePostDto,
@@ -33,41 +34,59 @@ export class FeedController {
     return this.service.createPost(user.userId, user.tenantId, dto);
   }
 
-  @Post(':postId/like')
+  @Post('posts/:id/like')
   like(
     @CurrentUser() user: { userId: string },
-    @Param('postId') postId: string,
+    @Param('id') id: string,
   ) {
-    return this.service.likePost(postId, user.userId);
+    return this.service.likePost(id, user.userId);
   }
 
-  @Delete(':postId/like')
+  @Delete('posts/:id/like')
   unlike(
     @CurrentUser() user: { userId: string },
-    @Param('postId') postId: string,
+    @Param('id') id: string,
   ) {
-    return this.service.unlikePost(postId, user.userId);
+    return this.service.unlikePost(id, user.userId);
   }
 
-  @Get(':postId/comments')
-  getComments(@Param('postId') postId: string) {
-    return this.service.getComments(postId);
+  @Post('posts/:id/reactions')
+  addReaction(
+    @CurrentUser() user: { userId: string },
+    @Param('id') id: string,
+    @Body() dto: CreateReactionDto,
+  ) {
+    return this.service.addReaction(id, user.userId, dto);
   }
 
-  @Post(':postId/comments')
+  @Delete('posts/:id/reactions/:reaction')
+  removeReaction(
+    @CurrentUser() user: { userId: string },
+    @Param('id') id: string,
+    @Param('reaction') reaction: string,
+  ) {
+    return this.service.removeReaction(id, user.userId, reaction);
+  }
+
+  @Get('posts/:id/comments')
+  getComments(@Param('id') id: string) {
+    return this.service.getComments(id);
+  }
+
+  @Post('posts/:id/comments')
   addComment(
     @CurrentUser() user: { userId: string },
-    @Param('postId') postId: string,
+    @Param('id') id: string,
     @Body() dto: CreateCommentDto,
   ) {
-    return this.service.addComment(postId, user.userId, dto);
+    return this.service.addComment(id, user.userId, dto);
   }
 
-  @Delete(':postId')
+  @Delete('posts/:id')
   deletePost(
     @CurrentUser() user: { userId: string },
-    @Param('postId') postId: string,
+    @Param('id') id: string,
   ) {
-    return this.service.deletePost(postId, user.userId);
+    return this.service.deletePost(id, user.userId);
   }
 }

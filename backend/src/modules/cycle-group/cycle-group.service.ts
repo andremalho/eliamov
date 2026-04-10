@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { CycleEntry } from '../cycle/entities/cycle.entity';
 import { User } from '../users/entities/user.entity';
 import { Notifications } from '../notifications/entities/notifications.entity';
-import { ActivityPost } from '../feed/entities/activity-post.entity';
+import { Post } from '../feed/entities/post.entity';
 import { GroupWorkout } from './entities/group-workout.entity';
 import { CreateGroupWorkoutDto } from './dto/create-group-workout.dto';
 
@@ -20,8 +20,8 @@ export class CycleGroupService {
     private workoutRepo: Repository<GroupWorkout>,
     @InjectRepository(Notifications)
     private notifRepo: Repository<Notifications>,
-    @InjectRepository(ActivityPost)
-    private feedPostRepo: Repository<ActivityPost>,
+    @InjectRepository(Post)
+    private feedPostRepo: Repository<Post>,
   ) {}
 
   async getPeers(userId: string, tenantId: string) {
@@ -148,7 +148,8 @@ export class CycleGroupService {
     // Create feed post for the group workout
     const feedPost = this.feedPostRepo.create({
       userId,
-      tenantId,
+      academyId: tenantId,
+      postType: 'free',
       content: `Treino em grupo: ${dto.title} | Fase ${phase} | ${participantIds.length} participantes`,
     });
     const savedPost = await this.feedPostRepo.save(feedPost);
