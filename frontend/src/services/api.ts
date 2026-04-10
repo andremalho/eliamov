@@ -19,6 +19,11 @@ api.interceptors.response.use(
       localStorage.removeItem('eliamov_token');
       window.location.href = '/login';
     }
+    // Don't retry on 429 - just reject silently
+    if (error.response?.status === 429) {
+      console.warn('Rate limited - too many requests');
+      return Promise.reject(error);
+    }
     return Promise.reject(error);
   },
 );
