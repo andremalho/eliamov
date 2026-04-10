@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth, getHomeRoute } from '../contexts/AuthContext';
 
 type ProfileType = 'female_user' | 'personal_trainer' | 'family_companion' | 'academy_admin';
 
@@ -29,8 +29,8 @@ export default function Register() {
     setError(null);
     setSubmitting(true);
     try {
-      await register(name, email, password, profileType, academyCode || undefined);
-      navigate('/onboarding-flow', { replace: true });
+      const user = await register(name, email, password, profileType, academyCode || undefined);
+      navigate(getHomeRoute(user), { replace: true });
     } catch (err: any) {
       const msg = err?.response?.data?.message ?? 'Falha ao cadastrar';
       setError(Array.isArray(msg) ? msg.join(', ') : msg);

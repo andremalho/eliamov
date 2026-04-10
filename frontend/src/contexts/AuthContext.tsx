@@ -22,19 +22,45 @@ export interface User {
     | null;
   profile?: Record<string, any> | null;
   onboardingCompletedAt?: string | null;
+  profileType?: 'full' | 'trainer' | 'companion' | 'admin' | null;
+  isProfileComplete?: boolean;
+  onboardingStep?: number;
+  gender?: string | null;
 }
 
 export const isProfileComplete = (user: User | null) =>
-  !!(user && user.onboardingCompletedAt);
+  !!(user && (user.isProfileComplete || user.onboardingCompletedAt));
+
+export function getHomeRoute(user: User | null): string {
+  if (!user) return '/login';
+  if (!isProfileComplete(user)) return '/onboarding-flow';
+  const role = user.role;
+  if (role === 'female_user' || role === 'user') return '/home';
+  if (role === 'personal_trainer' || role === 'professional') return '/trainer';
+  if (
+    role === 'academy_admin' ||
+    role === 'tenant_admin' ||
+    role === 'academy_manager' ||
+    role === 'super_admin' ||
+    role === 'admin'
+  )
+    return '/admin';
+  if (role === 'family_companion') return '/companion';
+  return '/home';
+}
 
 interface AuthContextValue {
   currentUser: User | null;
   token: string | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string, profileType?: string, academyCode?: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<User>;
+  register: (name: string, email: string, password: string, profileType?: string, academyCode?: string) => Promise<User>;
   logout: () => void;
   setCurrentUser: (user: User) => void;
+  refreshUser: () => Promise<void>;
+  isRole: (...roles: string[]) => boolean;
+  isFemaleZone: () => boolean;
+  getHomeRoute: () => string;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -76,15 +102,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setCurrentUser(user);
   };
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<User> => {
     const res = await api.post<{ access_token: string; user: User }>('/auth/login', {
       email,
       password,
     });
     persistAuth(res.data.access_token, res.data.user);
+    return res.data.user;
   };
 
-  const register = async (name: string, email: string, password: string, profileType?: string, academyCode?: string) => {
+  const register = async (name: string, email: string, password: string, profileType?: string, academyCode?: string): Promise<User> => {
     const res = await api.post<{ access_token: string; user: User }>('/auth/register', {
       name,
       email,
@@ -93,6 +120,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       ...(academyCode && { academyCode }),
     });
     persistAuth(res.data.access_token, res.data.user);
+    return res.data.user;
   };
 
   const logout = () => {
@@ -101,9 +129,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setCurrentUser(null);
   };
 
+  const refreshUser = async () => {
+    try {
+      const res = await api.get<User>('/auth/me');
+      setCurrentUser(res.data);
+    } catch {
+      logout();
+    }
+  };
+
+  const isRole = (...roles: string[]) => {
+    if (!currentUser) return false;
+    return roles.includes(currentUser.role);
+  };
+
+  const isFemaleZone = () => isRole('female_user', 'user');
+
+  const getHomeRouteForUser = () => getHomeRoute(currentUser);
+
   return (
     <AuthContext.Provider
-      value={{ currentUser, token, loading, login, register, logout, setCurrentUser }}
+      value={{
+        currentUser,
+        token,
+        loading,
+        login,
+        register,
+        logout,
+        setCurrentUser,
+        refreshUser,
+        isRole,
+        isFemaleZone,
+        getHomeRoute: getHomeRouteForUser,
+      }}
     >
       {children}
     </AuthContext.Provider>

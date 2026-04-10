@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth, getHomeRoute } from '../contexts/AuthContext';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -15,8 +15,8 @@ export default function Login() {
     setError(null);
     setSubmitting(true);
     try {
-      await login(email, password);
-      navigate('/dashboard', { replace: true });
+      const user = await login(email, password);
+      navigate(getHomeRoute(user), { replace: true });
     } catch (err: any) {
       const msg = err?.response?.data?.message ?? 'Falha ao entrar';
       setError(Array.isArray(msg) ? msg.join(', ') : msg);

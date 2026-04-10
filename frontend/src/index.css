@@ -2994,3 +2994,58 @@ select:focus {
   .adm-form-row { flex-direction: column; gap: 14px; }
   .adm-distribution-label { width: 90px; font-size: 12px; }
 }
+
+/* ── Female Zone Protection ────────────────────────────────────── */
+.fz-badge {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 14px; margin-bottom: 12px;
+  background: linear-gradient(135deg, rgba(124,58,237,0.06), rgba(244,114,182,0.06));
+  border: 1px solid rgba(124,58,237,0.12);
+  border-radius: 10px; font-size: 12px; font-weight: 500;
+  color: #7C3AED;
+}
+.fz-badge svg { flex-shrink: 0; }
+
+.fz-modal-backdrop {
+  position: fixed; inset: 0; z-index: 9998;
+  background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.fz-modal-panel {
+  background: #fff; border-radius: 20px;
+  padding: 32px 28px; max-width: 380px; width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  animation: fz-modal-in 0.3s ease;
+}
+@keyframes fz-modal-in {
+  0% { opacity: 0; transform: scale(0.9) translateY(20px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+.fz-modal-icon {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: linear-gradient(135deg, #EDE9FE, #FCE7F3);
+  color: #7C3AED; display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px;
+}
+.fz-modal-title {
+  font-family: 'DM Sans', sans-serif; font-weight: 700;
+  font-size: 20px; color: #111827; margin-bottom: 12px;
+}
+.fz-modal-text {
+  font-size: 14px; color: #6B7280; line-height: 1.6;
+  margin-bottom: 24px;
+}
+.fz-modal-btn {
+  width: 100%; padding: 14px; border: none; border-radius: 12px;
+  background: #7C3AED; color: #fff; font-weight: 600; font-size: 15px;
+  cursor: pointer; transition: background 0.15s;
+}
+.fz-modal-btn:hover { background: #6D28D9; }
+
+/* Centered screen for loading */
+.centered-screen {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  background: #F9FAFB;
+}
