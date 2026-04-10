@@ -1,4 +1,4 @@
-import { IsEmail, IsString, MinLength, IsOptional, IsEnum } from 'class-validator';
+import { IsEmail, IsString, MinLength, IsOptional, IsEnum, IsIn } from 'class-validator';
 import { Role } from '../role.enum';
 
 export class RegisterDto {
@@ -19,6 +19,14 @@ export class RegisterDto {
   @IsOptional()
   @IsEnum(Role)
   role?: Role;
+
+  @IsOptional()
+  @IsIn(['female_user', 'personal_trainer', 'family_companion', 'academy_admin'])
+  profileType?: 'female_user' | 'personal_trainer' | 'family_companion' | 'academy_admin';
+
+  @IsOptional()
+  @IsString()
+  academyCode?: string;
 }
 
 export class LoginDto {

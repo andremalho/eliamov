@@ -4,9 +4,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
+import { User } from './modules/users/entities/user.entity';
 
 import { AuthModule } from './modules/auth/auth.module';
 import { JwtAuthGuard } from './modules/auth/jwt-auth.guard';
+import { OnboardingGuard } from './modules/auth/guards/onboarding.guard';
 import { UsersModule } from './modules/users/users.module';
 import { OnboardingModule } from './modules/onboarding/onboarding.module';
 import { CycleModule } from './modules/cycle/cycle.module';
@@ -55,6 +57,7 @@ import { TrainerModule } from './modules/trainer/trainer.module';
       autoLoadEntities: true,
       synchronize: process.env.NODE_ENV !== 'production',
     }),
+    TypeOrmModule.forFeature([User]),
     AuthModule,
     UsersModule,
     OnboardingModule,
@@ -93,6 +96,7 @@ import { TrainerModule } from './modules/trainer/trainer.module';
   controllers: [AppController],
   providers: [
     { provide: APP_GUARD, useClass: JwtAuthGuard },
+    { provide: APP_GUARD, useClass: OnboardingGuard },
     { provide: APP_GUARD, useClass: ThrottlerGuard },
   ],
 })

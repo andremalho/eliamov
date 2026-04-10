@@ -43,4 +43,8 @@ export class TenantService implements OnModuleInit {
   remove(id: string) {
     return this.repo.delete(id);
   }
+
+  findBySlug(slug: string) {
+    return this.repo.findOne({ where: { slug } });
+  }
 }

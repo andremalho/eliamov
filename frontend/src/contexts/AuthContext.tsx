@@ -32,7 +32,7 @@ interface AuthContextValue {
   token: string | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
+  register: (name: string, email: string, password: string, profileType?: string, academyCode?: string) => Promise<void>;
   logout: () => void;
   setCurrentUser: (user: User) => void;
 }
@@ -84,11 +84,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     persistAuth(res.data.access_token, res.data.user);
   };
 
-  const register = async (name: string, email: string, password: string) => {
+  const register = async (name: string, email: string, password: string, profileType?: string, academyCode?: string) => {
     const res = await api.post<{ access_token: string; user: User }>('/auth/register', {
       name,
       email,
       password,
+      ...(profileType && { profileType }),
+      ...(academyCode && { academyCode }),
     });
     persistAuth(res.data.access_token, res.data.user);
   };
