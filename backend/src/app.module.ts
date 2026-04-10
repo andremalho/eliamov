@@ -42,6 +42,7 @@ import { CommunityChatModule } from './modules/community-chat/community-chat.mod
 import { MediaModule } from './modules/media/media.module';
 import { StoriesModule } from './modules/stories/stories.module';
 import { TrainerModule } from './modules/trainer/trainer.module';
+import { AcademyModule } from './modules/academy/academy.module';
 
 @Module({
   imports: [
@@ -92,6 +93,7 @@ import { TrainerModule } from './modules/trainer/trainer.module';
     MediaModule,
     StoriesModule,
     TrainerModule,
+    AcademyModule,
   ],
   controllers: [AppController],
   providers: [

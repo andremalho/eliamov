@@ -20,7 +20,7 @@ import Content from './pages/Content';
 import Courses from './pages/Courses';
 import Marketplace from './pages/Marketplace';
 import Profile from './pages/Profile';
-import Admin from './pages/Admin';
+import AdminPanel from './pages/Admin';
 import TrainerPanel from './pages/Trainer';
 import Community from './pages/Community';
 import Chat from './pages/Chat';
@@ -64,7 +64,7 @@ export default function App() {
       <Route path="/challenges" element={protect(<Challenges />)} />
       <Route path="/communities" element={protect(<Communities />)} />
       <Route path="/chat" element={protect(<Chat />)} />
-      <Route path="/admin" element={protect(<Admin />)} />
+      <Route path="/admin" element={protect(<AdminPanel />)} />
       <Route path="/trainer" element={protect(<TrainerPanel />)} />
       <Route path="*" element={<NotFound />} />
     </Routes>
