@@ -33,6 +33,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import { TenantModule } from './modules/tenant/tenant.module';
 import { AiEngineModule } from './modules/ai-engine/ai-engine.module';
 import { ActivitiesModule } from './modules/activities/activities.module';
+import { FeedModule } from './modules/feed/feed.module';
 
 @Module({
   imports: [
@@ -75,6 +76,7 @@ import { ActivitiesModule } from './modules/activities/activities.module';
     TenantModule,
     AiEngineModule,
     ActivitiesModule,
+    FeedModule,
   ],
   controllers: [AppController],
   providers: [
