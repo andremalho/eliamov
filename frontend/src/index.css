@@ -1564,3 +1564,49 @@ select:focus {
 @media (max-width: 720px) {
   .cycle-group-banner { padding: 14px 16px; }
 }
+
+/* ── Challenges ────────────────────────────────────────────────── */
+.challenge-card { margin-bottom: 16px; }
+.challenge-goal-badge {
+  display: inline-block; background: var(--color-primary-pastel);
+  color: var(--color-primary); font-weight: 600; font-size: 12px;
+  padding: 4px 10px; border-radius: 999px; margin-bottom: 8px;
+}
+.challenge-dates { font-size: 12px; color: var(--color-muted); margin-bottom: 12px; }
+.challenge-progress-bar {
+  background: var(--color-border); border-radius: 8px;
+  height: 12px; overflow: hidden; position: relative; margin-bottom: 4px;
+}
+.challenge-progress-fill {
+  height: 100%; border-radius: 8px; transition: width 0.5s ease;
+}
+.challenge-progress-label { font-size: 12px; color: var(--color-muted); text-align: right; }
+.challenge-actions { display: flex; gap: 8px; margin-top: 12px; }
+.challenge-actions button { flex: 1; }
+.challenge-completed-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: #dcfce7; color: #16a34a; font-weight: 700;
+  font-size: 13px; padding: 6px 14px; border-radius: 999px;
+  animation: badge-pop 0.5s ease forwards;
+}
+@keyframes badge-pop {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.leaderboard-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 0; border-bottom: 1px solid var(--color-border);
+}
+.leaderboard-rank {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 13px; flex-shrink: 0;
+}
+.leaderboard-rank.gold { background: #fef3c7; color: #f59e0b; }
+.leaderboard-rank.silver { background: #f1f5f9; color: #9ca3af; }
+.leaderboard-rank.bronze { background: #fde8d8; color: #cd7f32; }
+.leaderboard-rank.default { background: var(--color-border); color: var(--color-muted); }
+.leaderboard-name { flex: 1; font-weight: 500; }
+.leaderboard-progress { font-size: 13px; color: var(--color-muted); }
+.leaderboard-check { color: #16a34a; font-weight: 700; }

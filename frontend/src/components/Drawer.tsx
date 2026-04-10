@@ -49,6 +49,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'Comunidade',
     items: [
       { to: '/feed', label: 'Feed' },
+      { to: '/challenges', label: 'Desafios' },
       { to: '/community', label: 'Fórum' },
       { to: '/chat', label: 'Chat' },
       { to: '/content', label: 'Conteúdos' },

@@ -33,6 +33,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import { TenantModule } from './modules/tenant/tenant.module';
 import { AiEngineModule } from './modules/ai-engine/ai-engine.module';
 import { ActivitiesModule } from './modules/activities/activities.module';
+import { ChallengesModule } from './modules/challenges/challenges.module';
 import { FeedModule } from './modules/feed/feed.module';
 import { CycleGroupModule } from './modules/cycle-group/cycle-group.module';
 
@@ -77,6 +78,7 @@ import { CycleGroupModule } from './modules/cycle-group/cycle-group.module';
     TenantModule,
     AiEngineModule,
     ActivitiesModule,
+    ChallengesModule,
     FeedModule,
     CycleGroupModule,
   ],

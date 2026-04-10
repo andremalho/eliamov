@@ -23,6 +23,7 @@ import Community from './pages/Community';
 import Chat from './pages/Chat';
 import Activities from './pages/Activities';
 import Feed from './pages/Feed';
+import Challenges from './pages/Challenges';
 import NotFound from './pages/NotFound';
 
 const protect = (el: React.ReactNode) => <ProtectedRoute>{el}</ProtectedRoute>;
@@ -53,6 +54,7 @@ export default function App() {
       <Route path="/profile" element={protect(<Profile />)} />
       <Route path="/community" element={protect(<Community />)} />
       <Route path="/feed" element={protect(<Feed />)} />
+      <Route path="/challenges" element={protect(<Challenges />)} />
       <Route path="/chat" element={protect(<Chat />)} />
       <Route path="/admin" element={protect(<Admin />)} />
       <Route path="*" element={<NotFound />} />
