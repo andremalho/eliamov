@@ -16,6 +16,7 @@ import { Notifications } from '../notifications/entities/notifications.entity';
 import { CreateCommunityDto } from './dto/create-community.dto';
 import { JoinCommunityDto } from './dto/join-community.dto';
 import { SendMessageDto } from './dto/send-message.dto';
+import { MediaService } from '../media/media.service';
 
 @Injectable()
 export class CommunityChatService {
@@ -34,6 +35,7 @@ export class CommunityChatService {
     private userRepo: Repository<User>,
     @InjectRepository(Notifications)
     private notifRepo: Repository<Notifications>,
+    private readonly mediaService: MediaService,
   ) {}
 
   // List communities for user's academy
@@ -204,15 +206,9 @@ export class CommunityChatService {
     return { ok: true };
   }
 
-  // --- Presigned URL for media upload ---
+  // --- Presigned URL for media upload (delegates to shared MediaService) ---
   getPresignedUrl(type: 'image' | 'video') {
-    // In production, generate S3/R2 presigned URL
-    // For now, return a placeholder pattern
-    const key = `uploads/${Date.now()}-${randomBytes(8).toString('hex')}.${type === 'image' ? 'jpg' : 'mp4'}`;
-    const uploadUrl =
-      process.env.MEDIA_UPLOAD_URL ?? `http://localhost:3001/uploads/${key}`;
-    const publicUrl = process.env.MEDIA_PUBLIC_URL ?? uploadUrl;
-    return { uploadUrl, publicUrl, key };
+    return this.mediaService.getPresignedUploadUrl(type);
   }
 
   // --- Cycle auto groups (called by cron) ---

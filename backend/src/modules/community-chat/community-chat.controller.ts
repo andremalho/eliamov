@@ -83,13 +83,3 @@ export class CommunityChatController {
     return this.service.deleteMessage(id, msgId, user.userId);
   }
 }
-
-@Controller('media')
-export class MediaController {
-  constructor(private readonly service: CommunityChatService) {}
-
-  @Post('presigned-url')
-  getPresignedUrl(@Query('type') type: 'image' | 'video') {
-    return this.service.getPresignedUrl(type ?? 'image');
-  }
-}

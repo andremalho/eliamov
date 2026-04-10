@@ -10,12 +10,10 @@ import { User } from '../users/entities/user.entity';
 import { Notifications } from '../notifications/entities/notifications.entity';
 import { Tenant } from '../tenant/entities/tenant.entity';
 import { CommunityChatService } from './community-chat.service';
-import {
-  CommunityChatController,
-  MediaController,
-} from './community-chat.controller';
+import { CommunityChatController } from './community-chat.controller';
 import { CommunityChatGateway } from './community-chat.gateway';
 import { CommunityChatCron } from './community-chat.cron';
+import { MediaModule } from '../media/media.module';
 
 @Module({
   imports: [
@@ -30,8 +28,9 @@ import { CommunityChatCron } from './community-chat.cron';
       Notifications,
       Tenant,
     ]),
+    MediaModule,
   ],
-  controllers: [CommunityChatController, MediaController],
+  controllers: [CommunityChatController],
   providers: [CommunityChatService, CommunityChatGateway, CommunityChatCron],
   exports: [CommunityChatService],
 })
