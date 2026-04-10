@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import Logo from './Logo';
 
 interface DrawerProps {
   open: boolean;
@@ -107,7 +108,7 @@ export const Drawer: React.FC<DrawerProps> = ({ open, onClose }) => {
       <aside className={`drawer ${open ? 'open' : ''}`} aria-hidden={!open}>
         <div className="drawer-header">
           <div>
-            <div className="brand">EliaMov</div>
+            <div className="brand"><Logo size={20} variant="dark" /></div>
             {currentUser && <div className="muted small">{currentUser.name}</div>}
           </div>
           <button className="link-button" onClick={onClose} aria-label="Fechar menu">

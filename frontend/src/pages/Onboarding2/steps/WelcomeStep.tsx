@@ -32,7 +32,7 @@ const particleStyles = `
 
 const CONTENT: Record<string, { title: string; subtitle: string; button: string; particles: boolean }> = {
   female_user: {
-    title: 'Bem-vinda ao EliaMov',
+    title: 'Bem-vinda ao eliaMov',
     subtitle: 'Seu corpo. Seu ritmo. Sua comunidade.',
     button: 'Comecar minha jornada \u2192',
     particles: true,
@@ -51,7 +51,7 @@ const CONTENT: Record<string, { title: string; subtitle: string; button: string;
   },
   academy_admin: {
     title: 'Bem-vindo(a)',
-    subtitle: 'Sua academia no EliaMov.',
+    subtitle: 'Sua academia no eliaMov.',
     button: 'Ir para o painel \u2192',
     particles: false,
   },

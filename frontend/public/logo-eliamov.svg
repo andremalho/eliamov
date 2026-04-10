@@ -1,0 +1,16 @@
+<svg width="400" height="100" viewBox="0 0 400 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800&amp;display=swap');
+    </style>
+  </defs>
+  <text
+    x="0"
+    y="76"
+    font-family="'Montserrat', sans-serif"
+    font-weight="800"
+    font-size="72"
+    fill="#2D1B4E"
+    letter-spacing="-2"
+  >elia<tspan fill="#7C3AED">M</tspan>ov</text>
+</svg>

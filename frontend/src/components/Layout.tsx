@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import BottomNav from './BottomNav';
 import Drawer from './Drawer';
+import Logo from './Logo';
 
 interface LayoutProps {
   title?: string;
@@ -39,7 +40,7 @@ export const Layout: React.FC<LayoutProps> = ({ title, subtitle, children }) => 
         </button>
 
         <Link to="/dashboard" className="brand">
-          EliaMov
+          <Logo size={18} variant="dark" />
         </Link>
 
         <Link to="/dashboard" className="icon-button" aria-label="Ir para início">

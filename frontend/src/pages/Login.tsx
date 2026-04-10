@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth, getHomeRoute } from '../contexts/AuthContext';
 import { ArrowRight, Mail, Lock } from 'lucide-react';
+import Logo from '../components/Logo';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -38,10 +39,7 @@ export default function Login() {
         border: '0.5px solid #E5E7EB',
       }}>
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
-          <h1 style={{
-            fontFamily: "'Cormorant Garamond', serif", fontSize: 32,
-            fontWeight: 700, color: '#2D1B4E', margin: '0 0 6px',
-          }}>EliaMov</h1>
+          <div style={{ marginBottom: 6 }}><Logo size={36} variant="dark" /></div>
           <p style={{ fontSize: 14, color: '#6B7280' }}>Entre na sua conta</p>
         </div>
 

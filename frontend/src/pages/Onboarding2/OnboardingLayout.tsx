@@ -1,6 +1,7 @@
 import React from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
+import Logo from '../../components/Logo';
 
 interface OnboardingLayoutProps {
   currentStep: number;
@@ -100,7 +101,7 @@ const OnboardingLayout: React.FC<OnboardingLayoutProps> = ({
           <button className="ob-back" disabled={!canGoBack} onClick={onBack}>
             <ArrowLeft size={20} />
           </button>
-          <span className="ob-brand">EliaMov</span>
+          <span className="ob-brand"><Logo size={20} variant="dark" /></span>
           <div style={{ width: 20 }} />
         </div>
         <div className="ob-progress">

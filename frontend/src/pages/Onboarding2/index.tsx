@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Logo from '../../components/Logo';
 import {
   ArrowLeft,
   ArrowRight,
@@ -99,9 +100,7 @@ export default function OnboardingFlow() {
           >
             <ArrowLeft size={20} />
           </button>
-          <span style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontSize: 20, color: '#2D1B4E' }}>
-            EliaMov
-          </span>
+          <Logo size={22} variant="dark" />
           <div style={{ width: 20 }} />
         </div>
       )}
@@ -129,7 +128,7 @@ export default function OnboardingFlow() {
               BEM-VINDA
             </div>
             <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, fontWeight: 600, color: '#2D1B4E', margin: '0 0 6px', lineHeight: 1.2 }}>
-              Como voce vai usar o EliaMov?
+              Como voce vai usar o eliaMov?
             </h1>
             <p style={{ fontSize: 13, color: '#6B7280', marginBottom: 24 }}>
               Escolha o perfil que melhor descreve voce.
@@ -313,7 +312,7 @@ export default function OnboardingFlow() {
               fontFamily: "'Cormorant Garamond', serif", fontSize: 32, fontWeight: 600,
               color: '#2D1B4E', margin: '0 0 12px',
             }}>
-              {isFemale ? 'Bem-vinda ao EliaMov' : 'Bem-vindo ao EliaMov'}
+              {isFemale ? 'Bem-vinda ao eliaMov' : 'Bem-vindo ao eliaMov'}
             </h1>
 
             <p style={{ fontSize: 14, color: '#6B7280', lineHeight: 1.8, marginBottom: 36 }}>

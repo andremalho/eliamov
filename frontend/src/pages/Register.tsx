@@ -5,6 +5,7 @@ import {
   ArrowRight, UserCircle, ClipboardList, Heart, Building2,
   Mail, Lock, User,
 } from 'lucide-react';
+import Logo from '../components/Logo';
 
 type ProfileType = 'female_user' | 'personal_trainer' | 'family_companion' | 'academy_admin';
 
@@ -61,10 +62,7 @@ export default function Register() {
         border: '0.5px solid #E5E7EB',
       }}>
         <div style={{ textAlign: 'center', marginBottom: 24 }}>
-          <h1 style={{
-            fontFamily: "'Cormorant Garamond', serif", fontSize: 32,
-            fontWeight: 700, color: '#2D1B4E', margin: '0 0 6px',
-          }}>EliaMov</h1>
+          <div style={{ marginBottom: 6 }}><Logo size={36} variant="dark" /></div>
           <p style={{ fontSize: 14, color: '#6B7280' }}>Crie sua conta</p>
         </div>
 

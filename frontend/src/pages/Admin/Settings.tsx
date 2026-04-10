@@ -17,7 +17,7 @@ const Settings: React.FC = () => {
           <div className="adm-settings-item">
             <label className="adm-settings-label">Nome da academia</label>
             <div className="adm-settings-value">
-              {currentUser?.profile?.academyName || 'Academia EliaMov'}
+              {currentUser?.profile?.academyName || 'Academia eliaMov'}
             </div>
           </div>
 
