@@ -5,7 +5,7 @@ import { cycleApi, CurrentPhase } from '../../services/cycle.api';
 import { feedApi, FeedPost } from '../../services/feed.api';
 import { contentApi, Article } from '../../services/content.api';
 import {
-  Bell, Plus, Sun, Zap, ArrowRight, Heart, MessageCircle,
+  Plus, Sun, Zap, ArrowRight, Heart, MessageCircle,
   Home as HomeIcon, Users, User, BookOpen, Play, Flame,
   Droplets, Sprout, Moon, Activity, Dumbbell, Apple, Brain, LogOut,
 } from 'lucide-react';
@@ -238,8 +238,8 @@ export default function Home() {
                 </div>
               )}
             </div>
-            <button type="button" style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(255,255,255,0.10)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', border: 'none', cursor: 'pointer' }}>
-              <Bell size={18} color="#F9FAFB" />
+            <button onClick={() => { localStorage.removeItem('eliamov_token'); window.location.href = '/login'; }} title="Sair" style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(255,255,255,0.10)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer' }}>
+              <LogOut size={18} color="#F9FAFB" />
             </button>
           </div>
 

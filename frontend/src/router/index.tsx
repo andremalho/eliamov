@@ -87,7 +87,7 @@ export default function AppRouter() {
       <Route path="/content" element={<OnboardingRoute><Content /></OnboardingRoute>} />
       <Route path="/courses" element={<OnboardingRoute><Courses /></OnboardingRoute>} />
       <Route path="/marketplace" element={<OnboardingRoute><Marketplace /></OnboardingRoute>} />
-      <Route path="/dashboard" element={<OnboardingRoute><Dashboard /></OnboardingRoute>} />
+      <Route path="/dashboard" element={<Navigate to="/home" replace />} />
 
       {/* 404 */}
       <Route path="*" element={<NotFound />} />
