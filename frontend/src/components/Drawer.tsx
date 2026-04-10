@@ -59,6 +59,12 @@ const groups: { title: string; items: NavItem[] }[] = [
     ],
   },
   {
+    title: 'Trainer',
+    items: [
+      { to: '/trainer', label: 'Painel Trainer' },
+    ],
+  },
+  {
     title: 'Conta',
     items: [
       { to: '/profile', label: 'Meu perfil' },

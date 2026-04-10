@@ -19,6 +19,7 @@ import Courses from './pages/Courses';
 import Marketplace from './pages/Marketplace';
 import Profile from './pages/Profile';
 import Admin from './pages/Admin';
+import TrainerDashboard from './pages/TrainerDashboard';
 import Community from './pages/Community';
 import Chat from './pages/Chat';
 import Communities from './pages/Communities';
@@ -59,6 +60,7 @@ export default function App() {
       <Route path="/communities" element={protect(<Communities />)} />
       <Route path="/chat" element={protect(<Chat />)} />
       <Route path="/admin" element={protect(<Admin />)} />
+      <Route path="/trainer" element={protect(<TrainerDashboard />)} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

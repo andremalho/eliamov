@@ -10,9 +10,12 @@ import {
 import { TrainerService } from './trainer.service';
 import { InviteStudentDto } from './dto/invite-student.dto';
 import { InviteCompanionDto } from './dto/invite-companion.dto';
+import { PrescribeWorkoutDto } from './dto/prescribe-workout.dto';
+import { TrainerCommentDto } from './dto/trainer-comment.dto';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 import { Role } from '../auth/role.enum';
+import { TrainerAccessGuard } from './guards/trainer-access.guard';
 
 @Controller('trainer')
 @UseGuards(RolesGuard)
@@ -35,6 +38,72 @@ export class TrainerController {
   @Roles(Role.PERSONAL_TRAINER, 'professional')
   getMyStudents(@Request() req) {
     return this.trainerService.getMyStudents(req.user.userId);
+  }
+
+  @Get('dashboard')
+  @Roles(Role.PERSONAL_TRAINER, 'professional')
+  getDashboard(@Request() req) {
+    return this.trainerService.getDashboard(req.user.userId);
+  }
+
+  @Get('students/:studentId/workouts')
+  @UseGuards(TrainerAccessGuard)
+  getStudentWorkouts(
+    @Request() req,
+    @Param('studentId') studentId: string,
+  ) {
+    return this.trainerService.getStudentWorkouts(
+      req.user.userId,
+      studentId,
+      req.trainerLink,
+    );
+  }
+
+  @Get('students/:studentId/progress')
+  @UseGuards(TrainerAccessGuard)
+  getStudentProgress(
+    @Request() req,
+    @Param('studentId') studentId: string,
+  ) {
+    return this.trainerService.getStudentProgress(
+      req.user.userId,
+      studentId,
+      req.trainerLink,
+    );
+  }
+
+  @Post('students/:studentId/prescribe')
+  @UseGuards(TrainerAccessGuard)
+  prescribeWorkout(
+    @Request() req,
+    @Param('studentId') studentId: string,
+    @Body() dto: PrescribeWorkoutDto,
+  ) {
+    return this.trainerService.prescribeWorkout(
+      req.user.userId,
+      studentId,
+      dto,
+    );
+  }
+
+  @Get('prescriptions')
+  @Roles(Role.PERSONAL_TRAINER, 'professional')
+  getMyPrescriptions(@Request() req) {
+    return this.trainerService.getMyPrescriptions(req.user.userId);
+  }
+
+  @Post('students/:studentId/comment')
+  @UseGuards(TrainerAccessGuard)
+  commentOnWorkout(
+    @Request() req,
+    @Param('studentId') studentId: string,
+    @Body() dto: TrainerCommentDto,
+  ) {
+    return this.trainerService.commentOnWorkout(
+      req.user.userId,
+      studentId,
+      dto,
+    );
   }
 }
 

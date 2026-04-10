@@ -9,8 +9,14 @@ import { User } from '../users/entities/user.entity';
 import { TrainerStudentLink } from './entities/trainer-student-link.entity';
 import { FamilyLink } from './entities/family-link.entity';
 import { Notifications } from '../notifications/entities/notifications.entity';
+import { TrainerPrescription } from './entities/trainer-prescription.entity';
+import { TrainerComment } from './entities/trainer-comment.entity';
+import { Activity } from '../activities/entities/activity.entity';
+import { WeightEntry } from '../nutrition/entities/weight-entry.entity';
 import { InviteStudentDto } from './dto/invite-student.dto';
 import { InviteCompanionDto } from './dto/invite-companion.dto';
+import { PrescribeWorkoutDto } from './dto/prescribe-workout.dto';
+import { TrainerCommentDto } from './dto/trainer-comment.dto';
 
 @Injectable()
 export class TrainerService {
@@ -23,6 +29,14 @@ export class TrainerService {
     private readonly familyLinkRepo: Repository<FamilyLink>,
     @InjectRepository(Notifications)
     private readonly notificationsRepo: Repository<Notifications>,
+    @InjectRepository(TrainerPrescription)
+    private readonly prescriptionRepo: Repository<TrainerPrescription>,
+    @InjectRepository(TrainerComment)
+    private readonly trainerCommentRepo: Repository<TrainerComment>,
+    @InjectRepository(Activity)
+    private readonly activityRepo: Repository<Activity>,
+    @InjectRepository(WeightEntry)
+    private readonly weightRepo: Repository<WeightEntry>,
   ) {}
 
   async inviteStudent(trainerId: string, dto: InviteStudentDto) {
@@ -144,5 +158,155 @@ export class TrainerService {
     }
 
     return { link, member: filtered };
+  }
+
+  // --- Dashboard ---
+
+  async getDashboard(trainerId: string) {
+    const links = await this.trainerStudentRepo.find({
+      where: { trainerId, status: 'active' },
+      relations: ['student'],
+    });
+
+    const studentIds = links.map((l) => l.studentId);
+    const totalStudents = studentIds.length;
+
+    // Workouts prescribed this week
+    const weekStart = new Date();
+    weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+    weekStart.setHours(0, 0, 0, 0);
+
+    const prescriptionsThisWeek = await this.prescriptionRepo
+      .createQueryBuilder('p')
+      .where('p.trainerId = :trainerId', { trainerId })
+      .andWhere('p.createdAt >= :weekStart', { weekStart })
+      .getCount();
+
+    // Active students today (had activity today)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    let activeToday = 0;
+    if (studentIds.length > 0) {
+      activeToday = await this.activityRepo
+        .createQueryBuilder('a')
+        .where('a.userId IN (:...ids)', { ids: studentIds })
+        .andWhere('a.startedAt >= :today', { today })
+        .select('COUNT(DISTINCT a.userId)', 'count')
+        .getRawOne()
+        .then((r) => parseInt(r?.count ?? '0'));
+    }
+
+    const students = links.map((l) => ({
+      id: l.studentId,
+      name: l.student?.name ?? 'Unknown',
+      avatarUrl: (l.student?.profile as any)?.avatarUrl ?? null,
+      permissions: l.permissions,
+    }));
+
+    return { totalStudents, prescriptionsThisWeek, activeToday, students };
+  }
+
+  async getStudentWorkouts(
+    trainerId: string,
+    studentId: string,
+    link: TrainerStudentLink,
+  ) {
+    if (!link.permissions.viewWorkouts) {
+      throw new ForbiddenException(
+        'Permissao para ver treinos nao concedida',
+      );
+    }
+    return this.activityRepo.find({
+      where: { userId: studentId },
+      order: { startedAt: 'DESC' },
+      take: 50,
+    });
+  }
+
+  async getStudentProgress(
+    trainerId: string,
+    studentId: string,
+    link: TrainerStudentLink,
+  ) {
+    if (!link.permissions.viewProgress) {
+      throw new ForbiddenException(
+        'Permissao para ver progresso nao concedida',
+      );
+    }
+    const user = await this.usersRepo.findOneBy({ id: studentId });
+    const weights = await this.weightRepo.find({
+      where: { userId: studentId },
+      order: { date: 'DESC' },
+      take: 30,
+    });
+    return {
+      currentWeight: user?.weight ?? null,
+      currentHeight: user?.height ?? null,
+      fitnessLevel: user?.fitnessLevel ?? null,
+      fitnessGoal: user?.fitnessGoal ?? null,
+      weightHistory: weights,
+    };
+  }
+
+  async prescribeWorkout(
+    trainerId: string,
+    studentId: string,
+    dto: PrescribeWorkoutDto,
+  ) {
+    const prescription = await this.prescriptionRepo.save(
+      this.prescriptionRepo.create({
+        trainerId,
+        studentId,
+        title: dto.title,
+        notes: dto.notes ?? null,
+        workoutPlan: dto.workoutPlan ?? null,
+        scheduledDates: dto.scheduledDates ?? null,
+      } as any),
+    );
+
+    await this.notificationsRepo.save(
+      this.notificationsRepo.create({
+        userId: studentId,
+        title: 'Novo treino prescrito',
+        body: `Seu personal prescreveu: ${dto.title}`,
+        type: 'info',
+      } as any),
+    );
+
+    return prescription;
+  }
+
+  async getMyPrescriptions(trainerId: string) {
+    return this.prescriptionRepo.find({
+      where: { trainerId },
+      relations: ['student'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  async commentOnWorkout(
+    trainerId: string,
+    studentId: string,
+    dto: TrainerCommentDto,
+  ) {
+    const comment = await this.trainerCommentRepo.save(
+      this.trainerCommentRepo.create({
+        trainerId,
+        studentId,
+        activityId: dto.workoutId,
+        comment: dto.comment,
+      }),
+    );
+
+    await this.notificationsRepo.save(
+      this.notificationsRepo.create({
+        userId: studentId,
+        title: 'Seu personal comentou seu treino',
+        body: dto.comment.slice(0, 100),
+        type: 'info',
+      } as any),
+    );
+
+    return comment;
   }
 }
