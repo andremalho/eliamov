@@ -2,8 +2,10 @@ import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { CycleService } from './cycle.service';
 import { CreateCycleDto } from './dto/create-cycle.dto';
 import { CurrentUser } from '../auth/current-user.decorator';
+import { FemaleZoneOnly } from '../auth/decorators/female-zone.decorator';
 
 @Controller('cycle')
+@FemaleZoneOnly()
 export class CycleController {
   constructor(private readonly service: CycleService) {}
 

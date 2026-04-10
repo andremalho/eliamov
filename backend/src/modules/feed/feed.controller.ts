@@ -13,8 +13,10 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 import { CreateReactionDto } from './dto/create-reaction.dto';
 import { FeedQueryDto } from './dto/feed-query.dto';
 import { CurrentUser } from '../auth/current-user.decorator';
+import { FemaleZoneOnly } from '../auth/decorators/female-zone.decorator';
 
 @Controller('feed')
+@FemaleZoneOnly()
 export class FeedController {
   constructor(private readonly service: FeedService) {}
 

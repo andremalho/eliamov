@@ -9,8 +9,10 @@ import {
 import { StoriesService } from './stories.service';
 import { CreateStoryDto } from './dto/create-story.dto';
 import { CurrentUser } from '../auth/current-user.decorator';
+import { FemaleZoneOnly } from '../auth/decorators/female-zone.decorator';
 
 @Controller('stories')
+@FemaleZoneOnly()
 export class StoriesController {
   constructor(private readonly service: StoriesService) {}
 

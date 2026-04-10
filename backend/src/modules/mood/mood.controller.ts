@@ -2,8 +2,10 @@ import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { MoodService } from './mood.service';
 import { CreateMoodDto } from './dto/create-mood.dto';
 import { CurrentUser } from '../auth/current-user.decorator';
+import { FemaleZoneOnly } from '../auth/decorators/female-zone.decorator';
 
 @Controller('mood')
+@FemaleZoneOnly()
 export class MoodController {
   constructor(private readonly service: MoodService) {}
 

@@ -15,8 +15,10 @@ import { SendMessageDto } from './dto/send-message.dto';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
+import { FemaleZoneOnly } from '../auth/decorators/female-zone.decorator';
 
 @Controller('communities')
+@FemaleZoneOnly()
 export class CommunityChatController {
   constructor(private readonly service: CommunityChatService) {}
 

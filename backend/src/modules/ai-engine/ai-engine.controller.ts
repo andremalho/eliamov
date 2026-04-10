@@ -1,8 +1,10 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { AiEngineService } from './ai-engine.service';
 import { CurrentUser } from '../auth/current-user.decorator';
+import { FemaleZoneOnly } from '../auth/decorators/female-zone.decorator';
 
 @Controller('ai-engine')
+@FemaleZoneOnly()
 export class AiEngineController {
   constructor(private readonly service: AiEngineService) {}
 
