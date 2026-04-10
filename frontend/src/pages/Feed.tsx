@@ -4,6 +4,8 @@ import FeedCard from '../components/FeedCard';
 import CommentsModal from '../components/CommentsModal';
 import { feedApi, FeedPost, PostType, ReactionType } from '../services/feed.api';
 import { useAuth } from '../contexts/AuthContext';
+import api from '../services/api';
+import { Camera, Image, Share2 } from 'lucide-react';
 
 const POST_TYPE_OPTIONS: { value: PostType; label: string }[] = [
   { value: 'free', label: 'Texto livre' },
@@ -24,6 +26,22 @@ export default function Feed() {
   const [postType, setPostType] = useState<PostType>('free');
   const [mediaUrl, setMediaUrl] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const feedFileRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const { uploadUrl, publicUrl } = await api.post('/media/presigned-url?type=image&folder=feed').then(r => r.data);
+      await fetch(uploadUrl, { method: 'PUT', body: file, headers: { 'Content-Type': file.type } });
+      setMediaUrl(publicUrl);
+    } catch {
+      setMediaUrl(URL.createObjectURL(file));
+    }
+    setUploading(false);
+  };
 
   // Comments modal
   const [commentsPostId, setCommentsPostId] = useState<string | null>(null);
@@ -189,15 +207,24 @@ export default function Feed() {
               rows={3}
             />
           </label>
-          <div style={{ marginBottom: 12 }}>
-            <input
-              type="text"
-              value={mediaUrl}
-              onChange={(e) => setMediaUrl(e.target.value)}
-              placeholder="URL da imagem (opcional)"
-              style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--color-border)', borderRadius: 8, fontSize: 13 }}
-            />
+          {/* Photo upload */}
+          <input ref={feedFileRef} type="file" accept="image/*,video/*" style={{ display: 'none' }} onChange={handleFileUpload} />
+          <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+            <button type="button" onClick={() => feedFileRef.current?.click()} disabled={uploading}
+              style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 12px', borderRadius: 8, border: '1px solid var(--color-border)', background: '#fff', cursor: 'pointer', fontSize: 12, fontWeight: 500 }}>
+              <Image size={14} /> {uploading ? 'Enviando...' : 'Fototeca'}
+            </button>
+            <button type="button" onClick={() => { if (feedFileRef.current) { feedFileRef.current.setAttribute('capture', 'environment'); feedFileRef.current.click(); } }}
+              style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 12px', borderRadius: 8, border: '1px solid var(--color-border)', background: '#fff', cursor: 'pointer', fontSize: 12, fontWeight: 500 }}>
+              <Camera size={14} /> Camera
+            </button>
           </div>
+          {mediaUrl && (
+            <div style={{ marginBottom: 12, position: 'relative' }}>
+              <img src={mediaUrl} alt="" style={{ width: '100%', maxHeight: 200, objectFit: 'cover', borderRadius: 10 }} />
+              <button type="button" onClick={() => setMediaUrl('')} style={{ position: 'absolute', top: 6, right: 6, background: 'rgba(0,0,0,0.6)', border: 'none', color: '#fff', borderRadius: '50%', width: 24, height: 24, cursor: 'pointer', fontSize: 14 }}>x</button>
+            </div>
+          )}
           {error && <div className="error">{error}</div>}
           <button type="submit" disabled={submitting || !content.trim()}>
             {submitting ? 'Publicando...' : 'Publicar'}
