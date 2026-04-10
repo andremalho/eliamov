@@ -28,6 +28,7 @@ import Communities from './pages/Communities';
 import Activities from './pages/Activities';
 import Feed from './pages/Feed';
 import Challenges from './pages/Challenges';
+import FemaleHome from './pages/Home';
 import NotFound from './pages/NotFound';
 
 const protect = (el: React.ReactNode) => <ProtectedRoute>{el}</ProtectedRoute>;
@@ -38,7 +39,8 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      <Route path="/" element={<Navigate to="/home" replace />} />
+      <Route path="/home" element={protect(<FemaleHome />)} />
       <Route path="/dashboard" element={protect(<Dashboard />)} />
       <Route path="/onboarding" element={protect(<Onboarding />)} />
       <Route path="/onboarding-flow" element={protect(<NewOnboarding />)} />
