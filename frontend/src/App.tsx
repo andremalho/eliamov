@@ -21,6 +21,7 @@ import Profile from './pages/Profile';
 import Admin from './pages/Admin';
 import Community from './pages/Community';
 import Chat from './pages/Chat';
+import Communities from './pages/Communities';
 import Activities from './pages/Activities';
 import Feed from './pages/Feed';
 import Challenges from './pages/Challenges';
@@ -55,6 +56,7 @@ export default function App() {
       <Route path="/community" element={protect(<Community />)} />
       <Route path="/feed" element={protect(<Feed />)} />
       <Route path="/challenges" element={protect(<Challenges />)} />
+      <Route path="/communities" element={protect(<Communities />)} />
       <Route path="/chat" element={protect(<Chat />)} />
       <Route path="/admin" element={protect(<Admin />)} />
       <Route path="*" element={<NotFound />} />

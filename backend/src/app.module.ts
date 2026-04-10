@@ -36,6 +36,7 @@ import { ActivitiesModule } from './modules/activities/activities.module';
 import { ChallengesModule } from './modules/challenges/challenges.module';
 import { FeedModule } from './modules/feed/feed.module';
 import { CycleGroupModule } from './modules/cycle-group/cycle-group.module';
+import { CommunityChatModule } from './modules/community-chat/community-chat.module';
 
 @Module({
   imports: [
@@ -81,6 +82,7 @@ import { CycleGroupModule } from './modules/cycle-group/cycle-group.module';
     ChallengesModule,
     FeedModule,
     CycleGroupModule,
+    CommunityChatModule,
   ],
   controllers: [AppController],
   providers: [
