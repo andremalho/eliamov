@@ -22,6 +22,7 @@ export default function Feed() {
   // Create post
   const [content, setContent] = useState('');
   const [postType, setPostType] = useState<PostType>('free');
+  const [mediaUrl, setMediaUrl] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   // Comments modal
@@ -81,9 +82,10 @@ export default function Feed() {
     setSubmitting(true);
     setError(null);
     try {
-      const post = await feedApi.createPost({ postType, content: content.trim() });
+      const post = await feedApi.createPost({ postType, content: content.trim(), mediaUrls: mediaUrl.trim() ? [mediaUrl.trim()] : undefined });
       setPosts((prev) => [post, ...prev]);
       setContent('');
+      setMediaUrl('');
       setPostType('free');
     } catch (err: any) {
       const msg = err?.response?.data?.message ?? 'Falha ao criar publicacao';
@@ -187,6 +189,15 @@ export default function Feed() {
               rows={3}
             />
           </label>
+          <div style={{ marginBottom: 12 }}>
+            <input
+              type="text"
+              value={mediaUrl}
+              onChange={(e) => setMediaUrl(e.target.value)}
+              placeholder="URL da imagem (opcional)"
+              style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--color-border)', borderRadius: 8, fontSize: 13 }}
+            />
+          </div>
           {error && <div className="error">{error}</div>}
           <button type="submit" disabled={submitting || !content.trim()}>
             {submitting ? 'Publicando...' : 'Publicar'}

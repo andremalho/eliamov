@@ -4,6 +4,11 @@ import { usersApi, UpdateProfileInput } from '../services/users.api';
 import Layout from '../components/Layout';
 import { formatBR } from '../utils/format';
 
+function getInitials(name: string): string {
+  const p = name.trim().split(/\s+/);
+  return p.length === 1 ? (p[0][0]?.toUpperCase() ?? '?') : (p[0][0] + p[p.length - 1][0]).toUpperCase();
+}
+
 const FITNESS_LEVELS = [
   { value: 'sedentary', label: 'Sedentário' },
   { value: 'beginner', label: 'Iniciante' },
@@ -31,6 +36,7 @@ export default function Profile() {
   const [height, setHeight] = useState<number | ''>(currentUser?.height ?? '');
   const [fitnessLevel, setFitnessLevel] = useState(currentUser?.fitnessLevel ?? '');
   const [fitnessGoal, setFitnessGoal] = useState(currentUser?.fitnessGoal ?? '');
+  const [avatarUrl, setAvatarUrl] = useState(currentUser?.profile?.avatarUrl ?? '');
 
   const levelLabel = (v: string | null | undefined) =>
     FITNESS_LEVELS.find((x) => x.value === v)?.label ?? '—';
@@ -49,6 +55,7 @@ export default function Profile() {
       if (height !== '') dto.height = Number(height);
       if (fitnessLevel) dto.fitnessLevel = fitnessLevel as UpdateProfileInput['fitnessLevel'];
       if (fitnessGoal) dto.fitnessGoal = fitnessGoal as UpdateProfileInput['fitnessGoal'];
+      if (avatarUrl) dto.profile = { ...(dto.profile ?? {}), avatarUrl } as any;
 
       const updated = await usersApi.updateMe(dto);
       setCurrentUser(updated);
@@ -73,6 +80,17 @@ export default function Profile() {
   return (
     <Layout title="Perfil" subtitle="Visualize e edite suas informações pessoais.">
       <section className="card">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
+          <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#7C3AED', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#EDE9FE', fontWeight: 700, fontSize: 22, overflow: 'hidden', flexShrink: 0 }}>
+            {currentUser.profile?.avatarUrl
+              ? <img src={currentUser.profile.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              : getInitials(currentUser.name)}
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 600, fontSize: 16 }}>{currentUser.name}</div>
+            <div style={{ fontSize: 12, color: '#6B7280' }}>{currentUser.email}</div>
+          </div>
+        </div>
         <h3>Informações pessoais</h3>
         <div className="metric-row">
           <div>
@@ -181,6 +199,16 @@ export default function Profile() {
               </select>
             </label>
 
+            <label>
+              URL da foto de perfil
+              <input
+                type="text"
+                value={avatarUrl}
+                onChange={(e) => setAvatarUrl(e.target.value)}
+                placeholder="https://..."
+              />
+            </label>
+
             {error && <div className="error">{error}</div>}
             {success && <div className="muted small">Perfil atualizado com sucesso.</div>}
 
@@ -190,6 +218,12 @@ export default function Profile() {
           </form>
         </section>
       )}
+
+      <section className="card" style={{ textAlign: 'center' }}>
+        <button onClick={() => { localStorage.removeItem('eliamov_token'); window.location.href = '/login'; }} style={{ background: 'none', border: '1px solid #DC2626', color: '#DC2626', padding: '10px 24px', borderRadius: 12, fontWeight: 600, cursor: 'pointer' }}>
+          Sair da conta
+        </button>
+      </section>
     </Layout>
   );
 }

@@ -7,7 +7,7 @@ import { contentApi, Article } from '../../services/content.api';
 import {
   Bell, Plus, Sun, Zap, ArrowRight, Heart, MessageCircle,
   Home as HomeIcon, Users, User, BookOpen, Play, Flame,
-  Droplets, Sprout, Moon, Activity, Dumbbell, Apple, Brain,
+  Droplets, Sprout, Moon, Activity, Dumbbell, Apple, Brain, LogOut,
 } from 'lucide-react';
 import Logo from '../../components/Logo';
 
@@ -57,6 +57,21 @@ function timeAgo(iso: string): string {
   if (h < 24) return `ha ${h}h`;
   return `ha ${Math.floor(h / 24)}d`;
 }
+
+const GOAL_TIPS: Record<string, { title: string; text: string }[]> = {
+  weight_loss: [
+    { title: 'Deficit calorico', text: 'Um deficit de 500 kcal/dia leva a perda de ~0.5kg/semana.' },
+    { title: 'Proteina', text: 'Consumir 1.4g/kg de proteina ajuda a preservar massa muscular.' },
+  ],
+  health: [
+    { title: 'Atividade fisica', text: '150 minutos de exercicio moderado por semana e recomendado.' },
+    { title: 'Hidratacao', text: 'Beba pelo menos 2 litros de agua por dia.' },
+  ],
+  strength: [
+    { title: 'Treino progressivo', text: 'Aumente a carga gradualmente a cada semana.' },
+    { title: 'Recuperacao', text: 'Descanse 48h entre treinos do mesmo grupo muscular.' },
+  ],
+};
 
 /* ── component ───────────────────────────────────────────────── */
 export default function Home() {
@@ -132,6 +147,11 @@ export default function Home() {
           </NavLink>
         ))}
       </nav>
+      <div style={{ padding: '16px 12px', marginTop: 'auto', borderTop: '1px solid #E5E7EB' }}>
+        <button onClick={() => { localStorage.removeItem('eliamov_token'); window.location.href = '/login'; }} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 10, background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 500, color: '#DC2626', width: '100%' }}>
+          <LogOut size={18} /> Sair
+        </button>
+      </div>
     </aside>
   );
 
@@ -184,7 +204,7 @@ export default function Home() {
     <>
       <style>{`
         .home-layout { display: flex; min-height: 100vh; background: ${C.bg}; font-family: 'DM Sans', sans-serif; }
-        .home-sidebar { display: none; width: 240px; border-right: 1px solid ${C.border}; background: #fff; flex-shrink: 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+        .home-sidebar { display: none; width: 240px; border-right: 1px solid ${C.border}; background: #fff; flex-shrink: 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; flex-direction: column; }
         .home-main { flex: 1; max-width: 900px; }
         .home-mobile-tab { display: flex; position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 0.5px solid ${C.border}; padding: 8px 0 env(safe-area-inset-bottom, 8px); z-index: 50; }
         .home-desktop-grid { display: flex; flex-direction: column; gap: 16px; }
@@ -218,9 +238,9 @@ export default function Home() {
                 </div>
               )}
             </div>
-            <Link to="/notifications" style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(255,255,255,0.10)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-              <Bell size={18} color={C.offWhite} />
-            </Link>
+            <button type="button" style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(255,255,255,0.10)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', border: 'none', cursor: 'pointer' }}>
+              <Bell size={18} color="#F9FAFB" />
+            </button>
           </div>
 
           {/* ── CONTENT AREA ───────────────────────────────────── */}
@@ -320,6 +340,20 @@ export default function Home() {
                 )}
               </div>
             </div>
+
+            {articles.length === 0 && (
+              <div style={{ marginTop: 20 }}>
+                <span style={{ fontSize: 14, fontWeight: 600, color: C.text }}>Dicas para voce</span>
+                <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {(GOAL_TIPS[currentUser?.fitnessGoal ?? ''] ?? GOAL_TIPS.health ?? []).map((tip, i) => (
+                    <div key={i} style={{ background: '#fff', borderRadius: 14, padding: '14px 16px', border: `0.5px solid ${C.border}` }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: C.violet, marginBottom: 4 }}>{tip.title}</div>
+                      <div style={{ fontSize: 13, color: C.muted, lineHeight: 1.5 }}>{tip.text}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
