@@ -44,6 +44,7 @@ import { StoriesModule } from './modules/stories/stories.module';
 import { TrainerModule } from './modules/trainer/trainer.module';
 import { AcademyModule } from './modules/academy/academy.module';
 import { WeightLossModule } from './modules/weight-loss/weight-loss.module';
+import { CalendarModule } from './modules/calendar/calendar.module';
 
 @Module({
   imports: [
@@ -96,6 +97,7 @@ import { WeightLossModule } from './modules/weight-loss/weight-loss.module';
     TrainerModule,
     AcademyModule,
     WeightLossModule,
+    CalendarModule,
   ],
   controllers: [AppController],
   providers: [

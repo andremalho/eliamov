@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth, User } from '../contexts/AuthContext';
 import { usersApi, UpdateProfileInput } from '../services/users.api';
 import Layout from '../components/Layout';
 import { formatBR } from '../utils/format';
+import { Calendar, ExternalLink, Trash2, Copy, Check } from 'lucide-react';
+import { calendarApi, CalendarConnection } from '../services/calendar.api';
 
 function getInitials(name: string): string {
   const p = name.trim().split(/\s+/);
@@ -31,12 +33,18 @@ export default function Profile() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [calConnections, setCalConnections] = useState<CalendarConnection[]>([]);
+  const [icalCopied, setIcalCopied] = useState(false);
 
   const [weight, setWeight] = useState<number | ''>(currentUser?.weight ?? '');
   const [height, setHeight] = useState<number | ''>(currentUser?.height ?? '');
   const [fitnessLevel, setFitnessLevel] = useState(currentUser?.fitnessLevel ?? '');
   const [fitnessGoal, setFitnessGoal] = useState(currentUser?.fitnessGoal ?? '');
   const [avatarUrl, setAvatarUrl] = useState(currentUser?.profile?.avatarUrl ?? '');
+
+  useEffect(() => {
+    calendarApi.connections().then(setCalConnections).catch(() => {});
+  }, []);
 
   const levelLabel = (v: string | null | undefined) =>
     FITNESS_LEVELS.find((x) => x.value === v)?.label ?? '—';
@@ -218,6 +226,68 @@ export default function Profile() {
           </form>
         </section>
       )}
+
+      <section className="card">
+        <h3 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Calendar size={18} /> Calendarios
+        </h3>
+        <p className="muted small" style={{ marginBottom: 12 }}>
+          Sincronize treinos, consultas e ciclo com seu calendario.
+        </p>
+
+        {/* Connected calendars */}
+        {calConnections.length > 0 && (
+          <div style={{ marginBottom: 12 }}>
+            {calConnections.map(c => (
+              <div key={c.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #f3f4f6' }}>
+                <div>
+                  <strong style={{ fontSize: 14 }}>{c.provider === 'google' ? 'Google Calendar' : 'Microsoft Calendar'}</strong>
+                  <span className="muted small" style={{ marginLeft: 8 }}>{c.isActive ? 'Ativo' : 'Inativo'}</span>
+                </div>
+                <button onClick={async () => { await calendarApi.disconnect(c.id); setCalConnections(prev => prev.filter(x => x.id !== c.id)); }}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#DC2626', padding: 4 }}>
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Connect buttons */}
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
+          <a href={calendarApi.connectUrl('google')}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 10, border: '1px solid #E5E7EB', textDecoration: 'none', color: '#111827', fontSize: 13, fontWeight: 500 }}>
+            <ExternalLink size={14} /> Google Calendar
+          </a>
+          <a href={calendarApi.connectUrl('microsoft')}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 10, border: '1px solid #E5E7EB', textDecoration: 'none', color: '#111827', fontSize: 13, fontWeight: 500 }}>
+            <ExternalLink size={14} /> Microsoft / Teams
+          </a>
+        </div>
+
+        {/* iCal subscription link */}
+        <div style={{ background: '#F9FAFB', borderRadius: 10, padding: '10px 12px' }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 4 }}>Assinatura iCal (Apple Calendar, Outlook)</div>
+          <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+            <input
+              readOnly
+              value={currentUser ? calendarApi.icalFeedUrl(currentUser.id) : ''}
+              style={{ flex: 1, padding: '6px 8px', border: '1px solid #E5E7EB', borderRadius: 6, fontSize: 11, background: '#fff' }}
+              onClick={e => (e.target as HTMLInputElement).select()}
+            />
+            <button onClick={() => {
+              navigator.clipboard.writeText(calendarApi.icalFeedUrl(currentUser!.id));
+              setIcalCopied(true);
+              setTimeout(() => setIcalCopied(false), 2000);
+            }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: icalCopied ? '#16A34A' : '#6B7280' }}>
+              {icalCopied ? <Check size={16} /> : <Copy size={16} />}
+            </button>
+          </div>
+          <p className="muted" style={{ fontSize: 10, marginTop: 4 }}>
+            Cole esta URL nas configuracoes de calendario do seu app para sincronizar automaticamente.
+          </p>
+        </div>
+      </section>
 
       <section className="card" style={{ textAlign: 'center' }}>
         <button onClick={() => { localStorage.removeItem('eliamov_token'); window.location.href = '/login'; }} style={{ background: 'none', border: '1px solid #DC2626', color: '#DC2626', padding: '10px 24px', borderRadius: 12, fontWeight: 600, cursor: 'pointer' }}>
