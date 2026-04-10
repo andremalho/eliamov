@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth, isProfileComplete } from '../contexts/AuthContext';
 import Layout from '../components/Layout';
 import { Icon } from '../components/icons';
+import CycleGroupBanner from '../components/CycleGroupBanner';
 import ProfileMenuModal from '../components/profile-modals/ProfileMenuModal';
 import LifeMomentModal from '../components/profile-modals/LifeMomentModal';
 import ProfilePhotoModal from '../components/profile-modals/ProfilePhotoModal';
@@ -66,6 +67,8 @@ export default function Dashboard() {
           <h2 className="profile-name">{currentUser?.name?.split(' ')[0]}</h2>
         </div>
       </button>
+
+      <CycleGroupBanner />
 
       <Link to="/insights" className="hero-card">
         <div className="hero-card-icon">

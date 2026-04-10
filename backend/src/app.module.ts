@@ -34,6 +34,7 @@ import { TenantModule } from './modules/tenant/tenant.module';
 import { AiEngineModule } from './modules/ai-engine/ai-engine.module';
 import { ActivitiesModule } from './modules/activities/activities.module';
 import { FeedModule } from './modules/feed/feed.module';
+import { CycleGroupModule } from './modules/cycle-group/cycle-group.module';
 
 @Module({
   imports: [
@@ -77,6 +78,7 @@ import { FeedModule } from './modules/feed/feed.module';
     AiEngineModule,
     ActivitiesModule,
     FeedModule,
+    CycleGroupModule,
   ],
   controllers: [AppController],
   providers: [
