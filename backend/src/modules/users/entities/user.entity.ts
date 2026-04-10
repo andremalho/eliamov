@@ -57,10 +57,41 @@ export class User {
 
   @Column({
     type: 'enum',
-    enum: ['user', 'professional', 'admin', 'tenant_admin'],
-    default: 'user',
+    enum: [
+      'user',
+      'professional',
+      'admin',
+      'tenant_admin',
+      'female_user',
+      'personal_trainer',
+      'family_companion',
+      'academy_admin',
+      'academy_manager',
+      'super_admin',
+    ],
+    default: 'female_user',
   })
-  role: 'user' | 'professional' | 'admin' | 'tenant_admin';
+  role: string;
+
+  @Column({
+    type: 'enum',
+    enum: ['female', 'male', 'other', 'prefer_not_to_say'],
+    nullable: true,
+  })
+  gender: 'female' | 'male' | 'other' | 'prefer_not_to_say' | null;
+
+  @Column({
+    type: 'enum',
+    enum: ['full', 'trainer', 'companion', 'admin'],
+    default: 'full',
+  })
+  profileType: 'full' | 'trainer' | 'companion' | 'admin';
+
+  @Column({ default: false })
+  isProfileComplete: boolean;
+
+  @Column({ type: 'int', default: 0 })
+  onboardingStep: number;
 
   @Column({ type: 'jsonb', nullable: true })
   profile: Record<string, any> | null;

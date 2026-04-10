@@ -6,6 +6,7 @@ import * as bcrypt from 'bcryptjs';
 import { User } from '../users/entities/user.entity';
 import { RegisterDto, LoginDto } from './dto/create-auth.dto';
 import { TenantService } from '../tenant/tenant.service';
+import { Role } from './role.enum';
 
 @Injectable()
 export class AuthService {
@@ -31,7 +32,7 @@ export class AuthService {
       password: hash,
       name: dto.name,
       tenantId,
-      role: 'user',
+      role: dto.role || Role.FEMALE_USER,
     });
     await this.usersRepo.save(user);
     return this.buildAuthResponse(user);

@@ -39,6 +39,7 @@ import { CycleGroupModule } from './modules/cycle-group/cycle-group.module';
 import { CommunityChatModule } from './modules/community-chat/community-chat.module';
 import { MediaModule } from './modules/media/media.module';
 import { StoriesModule } from './modules/stories/stories.module';
+import { TrainerModule } from './modules/trainer/trainer.module';
 
 @Module({
   imports: [
@@ -87,6 +88,7 @@ import { StoriesModule } from './modules/stories/stories.module';
     CommunityChatModule,
     MediaModule,
     StoriesModule,
+    TrainerModule,
   ],
   controllers: [AppController],
   providers: [
