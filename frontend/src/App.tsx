@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Onboarding from './pages/Onboarding';
 import OnboardingFlow from './pages/OnboardingFlow';
+import NewOnboarding from './pages/Onboarding2';
 import Dashboard from './pages/Dashboard';
 import Cycle from './pages/Cycle';
 import Mood from './pages/Mood';
@@ -40,7 +41,7 @@ export default function App() {
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="/dashboard" element={protect(<Dashboard />)} />
       <Route path="/onboarding" element={protect(<Onboarding />)} />
-      <Route path="/onboarding-flow" element={protect(<OnboardingFlow />)} />
+      <Route path="/onboarding-flow" element={protect(<NewOnboarding />)} />
       <Route path="/cycle" element={protect(<Cycle />)} />
       <Route path="/mood" element={protect(<Mood />)} />
       <Route path="/activities" element={protect(<Activities />)} />
