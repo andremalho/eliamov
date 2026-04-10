@@ -1,17 +1,2 @@
-import { IsOptional, IsString } from 'class-validator';
-
-export class CreateContentDto {
-  @IsString()
-  authorId: string;
-
-  @IsString()
-  title: string;
-
-  @IsOptional()
-  @IsString()
-  body?: string;
-
-  @IsOptional()
-  @IsString()
-  type?: string;
-}
+// Legacy DTO replaced by create-article.dto.ts and create-video.dto.ts
+export { CreateArticleDto as CreateContentDto } from './create-article.dto';
