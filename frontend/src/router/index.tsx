@@ -32,6 +32,7 @@ import Feed from '../pages/Feed';
 import Challenges from '../pages/Challenges';
 import FemaleHome from '../pages/Home';
 import Companion from '../pages/Companion';
+import Evolution from '../pages/Evolution';
 import NotFound from '../pages/NotFound';
 
 function SmartRedirect() {
@@ -72,6 +73,7 @@ export default function AppRouter() {
       <Route path="/appointments" element={<FemaleRoute><Appointments /></FemaleRoute>} />
       <Route path="/challenges" element={<FemaleRoute><Challenges /></FemaleRoute>} />
       <Route path="/chat" element={<FemaleRoute><Chat /></FemaleRoute>} />
+      <Route path="/evolution" element={<FemaleRoute><Evolution /></FemaleRoute>} />
 
       {/* Trainer zone */}
       <Route path="/trainer" element={<RoleRoute roles={['personal_trainer', 'professional']}><TrainerPanel /></RoleRoute>} />

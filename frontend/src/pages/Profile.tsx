@@ -6,8 +6,9 @@ import api from '../services/api';
 import { formatBR } from '../utils/format';
 import {
   Camera, Upload, Edit3, Save, LogOut, Calendar, ExternalLink,
-  Trash2, Copy, Check, Share2, ChevronRight,
+  Trash2, Copy, Check, ChevronRight,
 } from 'lucide-react';
+import { InstagramIcon, FacebookIcon, XIcon, SnapchatIcon, WhatsAppIcon } from '../components/SocialIcons';
 
 function getInitials(n: string): string {
   const p = n.trim().split(/\s+/);
@@ -208,16 +209,21 @@ export default function Profile() {
       <div style={S.card}>
         <span style={S.cardTitle}>Compartilhar perfil</span>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          {[
-            { label: 'Instagram', url: 'https://www.instagram.com/', color: '#E4405F' },
-            { label: 'X', url: `https://twitter.com/intent/tweet?text=${encodeURIComponent('Estou usando o eliaMov!')}`, color: '#111827' },
-            { label: 'Snapchat', url: 'https://www.snapchat.com/', color: '#FFFC00', textColor: '#111827' },
-            { label: 'WhatsApp', url: `https://wa.me/?text=${encodeURIComponent('Conhece o eliaMov? Plataforma de saude feminina!')}`, color: '#25D366' },
-          ].map(s => (
-            <a key={s.label} href={s.url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 12px', borderRadius: 8, background: s.color, color: s.textColor ?? '#fff', fontSize: 12, fontWeight: 600, textDecoration: 'none' }}>
-              <Share2 size={12} /> {s.label}
-            </a>
-          ))}
+          <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 10, background: 'linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)', color: '#fff', fontSize: 12, fontWeight: 600, textDecoration: 'none' }}>
+            <InstagramIcon /> Instagram
+          </a>
+          <a href="https://www.facebook.com/sharer/sharer.php?u=https://eliamov.com" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 10, background: '#1877F2', color: '#fff', fontSize: 12, fontWeight: 600, textDecoration: 'none' }}>
+            <FacebookIcon /> Facebook
+          </a>
+          <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent('Estou usando o eliaMov! Plataforma de saude feminina.')}`} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 10, background: '#000', color: '#fff', fontSize: 12, fontWeight: 600, textDecoration: 'none' }}>
+            <XIcon /> X
+          </a>
+          <a href="https://www.snapchat.com/" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 10, background: '#FFFC00', color: '#111', fontSize: 12, fontWeight: 600, textDecoration: 'none' }}>
+            <SnapchatIcon /> Snapchat
+          </a>
+          <a href={`https://wa.me/?text=${encodeURIComponent('Conhece o eliaMov? Plataforma de saude feminina!')}`} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 10, background: '#25D366', color: '#fff', fontSize: 12, fontWeight: 600, textDecoration: 'none' }}>
+            <WhatsAppIcon /> WhatsApp
+          </a>
         </div>
       </div>
 

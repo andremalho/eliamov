@@ -17,8 +17,6 @@ const PINK = '#F472B6';
 const PROFILES = [
   { value: 'female_user', label: 'Sou aluna', hint: 'Treino, ciclo e saude feminina', Icon: UserCircle, iconColor: V, iconBg: '#EDE9FE' },
   { value: 'personal_trainer', label: 'Personal trainer', hint: 'Acompanhe suas alunas', Icon: ClipboardList, iconColor: '#16A34A', iconBg: '#F0FDF4' },
-  { value: 'family_companion', label: 'Familiar', hint: 'Acompanhe quem voce ama', Icon: Heart, iconColor: '#DB2777', iconBg: '#FDF2F8' },
-  { value: 'academy_admin', label: 'Gestor de academia', hint: 'Gerencie sua academia', Icon: Building2, iconColor: '#1D4ED8', iconBg: '#EFF6FF' },
 ];
 
 const DISEASES = [

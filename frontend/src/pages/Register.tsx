@@ -12,8 +12,6 @@ type ProfileType = 'female_user' | 'personal_trainer' | 'family_companion' | 'ac
 const PROFILES = [
   { value: 'female_user' as const, label: 'Sou aluna', hint: 'Treino, ciclo e saude feminina', Icon: UserCircle, iconColor: '#7C3AED', iconBg: '#EDE9FE' },
   { value: 'personal_trainer' as const, label: 'Personal trainer', hint: 'Acompanhe suas alunas', Icon: ClipboardList, iconColor: '#16A34A', iconBg: '#F0FDF4' },
-  { value: 'family_companion' as const, label: 'Familiar', hint: 'Acompanhe quem voce ama', Icon: Heart, iconColor: '#DB2777', iconBg: '#FDF2F8' },
-  { value: 'academy_admin' as const, label: 'Gestor de academia', hint: 'Gerencie sua academia', Icon: Building2, iconColor: '#1D4ED8', iconBg: '#EFF6FF' },
 ];
 
 export default function Register() {

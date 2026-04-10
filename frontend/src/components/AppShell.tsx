@@ -6,7 +6,7 @@ import {
   Home, Droplets, Dumbbell, Apple, Heart, MessageCircle,
   Users, Zap, BookOpen, Brain, User, Settings, LogOut,
   Menu, X, Activity, FlaskRound, Stethoscope, Watch,
-  Gauge, Trophy, ShoppingBag, GraduationCap,
+  Gauge, Trophy, ShoppingBag, GraduationCap, TrendingUp,
 } from 'lucide-react';
 
 const V = '#7C3AED';
@@ -26,6 +26,7 @@ const NAV_GROUPS = [
       { to: '/mood', label: 'Humor', Icon: Heart },
       { to: '/glucometer', label: 'Glicemia', Icon: Activity },
       { to: '/blood-pressure', label: 'Pressao', Icon: Gauge },
+      { to: '/evolution', label: 'Evolucao', Icon: TrendingUp },
     ],
   },
   {

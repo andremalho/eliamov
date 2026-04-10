@@ -4,9 +4,11 @@ import { Between, Repository } from 'typeorm';
 import { NutritionEntry } from './entities/nutrition.entity';
 import { WeightEntry } from './entities/weight-entry.entity';
 import { NutritionGoal } from './entities/nutrition-goal.entity';
+import { BodyComposition } from './entities/body-composition.entity';
 import { CreateNutritionDto } from './dto/create-nutrition.dto';
 import { CreateWeightEntryDto } from './dto/create-weight-entry.dto';
 import { CreateNutritionGoalDto } from './dto/create-nutrition-goal.dto';
+import { CreateBodyCompositionDto } from './dto/create-body-composition.dto';
 import { PaginationDto, paginate } from '../../common/pagination.dto';
 import { User } from '../users/entities/user.entity';
 
@@ -17,6 +19,7 @@ export class NutritionService {
     @InjectRepository(WeightEntry) private readonly weightRepo: Repository<WeightEntry>,
     @InjectRepository(NutritionGoal) private readonly goalRepo: Repository<NutritionGoal>,
     @InjectRepository(User) private readonly userRepo: Repository<User>,
+    @InjectRepository(BodyComposition) private readonly bodyCompRepo: Repository<BodyComposition>,
   ) {}
 
   // ── existing CRUD ──────────────────────────────────────────────
@@ -246,5 +249,77 @@ export class NutritionService {
       dailyWater,
       goal: goalType,
     };
+  }
+
+  // ── body composition ──────────────────────────────────────────
+
+  async listBodyCompositions(userId: string) {
+    return this.bodyCompRepo.find({ where: { userId }, order: { date: 'DESC' } });
+  }
+
+  async createBodyComposition(userId: string, dto: CreateBodyCompositionDto) {
+    return this.bodyCompRepo.save(this.bodyCompRepo.create({ ...dto, userId } as any));
+  }
+
+  async removeBodyComposition(userId: string, id: string) {
+    const rec = await this.bodyCompRepo.findOneBy({ id, userId });
+    if (!rec) throw new NotFoundException();
+    await this.bodyCompRepo.delete(id);
+    return { ok: true };
+  }
+
+  // ── evolution stats ───────────────────────────────────────────
+
+  async getEvolution(userId: string) {
+    const weights = await this.weightRepo.find({ where: { userId }, order: { date: 'ASC' } });
+    const compositions = await this.bodyCompRepo.find({ where: { userId }, order: { date: 'ASC' } });
+    const goal = await this.getGoal(userId);
+
+    // Calculate positive highlights
+    const highlights: { label: string; value: string; positive: boolean }[] = [];
+
+    if (weights.length >= 2) {
+      const first = Number(weights[0].weight);
+      const last = Number(weights[weights.length - 1].weight);
+      const diff = +(last - first).toFixed(1);
+      const goalIsLoss = goal?.goal === 'weight_loss';
+      highlights.push({
+        label: 'Variacao de peso',
+        value: `${diff > 0 ? '+' : ''}${diff} kg`,
+        positive: goalIsLoss ? diff < 0 : diff > 0,
+      });
+    }
+
+    if (compositions.length >= 2) {
+      const firstFat = compositions.find(c => c.bodyFatPercent != null);
+      const lastFat = [...compositions].reverse().find(c => c.bodyFatPercent != null);
+      if (firstFat && lastFat && firstFat.id !== lastFat.id) {
+        const diff = +(Number(lastFat.bodyFatPercent) - Number(firstFat.bodyFatPercent)).toFixed(1);
+        highlights.push({
+          label: 'Gordura corporal',
+          value: `${diff > 0 ? '+' : ''}${diff}%`,
+          positive: diff < 0,
+        });
+      }
+      const firstMuscle = compositions.find(c => c.muscleMassKg != null);
+      const lastMuscle = [...compositions].reverse().find(c => c.muscleMassKg != null);
+      if (firstMuscle && lastMuscle && firstMuscle.id !== lastMuscle.id) {
+        const diff = +(Number(lastMuscle.muscleMassKg) - Number(firstMuscle.muscleMassKg)).toFixed(1);
+        highlights.push({
+          label: 'Massa muscular',
+          value: `${diff > 0 ? '+' : ''}${diff} kg`,
+          positive: diff > 0,
+        });
+      }
+    }
+
+    // Streak: count weight entries as consistency metric
+    highlights.push({
+      label: 'Registros de peso',
+      value: `${weights.length} medicoes`,
+      positive: weights.length > 0,
+    });
+
+    return { weights, compositions, goal, highlights };
   }
 }

@@ -3,6 +3,7 @@ import { NutritionService } from './nutrition.service';
 import { CreateNutritionDto } from './dto/create-nutrition.dto';
 import { CreateWeightEntryDto } from './dto/create-weight-entry.dto';
 import { CreateNutritionGoalDto } from './dto/create-nutrition-goal.dto';
+import { CreateBodyCompositionDto } from './dto/create-body-composition.dto';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { PaginationDto } from '../../common/pagination.dto';
 
@@ -49,6 +50,30 @@ export class NutritionController {
   @Delete('weight/:id')
   removeWeight(@CurrentUser() user: { userId: string }, @Param('id') id: string) {
     return this.service.removeWeight(user.userId, id);
+  }
+
+  // ── body composition ────────────────────────────────────────────
+
+  @Get('body-composition')
+  listBodyComp(@CurrentUser() user: { userId: string }) {
+    return this.service.listBodyCompositions(user.userId);
+  }
+
+  @Post('body-composition')
+  createBodyComp(@CurrentUser() user: { userId: string }, @Body() dto: CreateBodyCompositionDto) {
+    return this.service.createBodyComposition(user.userId, dto);
+  }
+
+  @Delete('body-composition/:id')
+  removeBodyComp(@CurrentUser() user: { userId: string }, @Param('id') id: string) {
+    return this.service.removeBodyComposition(user.userId, id);
+  }
+
+  // ── evolution ──────────────────────────────────────────────────
+
+  @Get('evolution')
+  getEvolution(@CurrentUser() user: { userId: string }) {
+    return this.service.getEvolution(user.userId);
   }
 
   // ── existing CRUD (generic :id routes last) ────────────────────

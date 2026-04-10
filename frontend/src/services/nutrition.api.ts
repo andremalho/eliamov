@@ -72,6 +72,23 @@ export interface WeightEntry {
   createdAt: string;
 }
 
+export interface BodyComposition {
+  id: string; userId: string; date: string;
+  method: 'bioimpedance' | 'dexa' | 'manual';
+  bodyFatPercent: number | null; muscleMassKg: number | null;
+  boneMassKg: number | null; waterPercent: number | null;
+  visceralFat: number | null; basalMetabolism: number | null;
+  reportFileUrl: string | null; notes: string | null;
+  createdAt: string;
+}
+
+export interface EvolutionData {
+  weights: WeightEntry[];
+  compositions: BodyComposition[];
+  goal: NutritionGoal | null;
+  highlights: { label: string; value: string; positive: boolean }[];
+}
+
 export const nutritionApi = {
   list: () => api.get<any>('/nutrition').then((r) => Array.isArray(r.data) ? r.data : r.data?.data ?? []),
   create: (input: CreateNutritionInput) =>
@@ -104,4 +121,9 @@ export const nutritionApi = {
   createWeight: (dto: { date: string; weight: number; waist?: number; hip?: number; bodyFat?: number; notes?: string }) =>
     api.post<WeightEntry>('/nutrition/weight', dto).then((r) => r.data),
   removeWeight: (id: string) => api.delete(`/nutrition/weight/${id}`).then((r) => r.data),
+
+  listBodyComp: () => api.get<BodyComposition[]>('/nutrition/body-composition').then(r => r.data),
+  createBodyComp: (dto: any) => api.post('/nutrition/body-composition', dto).then(r => r.data),
+  removeBodyComp: (id: string) => api.delete(`/nutrition/body-composition/${id}`).then(r => r.data),
+  evolution: () => api.get<EvolutionData>('/nutrition/evolution').then(r => r.data),
 };
