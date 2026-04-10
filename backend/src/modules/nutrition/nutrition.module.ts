@@ -11,5 +11,6 @@ import { NutritionController } from './nutrition.controller';
   imports: [TypeOrmModule.forFeature([NutritionEntry, WeightEntry, NutritionGoal, User])],
   controllers: [NutritionController],
   providers: [NutritionService],
+  exports: [NutritionService],
 })
 export class NutritionModule {}

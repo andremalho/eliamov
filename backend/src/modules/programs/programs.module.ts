@@ -9,5 +9,6 @@ import { ProgramsController } from './programs.controller';
   imports: [TypeOrmModule.forFeature([WellnessProgram, ProgramEnrollment])],
   controllers: [ProgramsController],
   providers: [ProgramsService],
+  exports: [ProgramsService],
 })
 export class ProgramsModule {}

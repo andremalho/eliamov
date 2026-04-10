@@ -43,6 +43,7 @@ import { MediaModule } from './modules/media/media.module';
 import { StoriesModule } from './modules/stories/stories.module';
 import { TrainerModule } from './modules/trainer/trainer.module';
 import { AcademyModule } from './modules/academy/academy.module';
+import { WeightLossModule } from './modules/weight-loss/weight-loss.module';
 
 @Module({
   imports: [
@@ -94,6 +95,7 @@ import { AcademyModule } from './modules/academy/academy.module';
     StoriesModule,
     TrainerModule,
     AcademyModule,
+    WeightLossModule,
   ],
   controllers: [AppController],
   providers: [
