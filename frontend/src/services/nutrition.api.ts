@@ -73,13 +73,26 @@ export interface WeightEntry {
 }
 
 export const nutritionApi = {
-  list: () => api.get<NutritionEntry[]>('/nutrition').then((r) => r.data),
+  list: () => api.get<any>('/nutrition').then((r) => Array.isArray(r.data) ? r.data : r.data?.data ?? []),
   create: (input: CreateNutritionInput) =>
     api.post<NutritionEntry>('/nutrition', input).then((r) => r.data),
   remove: (id: string) => api.delete(`/nutrition/${id}`).then((r) => r.data),
 
   dailySummary: (date: string) =>
-    api.get<DailySummary>(`/nutrition/summary/daily?date=${date}`).then((r) => r.data),
+    api.get<any>(`/nutrition/summary/daily?date=${date}`).then((r) => {
+      const d = r.data;
+      const t = d.totals ?? d;
+      return {
+        date: d.date ?? date,
+        totalCalories: t.totalCalories ?? t.calories ?? 0,
+        totalProtein: t.totalProtein ?? t.protein ?? 0,
+        totalCarbs: t.totalCarbs ?? t.carbs ?? 0,
+        totalFat: t.totalFat ?? t.fat ?? 0,
+        totalWater: t.totalWater ?? t.water ?? 0,
+        entryCount: t.entryCount ?? t.entries ?? 0,
+        goal: d.goal ?? null,
+      } as DailySummary;
+    }),
   weekSummary: () =>
     api.get<any>('/nutrition/summary/week').then((r) => r.data),
 
