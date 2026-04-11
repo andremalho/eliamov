@@ -5,6 +5,7 @@ import {
   WeightLossAssessment,
   ProgressData,
   CreateAssessmentInput,
+  MealPlanResponse,
 } from '../services/weight-loss.api';
 import { ChevronDown, ChevronUp, Plus } from 'lucide-react';
 
@@ -54,6 +55,14 @@ export default function WeightLoss() {
 
   // Plan accordion
   const [planOpen, setPlanOpen] = useState(false);
+
+  // Meal plan
+  const [mealPlan, setMealPlan] = useState<MealPlanResponse | null>(null);
+  const [mpDietType, setMpDietType] = useState('onivora');
+  const [mpAllergies, setMpAllergies] = useState<string[]>([]);
+  const [mpMealsPerDay, setMpMealsPerDay] = useState(5);
+  const [mpBudget, setMpBudget] = useState('moderado');
+  const [mpLoading, setMpLoading] = useState(false);
 
   const bmiPreview = useMemo(() => {
     if (weight === '' || height === '' || Number(height) === 0) return null;
@@ -561,7 +570,176 @@ export default function WeightLoss() {
             </div>
           )}
 
-          {/* G) Protocolo de comorbidade */}
+          {/* G) Cardapio personalizado */}
+          <div className="wl-section">
+            <div className="wl-section-title">Cardapio personalizado</div>
+            {!mealPlan ? (
+              <div className="wl-card">
+                <div className="wl-form-row">
+                  <div className="wl-field">
+                    <label className="wl-label">Tipo de dieta</label>
+                    <select className="wl-select" value={mpDietType} onChange={e => setMpDietType(e.target.value)}>
+                      <option value="onivora">Onivora</option>
+                      <option value="vegetariana">Vegetariana</option>
+                      <option value="vegana">Vegana</option>
+                      <option value="pescetariana">Pescetariana</option>
+                      <option value="low-carb">Low-carb</option>
+                      <option value="mediterranea">Mediterranea</option>
+                    </select>
+                  </div>
+                  <div className="wl-field">
+                    <label className="wl-label">Refeicoes por dia</label>
+                    <select className="wl-select" value={mpMealsPerDay} onChange={e => setMpMealsPerDay(Number(e.target.value))}>
+                      <option value={3}>3 refeicoes</option>
+                      <option value={4}>4 refeicoes</option>
+                      <option value={5}>5 refeicoes</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="wl-form-row">
+                  <div className="wl-field">
+                    <label className="wl-label">Orcamento</label>
+                    <select className="wl-select" value={mpBudget} onChange={e => setMpBudget(e.target.value)}>
+                      <option value="economico">Economico</option>
+                      <option value="moderado">Moderado</option>
+                      <option value="flexivel">Flexivel</option>
+                    </select>
+                  </div>
+                </div>
+                <div style={{ marginBottom: 10 }}>
+                  <label className="wl-label">Alergias / restricoes</label>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                    {['Lactose', 'Gluten', 'Ovo', 'Amendoim', 'Frutos do mar', 'Soja'].map(a => {
+                      const key = a.toLowerCase();
+                      const active = mpAllergies.includes(key);
+                      return (
+                        <button
+                          key={a}
+                          type="button"
+                          onClick={() => setMpAllergies(prev => active ? prev.filter(x => x !== key) : [...prev, key])}
+                          style={{
+                            padding: '6px 14px',
+                            borderRadius: 20,
+                            border: `1.5px solid ${active ? V : '#E5E7EB'}`,
+                            background: active ? '#EDE9FE' : '#fff',
+                            color: active ? V : '#374151',
+                            fontSize: 13,
+                            fontWeight: active ? 600 : 400,
+                            cursor: 'pointer',
+                            fontFamily: 'inherit',
+                          }}
+                        >
+                          {a}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 12 }}>
+                  <button
+                    type="button"
+                    className="wl-btn wl-btn-primary"
+                    disabled={mpLoading}
+                    onClick={async () => {
+                      setMpLoading(true);
+                      setError(null);
+                      try {
+                        const plan = await weightLossApi.mealPlan({
+                          dietType: mpDietType,
+                          allergies: mpAllergies,
+                          mealsPerDay: mpMealsPerDay,
+                          budget: mpBudget,
+                        });
+                        setMealPlan(plan);
+                      } catch (err: any) {
+                        const msg = err?.response?.data?.message ?? 'Falha ao gerar cardapio';
+                        setError(Array.isArray(msg) ? msg.join(', ') : msg);
+                      } finally {
+                        setMpLoading(false);
+                      }
+                    }}
+                  >
+                    {mpLoading ? 'Gerando...' : 'Gerar cardapio'}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                {/* Meals */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12, marginBottom: 16 }}>
+                  {mealPlan.meals.map((meal, i) => (
+                    <div key={i} className="wl-card" style={{ borderLeft: `4px solid ${V}` }}>
+                      <div style={{ fontSize: 15, fontWeight: 600, color: DARK, marginBottom: 6 }}>{meal.name}</div>
+                      <div style={{ display: 'flex', gap: 10, fontSize: 12, color: '#6B7280', marginBottom: 10, flexWrap: 'wrap' }}>
+                        <span>{meal.calories} kcal</span>
+                        <span>P: {meal.protein}g</span>
+                        <span>C: {meal.carbs}g</span>
+                        <span>G: {meal.fat}g</span>
+                      </div>
+                      <ul style={{ margin: 0, paddingLeft: 18, fontSize: 13, color: '#374151' }}>
+                        {meal.suggestions.map((s, j) => (
+                          <li key={j} style={{ marginBottom: 4 }}>{s}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Weekly variation */}
+                <div className="wl-card" style={{ marginBottom: 16 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: DARK, marginBottom: 10 }}>Variacao semanal</div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 8 }}>
+                    {mealPlan.weeklyVariation.map((wv, i) => (
+                      <div key={i} style={{ background: '#F9FAFB', borderRadius: 10, padding: '10px 14px' }}>
+                        <span style={{ fontWeight: 600, color: V, fontSize: 13 }}>{wv.day}: </span>
+                        <span style={{ fontSize: 13, color: '#374151' }}>{wv.theme}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Shopping list */}
+                <div className="wl-card" style={{ marginBottom: 16 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: DARK, marginBottom: 10 }}>Lista de compras</div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                    {mealPlan.shoppingList.map((item, i) => (
+                      <span key={i} style={{
+                        padding: '5px 12px',
+                        borderRadius: 20,
+                        background: '#EDE9FE',
+                        color: V,
+                        fontSize: 13,
+                        fontWeight: 500,
+                      }}>
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Tips */}
+                <div className="wl-card" style={{ marginBottom: 16 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: DARK, marginBottom: 10 }}>Dicas</div>
+                  {mealPlan.tips.map((tip, i) => (
+                    <div key={i} style={{ fontSize: 13, color: '#374151', padding: '4px 0' }}>&#x2022; {tip}</div>
+                  ))}
+                </div>
+
+                {/* Regenerate button */}
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <button
+                    type="button"
+                    className="wl-btn wl-btn-primary"
+                    onClick={() => setMealPlan(null)}
+                  >
+                    Gerar novo cardapio
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* H) Protocolo de comorbidade */}
           {assessment.comorbidity !== 'none' && comorbProto && (
             <div className="wl-section">
               <div className="wl-section-title">Protocolo de comorbidade</div>

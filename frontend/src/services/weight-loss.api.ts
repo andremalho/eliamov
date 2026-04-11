@@ -34,10 +34,21 @@ export interface CreateAssessmentInput {
   comorbidity: 'none' | 'dm2' | 'hypertension' | 'metabolic_syndrome' | 'pcos';
 }
 
+export interface MealPlanResponse {
+  dailyTargets: { calories: number; protein: number; carbs: number; fats: number };
+  preferences: any;
+  meals: { name: string; calories: number; protein: number; carbs: number; fat: number; suggestions: string[] }[];
+  weeklyVariation: { day: string; theme: string }[];
+  shoppingList: string[];
+  tips: string[];
+}
+
 export const weightLossApi = {
   getAssessment: () => api.get<WeightLossAssessment>('/weight-loss/assessment').then(r => r.data),
   createAssessment: (dto: CreateAssessmentInput) => api.post<WeightLossAssessment>('/weight-loss/assessment', dto).then(r => r.data),
   checkin: (dto: { assessmentId: string; weekNumber: number; weightKg: number; adherencePercent: number; notes?: string }) =>
     api.post('/weight-loss/checkin', dto).then(r => r.data),
   progress: (assessmentId: string) => api.get<ProgressData>(`/weight-loss/progress?assessmentId=${assessmentId}`).then(r => r.data),
+  mealPlan: (dto: { dietType: string; allergies?: string[]; mealsPerDay?: number; budget?: string }) =>
+    api.post<MealPlanResponse>('/weight-loss/meal-plan', dto).then(r => r.data),
 };

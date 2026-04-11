@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { WeightLossService } from './weight-loss.service';
 import { CreateAssessmentDto } from './dto/create-assessment.dto';
 import { CheckinDto } from './dto/checkin.dto';
+import { MealPlanDto } from './dto/meal-plan.dto';
 import { CurrentUser } from '../auth/current-user.decorator';
 
 @Controller('weight-loss')
@@ -35,5 +36,13 @@ export class WeightLossController {
     @Query('assessmentId') assessmentId: string,
   ) {
     return this.service.getProgress(user.userId, assessmentId);
+  }
+
+  @Post('meal-plan')
+  generateMealPlan(
+    @CurrentUser() user: { userId: string },
+    @Body() dto: MealPlanDto,
+  ) {
+    return this.service.generateMealPlan(user.userId, dto as any);
   }
 }

@@ -212,6 +212,140 @@ export class WeightLossService {
     return phases;
   }
 
+  async generateMealPlan(userId: string, preferences: { dietType: string; allergies: string[]; mealsPerDay: number; budget: string }) {
+    const assessment = await this.assessmentRepo.findOne({ where: { userId }, order: { createdAt: 'DESC' } });
+    if (!assessment) throw new NotFoundException('Nenhuma avaliacao encontrada');
+
+    const calories = assessment.dailyCalorieGoal;
+    const protein = Number(assessment.proteinG);
+    const carbs = Number(assessment.carbsG);
+    const fats = Number(assessment.fatsG);
+    const comorbidity = assessment.comorbidity;
+
+    // Build meal plan based on macros and preferences
+    const plan = this.buildMealPlan(calories, protein, carbs, fats, preferences, comorbidity);
+    return plan;
+  }
+
+  private buildMealPlan(calories: number, protein: number, carbs: number, fats: number, prefs: any, comorbidity: string) {
+    const meals = prefs.mealsPerDay ?? 5;
+
+    // Distribution: main meals get more, snacks less
+    const distribution = meals === 3
+      ? [0.35, 0.40, 0.25]
+      : meals === 4
+      ? [0.30, 0.10, 0.35, 0.25]
+      : [0.25, 0.10, 0.30, 0.10, 0.25]; // 5 meals
+
+    const mealNames = meals === 3
+      ? ['Cafe da manha', 'Almoco', 'Jantar']
+      : meals === 4
+      ? ['Cafe da manha', 'Lanche da manha', 'Almoco', 'Jantar']
+      : ['Cafe da manha', 'Lanche da manha', 'Almoco', 'Lanche da tarde', 'Jantar'];
+
+    // Food database by category and diet type
+    const foods = this.getFoodOptions(prefs.dietType, prefs.allergies ?? [], comorbidity);
+
+    const mealPlan = {
+      dailyTargets: { calories, protein, carbs, fats },
+      preferences: prefs,
+      meals: mealNames.map((name, i) => {
+        const pct = distribution[i];
+        const mealCal = Math.round(calories * pct);
+        const mealProt = Math.round(protein * pct);
+        const mealCarbs = Math.round(carbs * pct);
+        const mealFat = Math.round(fats * pct);
+
+        return {
+          name,
+          calories: mealCal,
+          protein: mealProt,
+          carbs: mealCarbs,
+          fat: mealFat,
+          suggestions: foods[name] ?? foods.default,
+        };
+      }),
+      weeklyVariation: this.getWeeklyVariation(prefs.dietType),
+      shoppingList: this.getShoppingList(prefs.dietType, prefs.allergies ?? []),
+      tips: this.getMealTips(comorbidity, prefs.dietType),
+    };
+
+    return mealPlan;
+  }
+
+  private getFoodOptions(dietType: string, allergies: string[], comorbidity: string): Record<string, string[]> {
+    const isVeg = dietType === 'vegetariana' || dietType === 'vegana';
+    const noLactose = allergies.includes('lactose') || dietType === 'vegana';
+    const noGluten = allergies.includes('gluten');
+    const lowCarb = comorbidity === 'dm2' || comorbidity === 'pcos';
+
+    return {
+      'Cafe da manha': [
+        !noGluten ? 'Pao integral com ovo mexido e abacate' : 'Tapioca com ovo e abacate',
+        !noLactose ? 'Iogurte natural com granola e frutas' : 'Mingau de aveia com banana',
+        'Omelete de claras com espinafre e tomate',
+        isVeg ? 'Smoothie de banana, aveia e pasta de amendoim' : 'Crepioca com frango desfiado',
+        lowCarb ? 'Ovos mexidos com cottage e nozes' : null,
+      ].filter(Boolean) as string[],
+      'Lanche da manha': [
+        'Castanhas (30g) + 1 fruta',
+        !noLactose ? 'Iogurte grego com canela' : 'Fruta + pasta de amendoim',
+        'Mix de oleaginosas (amendoas, nozes)',
+      ].filter(Boolean) as string[],
+      'Almoco': [
+        isVeg ? 'Arroz integral + feijao + legumes grelhados + salada' : 'Arroz integral + feijao + frango grelhado + salada',
+        isVeg ? 'Quinoa com lentilha, abobora e rucula' : 'Peixe assado com batata doce e brocolis',
+        !isVeg ? 'Carne magra com mandioca e salada colorida' : 'Bowl de grao-de-bico com vegetais',
+        lowCarb ? 'Salada com proteina + azeite + sementes (sem arroz)' : null,
+      ].filter(Boolean) as string[],
+      'Lanche da tarde': [
+        'Frutas com pasta de amendoim',
+        !noLactose ? 'Queijo branco + 1 fruta' : 'Homus com palitos de cenoura',
+        'Banana + canela + aveia',
+      ].filter(Boolean) as string[],
+      'Jantar': [
+        isVeg ? 'Sopa de legumes com tofu' : 'Sopa de frango com legumes',
+        isVeg ? 'Salada completa com grao-de-bico e abacate' : 'Omelete com salada verde',
+        !isVeg ? 'Peixe grelhado com legumes no vapor' : 'Wrap de alface com cogumelos',
+        lowCarb ? 'Salada com ovo + abacate + azeite' : null,
+      ].filter(Boolean) as string[],
+      default: ['Opcao balanceada conforme macros'],
+    };
+  }
+
+  private getWeeklyVariation(dietType: string) {
+    return [
+      { day: 'Segunda', theme: 'Proteina magra + legumes verdes' },
+      { day: 'Terca', theme: 'Peixe ou alternativa + vegetais coloridos' },
+      { day: 'Quarta', theme: dietType === 'vegetariana' || dietType === 'vegana' ? 'Leguminosas variadas' : 'Carne vermelha magra (1x semana)' },
+      { day: 'Quinta', theme: 'Ovos + saladas elaboradas' },
+      { day: 'Sexta', theme: 'Refeicao livre controlada (dentro dos macros)' },
+      { day: 'Sabado', theme: 'Receitas novas saudaveis' },
+      { day: 'Domingo', theme: 'Meal prep para a semana' },
+    ];
+  }
+
+  private getShoppingList(dietType: string, allergies: string[]) {
+    const base = ['Ovos', 'Azeite extra virgem', 'Banana', 'Maca', 'Tomate', 'Alface', 'Brocolis', 'Cenoura', 'Cebola', 'Alho', 'Arroz integral', 'Feijao', 'Aveia', 'Castanhas', 'Pasta de amendoim'];
+    if (dietType !== 'vegana') base.push('Frango', 'Peixe', 'Iogurte natural', 'Queijo branco');
+    if (dietType === 'vegana') base.push('Tofu', 'Grao-de-bico', 'Lentilha', 'Leite vegetal');
+    if (!allergies.includes('gluten')) base.push('Pao integral');
+    return base;
+  }
+
+  private getMealTips(comorbidity: string, dietType: string) {
+    const tips = [
+      'Prepare as refeicoes com antecedencia (meal prep)',
+      'Beba agua antes das refeicoes',
+      'Coma devagar, mastigue bem',
+      'Use pratos menores para controlar porcoes',
+    ];
+    if (comorbidity === 'dm2') tips.push('Evite carboidratos refinados', 'Prefira indice glicemico baixo');
+    if (comorbidity === 'hypertension') tips.push('Reduza o sal', 'Use ervas e especiarias no lugar');
+    if (comorbidity === 'pcos') tips.push('Prefira carboidratos de baixo IG', 'Inclua alimentos anti-inflamatorios');
+    return tips;
+  }
+
   private generateComorbidityProtocol(comorbidity: string, currentCarbs: number) {
     switch (comorbidity) {
       case 'dm2':
