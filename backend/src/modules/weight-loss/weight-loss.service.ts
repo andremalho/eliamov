@@ -91,7 +91,90 @@ export class WeightLossService {
     saved.wellnessProgramId = (program as any).id;
     await this.assessmentRepo.save(saved);
 
-    return saved;
+    return { ...saved, references: this.getScientificReferences(dto.comorbidity) };
+  }
+
+  private getScientificReferences(comorbidity: string) {
+    const refs = [
+      {
+        method: 'Calculo de TMB',
+        formula: 'Mifflin-St Jeor',
+        reference: 'Mifflin MD, St Jeor ST, et al. A new predictive equation for resting energy expenditure in healthy individuals. Am J Clin Nutr. 1990;51(2):241-247.',
+        doi: '10.1093/ajcn/51.2.241',
+      },
+      {
+        method: 'Proteina para preservacao muscular',
+        formula: '1.4-2.0 g/kg/dia',
+        reference: 'Jager R, Kerksick CM, et al. International Society of Sports Nutrition Position Stand: protein and exercise. J Int Soc Sports Nutr. 2017;14:20.',
+        doi: '10.1186/s12970-017-0177-8',
+      },
+      {
+        method: 'Deficit calorico seguro',
+        formula: '500-750 kcal/dia (minimo 1200 kcal)',
+        reference: 'Hall KD, Heymsfield SB, et al. Energy balance and its components: implications for body weight regulation. Am J Clin Nutr. 2012;95(4):989-994.',
+        doi: '10.3945/ajcn.112.036350',
+      },
+      {
+        method: 'Distribuicao de macronutrientes',
+        formula: 'Proteina 25-30%, Gordura 25-30%, Carboidratos restante',
+        reference: 'Aragon AA, Schoenfeld BJ, et al. International society of sports nutrition position stand: diets and body composition. J Int Soc Sports Nutr. 2017;14:16.',
+        doi: '10.1186/s12970-017-0174-y',
+      },
+      {
+        method: 'Estrutura de fases (ancoragem/adaptacao/consolidacao)',
+        formula: 'Modelo de mudanca comportamental em 3 fases',
+        reference: 'Diabetes Prevention Program Research Group. Reduction in the incidence of type 2 diabetes with lifestyle intervention. N Engl J Med. 2002;346(6):393-403.',
+        doi: '10.1056/NEJMoa012512',
+      },
+      {
+        method: 'Planejamento de cardapio',
+        formula: 'Guia Alimentar para a Populacao Brasileira',
+        reference: 'Ministerio da Saude. Guia Alimentar para a Populacao Brasileira. 2a ed. Brasilia: MS; 2014.',
+        doi: 'ISBN 978-85-334-2176-9',
+      },
+      {
+        method: 'Frequencia de refeicoes',
+        formula: '3-6 refeicoes/dia com distribuicao calorica proporcional',
+        reference: 'Leidy HJ, et al. The role of protein in weight loss and maintenance. Am J Clin Nutr. 2015;101(6):1320S-1329S.',
+        doi: '10.3945/ajcn.114.084038',
+      },
+    ];
+
+    // Add comorbidity-specific references
+    if (comorbidity === 'dm2') {
+      refs.push({
+        method: 'Protocolo para Diabetes Tipo 2',
+        formula: 'Low-carb (<130g/dia), IG baixo',
+        reference: 'Sainsbury E, Kizirian NV, et al. Effect of dietary carbohydrate restriction on glycemic control in adults with diabetes. Diabetes Res Clin Pract. 2018;139:239-252.',
+        doi: '10.1016/j.diabres.2018.02.026',
+      });
+    }
+    if (comorbidity === 'hypertension') {
+      refs.push({
+        method: 'Protocolo DASH para Hipertensao',
+        formula: 'Sodio <2.3g/dia, rico em K+, Ca2+, Mg2+',
+        reference: 'Appel LJ, Moore TJ, et al. A clinical trial of the effects of dietary patterns on blood pressure. N Engl J Med. 1997;336(16):1117-1124.',
+        doi: '10.1056/NEJM199704173361601',
+      });
+    }
+    if (comorbidity === 'metabolic_syndrome') {
+      refs.push({
+        method: 'Protocolo para Sindrome Metabolica',
+        formula: 'Deficit moderado + exercicio resistido 3x/semana',
+        reference: 'Despres JP, Lemieux I. Abdominal obesity and metabolic syndrome. Nature. 2006;444(7121):881-887.',
+        doi: '10.1038/nature05488',
+      });
+    }
+    if (comorbidity === 'pcos') {
+      refs.push({
+        method: 'Protocolo para SOP/PCOS',
+        formula: 'Carbs 100-130g/dia, inositol mio+D-chiro 40:1',
+        reference: 'Teede HJ, et al. Recommendations from the 2023 international evidence-based guideline for the assessment and management of PCOS. J Clin Endocrinol Metab. 2023;108(10):2447-2469.',
+        doi: '10.1210/clinem/dgad463',
+      });
+    }
+
+    return refs;
   }
 
   async getAssessment(userId: string) {
@@ -270,7 +353,7 @@ export class WeightLossService {
       tips: this.getMealTips(comorbidity, prefs.dietType),
     };
 
-    return mealPlan;
+    return { ...mealPlan, references: this.getScientificReferences(comorbidity) };
   }
 
   private getFoodOptions(dietType: string, allergies: string[], comorbidity: string): Record<string, string[]> {

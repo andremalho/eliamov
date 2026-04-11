@@ -752,6 +752,49 @@ export default function WeightLoss() {
               </div>
             </div>
           )}
+
+          {/* I) Referencias cientificas */}
+          <div style={{ marginTop: 20 }}>
+            <div style={{ fontSize: 15, fontWeight: 600, color: '#111827', marginBottom: 12 }}>Fundamentacao cientifica</div>
+            <p style={{ fontSize: 12, color: '#6B7280', marginBottom: 12 }}>
+              Este programa utiliza metodos validados por pesquisas publicadas em periodicos indexados.
+            </p>
+            {((assessment as any).references ?? []).map((ref: any, i: number) => (
+              <div key={i} style={{ background: '#fff', borderRadius: 12, border: '1px solid #E5E7EB', padding: '12px 14px', marginBottom: 8 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: V, marginBottom: 2 }}>{ref.method}</div>
+                    <div style={{ fontSize: 11, color: '#374151', marginBottom: 4 }}>{ref.formula}</div>
+                    <div style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.5, fontStyle: 'italic' }}>{ref.reference}</div>
+                  </div>
+                </div>
+                {ref.doi && (
+                  <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 4 }}>
+                    DOI: <a href={ref.doi.startsWith('10.') ? `https://doi.org/${ref.doi}` : '#'} target="_blank" rel="noopener noreferrer" style={{ color: V, textDecoration: 'none' }}>{ref.doi}</a>
+                  </div>
+                )}
+              </div>
+            ))}
+
+            {/* Meal plan references (if generated) */}
+            {mealPlan && (mealPlan as any).references && (
+              <>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginTop: 16, marginBottom: 8 }}>Referencias do cardapio</div>
+                {((mealPlan as any).references ?? []).filter((r: any) => !(assessment as any).references?.some((ar: any) => ar.method === r.method)).map((ref: any, i: number) => (
+                  <div key={`mp-${i}`} style={{ background: '#fff', borderRadius: 12, border: '1px solid #E5E7EB', padding: '12px 14px', marginBottom: 8 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: V, marginBottom: 2 }}>{ref.method}</div>
+                    <div style={{ fontSize: 11, color: '#374151', marginBottom: 4 }}>{ref.formula}</div>
+                    <div style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.5, fontStyle: 'italic' }}>{ref.reference}</div>
+                    {ref.doi && (
+                      <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 4 }}>
+                        DOI: <a href={ref.doi.startsWith('10.') ? `https://doi.org/${ref.doi}` : '#'} target="_blank" rel="noopener noreferrer" style={{ color: V, textDecoration: 'none' }}>{ref.doi}</a>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </>
+            )}
+          </div>
         </>
       )}
     </Layout>
