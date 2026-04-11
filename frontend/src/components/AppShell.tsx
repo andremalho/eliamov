@@ -10,35 +10,33 @@ import {
 } from 'lucide-react';
 
 const NAV_GROUPS = [
-  { title: 'Principal', items: [
+  { title: '', items: [
     { to: '/home', label: 'Home', Icon: Home },
     { to: '/insights', label: 'Insights IA', Icon: Brain },
   ]},
   { title: 'Saude', items: [
-    { to: '/cycle', label: 'Ciclo', Icon: Droplets },
+    { to: '/cycle', label: 'Ciclo menstrual', Icon: Droplets },
     { to: '/mood', label: 'Humor', Icon: Heart },
     { to: '/evolution', label: 'Evolucao', Icon: TrendingUp },
-    { to: '/glucometer', label: 'Glicemia', Icon: Activity },
-    { to: '/blood-pressure', label: 'Pressao', Icon: Gauge },
   ]},
-  { title: 'Plano', items: [
+  { title: 'Treino e nutricao', items: [
     { to: '/training', label: 'Treino', Icon: Dumbbell },
     { to: '/nutrition', label: 'Nutricao', Icon: Apple },
     { to: '/weight-loss', label: 'Emagrecimento', Icon: Scale },
     { to: '/activities', label: 'Atividades', Icon: Zap },
-    { to: '/lab-exams', label: 'Exames', Icon: FlaskRound },
-    { to: '/appointments', label: 'Consultas', Icon: Stethoscope },
-    { to: '/wearables', label: 'Wearables', Icon: Watch },
   ]},
   { title: 'Social', items: [
     { to: '/feed', label: 'Feed', Icon: MessageCircle },
     { to: '/communities', label: 'Grupos', Icon: Users },
     { to: '/challenges', label: 'Desafios', Icon: Trophy },
     { to: '/content', label: 'Conteudo', Icon: BookOpen },
-    { to: '/courses', label: 'Cursos', Icon: GraduationCap },
-    { to: '/marketplace', label: 'Marketplace', Icon: ShoppingBag },
   ]},
-  { title: 'Conta', items: [
+  { title: 'Mais', items: [
+    { to: '/glucometer', label: 'Glicemia', Icon: Activity },
+    { to: '/blood-pressure', label: 'Pressao arterial', Icon: Gauge },
+    { to: '/lab-exams', label: 'Exames', Icon: FlaskRound },
+    { to: '/appointments', label: 'Consultas', Icon: Stethoscope },
+    { to: '/wearables', label: 'Wearables', Icon: Watch },
     { to: '/profile', label: 'Perfil', Icon: User },
   ]},
 ];

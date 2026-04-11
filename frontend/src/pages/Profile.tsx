@@ -8,6 +8,7 @@ import {
   Camera, Upload, Edit3, Save, LogOut, Calendar, ExternalLink,
   Trash2, Copy, Check, ChevronRight,
 } from 'lucide-react';
+import Layout from '../components/Layout';
 import { InstagramIcon, FacebookIcon, XIcon, SnapchatIcon, WhatsAppIcon } from '../components/SocialIcons';
 
 function getInitials(n: string): string {
@@ -109,14 +110,14 @@ export default function Profile() {
     } finally { setSubmitting(false); }
   };
 
-  if (!currentUser) return <div style={S.screen}><p style={{ color: '#6B7280', textAlign: 'center', paddingTop: 40 }}>Carregando...</p></div>;
+  if (!currentUser) return <Layout title="Perfil"><p style={{ color: '#6B7280', textAlign: 'center', paddingTop: 40 }}>Carregando...</p></Layout>;
 
   const avatarUrl = currentUser.profile?.avatarUrl as string | undefined;
   const lv = LEVELS.find(x => x.value === currentUser.fitnessLevel)?.label ?? '--';
   const gl = GOALS.find(x => x.value === currentUser.fitnessGoal)?.label ?? '--';
 
   return (
-    <div style={S.screen}>
+    <Layout>
       {/* Hidden file input */}
       <input ref={fileInputRef} type="file" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={handlePhotoUpload} />
 
@@ -247,6 +248,6 @@ export default function Profile() {
 
       {/* Toast */}
       {toast && <div style={{ position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)', background: '#111827', color: '#fff', padding: '10px 20px', borderRadius: 12, fontSize: 13, fontWeight: 500, zIndex: 100 }}>{toast}</div>}
-    </div>
+    </Layout>
   );
 }
