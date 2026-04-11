@@ -6,7 +6,7 @@ import {
   Home, Droplets, Dumbbell, Apple, Heart, MessageCircle,
   Users, Zap, BookOpen, Brain, User, LogOut,
   Menu, X, Activity, FlaskRound, Stethoscope, Watch,
-  Gauge, Trophy, ShoppingBag, GraduationCap, TrendingUp,
+  Gauge, Trophy, ShoppingBag, GraduationCap, TrendingUp, Scale,
 } from 'lucide-react';
 
 const NAV_GROUPS = [
@@ -24,6 +24,7 @@ const NAV_GROUPS = [
   { title: 'Plano', items: [
     { to: '/training', label: 'Treino', Icon: Dumbbell },
     { to: '/nutrition', label: 'Nutricao', Icon: Apple },
+    { to: '/weight-loss', label: 'Emagrecimento', Icon: Scale },
     { to: '/activities', label: 'Atividades', Icon: Zap },
     { to: '/lab-exams', label: 'Exames', Icon: FlaskRound },
     { to: '/appointments', label: 'Consultas', Icon: Stethoscope },
