@@ -205,27 +205,7 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* Share profile */}
-      <div style={S.card}>
-        <span style={S.cardTitle}>Compartilhar perfil</span>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 10, background: 'linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)', color: '#fff', fontSize: 12, fontWeight: 600, textDecoration: 'none' }}>
-            <InstagramIcon /> Instagram
-          </a>
-          <a href="https://www.facebook.com/sharer/sharer.php?u=https://eliamov.com" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 10, background: '#1877F2', color: '#fff', fontSize: 12, fontWeight: 600, textDecoration: 'none' }}>
-            <FacebookIcon /> Facebook
-          </a>
-          <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent('Estou usando o eliaMov! Plataforma de saude feminina.')}`} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 10, background: '#000', color: '#fff', fontSize: 12, fontWeight: 600, textDecoration: 'none' }}>
-            <XIcon /> X
-          </a>
-          <a href="https://www.snapchat.com/" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 10, background: '#FFFC00', color: '#111', fontSize: 12, fontWeight: 600, textDecoration: 'none' }}>
-            <SnapchatIcon /> Snapchat
-          </a>
-          <a href={`https://wa.me/?text=${encodeURIComponent('Conhece o eliaMov? Plataforma de saude feminina!')}`} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 10, background: '#25D366', color: '#fff', fontSize: 12, fontWeight: 600, textDecoration: 'none' }}>
-            <WhatsAppIcon /> WhatsApp
-          </a>
-        </div>
-      </div>
+      {/* Share removed - moved to Feed */}
 
       {/* Calendar */}
       <div style={S.card}>

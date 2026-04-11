@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FeedPost, ReactionType } from '../services/feed.api';
+import { InstagramIcon, FacebookIcon, XIcon, SnapchatIcon, WhatsAppIcon } from './SocialIcons';
 
 const ACTIVITY_TYPE_LABELS: Record<string, string> = {
   run: 'Corrida',
@@ -203,12 +204,29 @@ export default function FeedCard({ post, onLike, onComment, onReaction, onDelete
           {post.commentsCount > 0 && <span>{post.commentsCount}</span>}
         </button>
 
+        {/* Share icons */}
+        <div style={{ display: 'flex', gap: 6, marginLeft: 'auto' }}>
+          {[
+            { Icon: WhatsAppIcon, href: `https://wa.me/?text=${encodeURIComponent(post.content ?? 'Veja no eliaMov!')}`, title: 'WhatsApp' },
+            { Icon: InstagramIcon, href: 'https://www.instagram.com/', title: 'Instagram' },
+            { Icon: XIcon, href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(post.content?.slice(0, 100) ?? 'eliaMov')}`, title: 'X' },
+            { Icon: FacebookIcon, href: 'https://www.facebook.com/sharer/sharer.php?u=https://eliamov.com', title: 'Facebook' },
+            { Icon: SnapchatIcon, href: 'https://www.snapchat.com/', title: 'Snapchat' },
+          ].map(({ Icon, href, title }) => (
+            <a key={title} href={href} target="_blank" rel="noopener noreferrer" title={title}
+              style={{ color: '#9CA3AF', opacity: 0.6, transition: 'opacity 0.15s', display: 'flex', alignItems: 'center' }}
+              onMouseEnter={e => { (e.target as HTMLElement).style.opacity = '1'; }}
+              onMouseLeave={e => { (e.target as HTMLElement).style.opacity = '0.6'; }}>
+              <Icon />
+            </a>
+          ))}
+        </div>
+
         {currentUserId === post.userId && onDelete && (
           <button
             type="button"
             className="feed-action-btn"
             onClick={handleDelete}
-            style={{ marginLeft: 'auto' }}
           >
             <TrashIcon />
           </button>
