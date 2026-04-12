@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { cycleApi, CycleEntry, CurrentPhase } from '../services/cycle.api';
 import Layout from '../components/Layout';
 import { formatBR } from '../utils/format';
+import { Droplets, Sprout, Sun, Moon, ArrowRight, Plus, Trash2, ShieldCheck, Calendar } from 'lucide-react';
 
-const PHASE_LABELS: Record<string, { label: string; color: string }> = {
-  menstrual: { label: 'Menstrual', color: '#dc2626' },
-  follicular: { label: 'Folicular', color: '#16a34a' },
-  ovulatory: { label: 'Ovulatória', color: '#f59e0b' },
-  luteal: { label: 'Lútea', color: '#7c3aed' },
+const PHASES: Record<string, { label: string; color: string; bg: string; icon: any; desc: string; tips: string[] }> = {
+  menstrual: { label: 'Menstrual', color: '#DB2777', bg: '#FDF2F8', icon: Droplets, desc: 'Fase de renovacao. Cuide-se com carinho.', tips: ['Yoga restaurativa', 'Caminhada leve', 'Alimentos ricos em ferro', 'Descanso adequado'] },
+  follicular: { label: 'Folicular', color: '#16A34A', bg: '#F0FDF4', icon: Sprout, desc: 'Energia crescente. Otimo para desafios!', tips: ['Treino de forca progressiva', 'HIIT', 'Aumente a carga', 'Proteina de qualidade'] },
+  ovulatory: { label: 'Ovulatoria', color: '#D97706', bg: '#FFFBEB', icon: Sun, desc: 'Pico de energia e disposicao.', tips: ['Performance maxima', 'Tente PRs', 'Aquecimento prolongado (risco ligamentar)', 'Socialize'] },
+  luteal: { label: 'Lutea', color: '#7C3AED', bg: '#EDE9FE', icon: Moon, desc: 'Fase de recolhimento. Respeite seu ritmo.', tips: ['Pilates', 'Treino moderado', 'Alimentos anti-inflamatorios', 'Reducao de cortisol'] },
 };
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -18,7 +19,7 @@ export default function Cycle() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
+  const [showForm, setShowForm] = useState(false);
   const [startDate, setStartDate] = useState(today());
   const [cycleLength, setCycleLength] = useState(28);
   const [periodLength, setPeriodLength] = useState(5);
@@ -30,9 +31,7 @@ export default function Cycle() {
   };
 
   useEffect(() => {
-    refresh()
-      .catch(() => setError('Não foi possível carregar os ciclos.'))
-      .finally(() => setLoading(false));
+    refresh().catch(() => setError('Nao foi possivel carregar.')).finally(() => setLoading(false));
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -41,10 +40,10 @@ export default function Cycle() {
     setSubmitting(true);
     try {
       await cycleApi.create({ startDate, cycleLength, periodLength });
+      setShowForm(false);
       await refresh();
     } catch (err: any) {
-      const msg = err?.response?.data?.message ?? 'Falha ao registrar ciclo';
-      setError(Array.isArray(msg) ? msg.join(', ') : msg);
+      setError(err?.response?.data?.message ?? 'Falha ao registrar');
     } finally {
       setSubmitting(false);
     }
@@ -52,108 +51,110 @@ export default function Cycle() {
 
   const handleDelete = async (id: string) => {
     if (!confirm('Remover este registro?')) return;
-    try {
-      await cycleApi.remove(id);
-      await refresh();
-    } catch {
-      setError('Falha ao remover registro.');
-    }
+    try { await cycleApi.remove(id); await refresh(); } catch { setError('Falha ao remover.'); }
   };
 
+  const cp = current?.phase ?? null;
+  const phase = PHASES[cp ?? ''] ?? null;
+  const PhaseIcon = phase?.icon ?? Sun;
+
   return (
-    <Layout
-      title="Ciclo menstrual"
-      subtitle="Registre o início de cada menstruação para acompanhar suas fases."
-    >
-      {loading ? (
-        <p className="muted">Carregando…</p>
-      ) : (
+    <Layout title="Ciclo menstrual" subtitle="Acompanhe suas fases e otimize seu treino.">
+      {loading ? <p style={{ color: '#6B7280', textAlign: 'center', padding: 20 }}>Carregando...</p> : (
         <>
-          {current && current.phase && (
-            <section className="card phase-card">
-              <div>
-                <span className="muted small">Fase atual</span>
-                <h3 style={{ color: PHASE_LABELS[current.phase].color }}>
-                  {PHASE_LABELS[current.phase].label}
-                </h3>
-              </div>
-              <div className="phase-meta">
-                <div>
-                  <span className="muted small">Dia do ciclo</span>
-                  <strong>{current.dayOfCycle}</strong>
+          {/* Current phase card */}
+          {phase && cp && (
+            <div style={{ background: `linear-gradient(135deg, ${phase.color}15, ${phase.color}08)`, border: `1.5px solid ${phase.color}30`, borderRadius: 18, padding: '20px', marginBottom: 18 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+                <div style={{ width: 44, height: 44, borderRadius: '50%', background: phase.color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <PhaseIcon size={22} color="#fff" />
                 </div>
                 <div>
-                  <span className="muted small">Próxima menstruação</span>
-                  <strong>{formatBR(current.nextStart)}</strong>
+                  <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 22, fontWeight: 600, color: '#2D1B4E' }}>Fase {phase.label}</div>
+                  <div style={{ fontSize: 13, color: '#6B7280' }}>Dia {current?.dayOfCycle ?? '--'} do ciclo</div>
                 </div>
               </div>
-            </section>
+              <p style={{ fontSize: 14, color: '#374151', marginBottom: 12 }}>{phase.desc}</p>
+
+              {/* Phase tips */}
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 12 }}>
+                {phase.tips.map((tip, i) => (
+                  <span key={i} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 999, background: phase.bg, color: phase.color, fontWeight: 500 }}>{tip}</span>
+                ))}
+              </div>
+
+              {/* Next period prediction */}
+              {current?.nextStart && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#6B7280' }}>
+                  <Calendar size={14} />
+                  Proxima menstruacao: <strong style={{ color: '#111827' }}>{formatBR(current.nextStart)}</strong>
+                </div>
+              )}
+            </div>
           )}
 
-          <section className="card">
-            <h3>Registrar novo ciclo</h3>
-            <form className="form-grid" onSubmit={handleSubmit}>
-              <label>
-                Data de início
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  required
-                />
-              </label>
-              <label>
-                Duração do ciclo (dias)
-                <input
-                  type="number"
-                  min={20}
-                  max={45}
-                  value={cycleLength}
-                  onChange={(e) => setCycleLength(Number(e.target.value))}
-                />
-              </label>
-              <label>
-                Duração do período (dias)
-                <input
-                  type="number"
-                  min={1}
-                  max={15}
-                  value={periodLength}
-                  onChange={(e) => setPeriodLength(Number(e.target.value))}
-                />
-              </label>
+          {/* No cycle data */}
+          {!cp && (
+            <div style={{ background: '#fff', borderRadius: 16, border: '1px solid #E5E7EB', padding: 20, textAlign: 'center', marginBottom: 18 }}>
+              <Droplets size={28} color="#7C3AED" style={{ marginBottom: 8 }} />
+              <p style={{ fontSize: 14, fontWeight: 500, color: '#111827', marginBottom: 4 }}>Registre seu ciclo</p>
+              <p style={{ fontSize: 13, color: '#6B7280', marginBottom: 12 }}>Seus treinos serao adaptados automaticamente a cada fase.</p>
+            </div>
+          )}
 
-              {error && <div className="error">{error}</div>}
+          {/* Privacy notice */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, background: '#FAF5FF', borderRadius: 10, padding: '10px 12px', marginBottom: 16 }}>
+            <ShieldCheck size={14} color="#7C3AED" style={{ flexShrink: 0, marginTop: 1 }} />
+            <span style={{ fontSize: 11, color: '#7C3AED', lineHeight: 1.5 }}>Dados de ciclo sao privados e nunca compartilhados com personal trainers ou gestores.</span>
+          </div>
 
-              <button type="submit" disabled={submitting}>
-                {submitting ? 'Salvando…' : 'Salvar'}
-              </button>
-            </form>
-          </section>
+          {/* Add cycle button / form */}
+          {!showForm ? (
+            <button onClick={() => setShowForm(true)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, width: '100%', padding: 12, background: '#7C3AED', color: '#fff', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, cursor: 'pointer', marginBottom: 18 }}>
+              <Plus size={16} /> Registrar novo ciclo
+            </button>
+          ) : (
+            <div style={{ background: '#fff', borderRadius: 14, border: '1px solid #E5E7EB', padding: 16, marginBottom: 18 }}>
+              <div style={{ fontSize: 15, fontWeight: 600, color: '#111827', marginBottom: 12 }}>Novo ciclo</div>
+              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <div>
+                  <label style={{ fontSize: 13, fontWeight: 500, color: '#374151', display: 'block', marginBottom: 4 }}>Data de inicio</label>
+                  <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} required style={{ width: '100%', padding: '10px 12px', border: '1.5px solid #E5E7EB', borderRadius: 10, fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                  <div>
+                    <label style={{ fontSize: 13, fontWeight: 500, color: '#374151', display: 'block', marginBottom: 4 }}>Ciclo (dias)</label>
+                    <input type="number" min={20} max={45} value={cycleLength} onChange={e => setCycleLength(Number(e.target.value))} style={{ width: '100%', padding: '10px 12px', border: '1.5px solid #E5E7EB', borderRadius: 10, fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: 13, fontWeight: 500, color: '#374151', display: 'block', marginBottom: 4 }}>Periodo (dias)</label>
+                    <input type="number" min={1} max={15} value={periodLength} onChange={e => setPeriodLength(Number(e.target.value))} style={{ width: '100%', padding: '10px 12px', border: '1.5px solid #E5E7EB', borderRadius: 10, fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
+                  </div>
+                </div>
+                {error && <div style={{ background: '#FEE2E2', color: '#991B1B', padding: '8px 12px', borderRadius: 8, fontSize: 13 }}>{error}</div>}
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button type="button" onClick={() => setShowForm(false)} style={{ flex: 1, padding: 10, border: '1px solid #E5E7EB', borderRadius: 10, background: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 500 }}>Cancelar</button>
+                  <button type="submit" disabled={submitting} style={{ flex: 1, padding: 10, border: 'none', borderRadius: 10, background: '#7C3AED', color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600, opacity: submitting ? 0.6 : 1 }}>{submitting ? 'Salvando...' : 'Salvar'}</button>
+                </div>
+              </form>
+            </div>
+          )}
 
-          <section className="card">
-            <h3>Histórico</h3>
-            {entries.length === 0 ? (
-              <p className="muted small">Nenhum ciclo registrado ainda.</p>
-            ) : (
-              <ul className="entry-list">
-                {entries.map((entry) => (
-                  <li key={entry.id}>
-                    <div>
-                      <strong>{formatBR(entry.startDate)}</strong>
-                      <span className="muted small">
-                        {' '}
-                        • {entry.cycleLength}d / período {entry.periodLength}d
-                      </span>
-                    </div>
-                    <button className="link-button" onClick={() => handleDelete(entry.id)}>
-                      Remover
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
+          {/* History */}
+          {entries.length > 0 && (
+            <div>
+              <div style={{ fontSize: 15, fontWeight: 600, color: '#111827', marginBottom: 10 }}>Historico</div>
+              {entries.map(entry => (
+                <div key={entry.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fff', borderRadius: 12, border: '1px solid #E5E7EB', padding: '10px 14px', marginBottom: 6 }}>
+                  <div>
+                    <strong style={{ fontSize: 13, color: '#111827' }}>{formatBR(entry.startDate)}</strong>
+                    <span style={{ fontSize: 12, color: '#6B7280', marginLeft: 8 }}>{entry.cycleLength}d / periodo {entry.periodLength}d</span>
+                  </div>
+                  <button onClick={() => handleDelete(entry.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9CA3AF', padding: 4 }}><Trash2 size={14} /></button>
+                </div>
+              ))}
+            </div>
+          )}
         </>
       )}
     </Layout>
