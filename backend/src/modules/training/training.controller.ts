@@ -12,6 +12,21 @@ export class TrainingController {
     return this.service.findAllForUser(user.userId);
   }
 
+  @Get('today')
+  getTodayWorkout(@CurrentUser() user: { userId: string }) {
+    return this.service.getTodayWorkout(user.userId);
+  }
+
+  @Get('library')
+  getLibrary() {
+    return this.service.getLibrary();
+  }
+
+  @Get('library/:phase')
+  getLibraryByPhase(@Param('phase') phase: string) {
+    return this.service.getLibraryByPhase(phase);
+  }
+
   @Get(':id')
   findOne(@CurrentUser() user: { userId: string }, @Param('id') id: string) {
     return this.service.findOneForUser(user.userId, id);

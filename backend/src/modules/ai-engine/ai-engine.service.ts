@@ -373,6 +373,55 @@ Adapte o plano à fase do ciclo, priorizando nutrientes relevantes para a fase a
     }
   }
 
+  async chat(userId: string, message: string) {
+    const [user, currentPhase, moodSummary] = await Promise.all([
+      this.usersRepo.findOne({ where: { id: userId } }),
+      this.cycleService.getCurrentPhase(userId).catch(() => null),
+      this.moodService.summary(userId).catch(() => ({ count: 0 })),
+    ]);
+
+    const systemPrompt = `Voce e Elia, a assistente de saude feminina do eliaMov. Responda em portugues, de forma acolhedora, objetiva e baseada em evidencias. Voce tem acesso ao perfil da usuaria:
+- Nome: ${user?.name ?? 'Usuaria'}
+- Fase do ciclo: ${currentPhase?.phase ?? 'nao informado'} (dia ${currentPhase?.dayOfCycle ?? '?'})
+- Objetivo: ${(user as any)?.fitnessGoal ?? 'nao informado'}
+- Nivel: ${(user as any)?.fitnessLevel ?? 'nao informado'}
+- Humor recente: ${(moodSummary as any)?.avgMood ?? 'nao registrado'}/5
+
+Regras:
+1. NUNCA de diagnosticos medicos. Sempre recomende consultar um profissional quando relevante.
+2. Base suas recomendacoes de treino na fase do ciclo (McNulty 2020, Schlie 2025).
+3. Para nutricao, use o Guia Alimentar Brasileiro e ISSN 2017.
+4. Seja breve (max 200 palavras). Use markdown leve.
+5. Se nao souber, diga que nao sabe.`;
+
+    if (!this.hasApiKey()) {
+      // Offline fallback
+      const offlineResponses: Record<string, string> = {
+        treino: `Com base na sua fase ${currentPhase?.phase ?? 'atual'}, recomendo ${currentPhase?.phase === 'menstrual' ? 'yoga restaurativa ou caminhada leve' : currentPhase?.phase === 'follicular' ? 'treino de forca progressiva ou HIIT' : currentPhase?.phase === 'ovulatory' ? 'treino de performance maxima (cuidado com ligamentos!)' : 'pilates ou treino moderado'}. Acesse "Treino" no menu para ver o plano do dia.`,
+        colica: 'Para colicas, yoga restaurativa pode ajudar. Posturas como Balasana (crianca) e Supta Baddha Konasana aliviam a dor. Alimentos ricos em magnesio (chocolate amargo 70%+, castanhas) tambem ajudam. Se as colicas forem muito intensas, consulte sua ginecologista.',
+        alimentacao: `Para sua fase ${currentPhase?.phase ?? 'atual'}, priorize ${currentPhase?.phase === 'luteal' ? 'alimentos anti-inflamatorios (omega-3, magnesio)' : 'proteina de qualidade (1.4g/kg) e carboidratos complexos'}. Beba pelo menos 2L de agua por dia.`,
+      };
+
+      const key = Object.keys(offlineResponses).find((k) =>
+        message.toLowerCase().includes(k),
+      );
+      return {
+        response: key
+          ? offlineResponses[key]
+          : `Ola ${user?.name?.split(' ')[0] ?? ''}! Para respostas personalizadas com IA, configure sua chave da Anthropic. Enquanto isso, explore o menu de Treino para ver seu plano adaptado ao ciclo.`,
+        usingAi: false,
+      };
+    }
+
+    const result = await this.callClaude(message, systemPrompt);
+    return {
+      response:
+        result.text ??
+        'Desculpe, nao consegui processar sua pergunta. Tente novamente.',
+      usingAi: true,
+    };
+  }
+
   async searchPubmed(query: string) {
     try {
       const url = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=${encodeURIComponent(query)}&retmode=json&api_key=${process.env.PUBMED_API_KEY ?? ''}`;

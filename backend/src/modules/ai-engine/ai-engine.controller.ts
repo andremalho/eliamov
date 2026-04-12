@@ -42,4 +42,9 @@ export class AiEngineController {
   pubmed(@Query('q') q: string) {
     return this.service.searchPubmed(q);
   }
+
+  @Post('chat')
+  chat(@CurrentUser() user: { userId: string }, @Body() dto: { message: string }) {
+    return this.service.chat(user.userId, dto.message);
+  }
 }

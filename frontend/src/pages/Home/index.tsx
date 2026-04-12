@@ -4,10 +4,11 @@ import { useAuth } from '../../contexts/AuthContext';
 import { cycleApi, CurrentPhase } from '../../services/cycle.api';
 import { feedApi, FeedPost } from '../../services/feed.api';
 import { contentApi, Article } from '../../services/content.api';
+import { trainingEngineApi, TodayWorkout, aiChatApi } from '../../services/training-engine.api';
 import Layout from '../../components/Layout';
 import {
   ArrowRight, Heart, MessageCircle, Droplets, Sprout, Sun, Moon,
-  Dumbbell, Apple, BookOpen, Play, TrendingUp,
+  Dumbbell, Apple, BookOpen, Play, TrendingUp, Bot, Send, X,
 } from 'lucide-react';
 
 const PHASE_COLORS: Record<string, string> = { follicular: '#22C55E', ovulatory: '#D97706', luteal: '#EA580C', menstrual: '#DB2777' };
@@ -55,6 +56,13 @@ export default function Home() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [liked, setLiked] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(true);
+  const [todayWorkout, setTodayWorkout] = useState<TodayWorkout | null>(null);
+  const [showChat, setShowChat] = useState(false);
+  const [chatMessages, setChatMessages] = useState<{from: 'user'|'elia'; text: string}[]>([
+    { from: 'elia', text: 'Ola! Sou a Elia, sua assistente de saude. Como posso ajudar?' }
+  ]);
+  const [chatInput, setChatInput] = useState('');
+  const [chatLoading, setChatLoading] = useState(false);
 
   const userName = currentUser?.name?.split(' ')[0] ?? 'Voce';
 
@@ -72,6 +80,7 @@ export default function Home() {
         setLiked(Object.fromEntries(fd.data.map((p: FeedPost) => [p.id, p.liked])));
         const ct = await contentApi.listArticles({ phase: ph?.phase ?? undefined, page: 1 }).catch(() => ({ data: [] as Article[], total: 0, page: 1, limit: 10, totalPages: 0 }));
         if (!cancelled) setArticles(ct.data.slice(0, 5));
+        trainingEngineApi.today().then(tw => { if (!cancelled) setTodayWorkout(tw); }).catch(() => {});
       } catch { /* ignore */ }
       if (!cancelled) setLoading(false);
     })();
@@ -87,6 +96,22 @@ export default function Home() {
     setLiked(p => ({ ...p, [id]: !was }));
     try { if (was) await feedApi.unlike(id); else await feedApi.like(id); }
     catch { setLiked(p => ({ ...p, [id]: was })); }
+  };
+
+  const handleChatSend = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!chatInput.trim()) return;
+    const msg = chatInput.trim();
+    setChatInput('');
+    setChatMessages(prev => [...prev, { from: 'user', text: msg }]);
+    setChatLoading(true);
+    try {
+      const res = await aiChatApi.send(msg);
+      setChatMessages(prev => [...prev, { from: 'elia', text: res.response }]);
+    } catch {
+      setChatMessages(prev => [...prev, { from: 'elia', text: 'Desculpe, houve um erro. Tente novamente.' }]);
+    }
+    setChatLoading(false);
   };
 
   return (
@@ -153,14 +178,26 @@ export default function Home() {
                 <Link to="/cycle" style={{ display: 'inline-flex', alignItems: 'center', gap: 3, background: '#7C3AED', color: '#fff', borderRadius: 999, padding: '5px 12px', fontSize: 11, fontWeight: 600, textDecoration: 'none' }}>Registrar <ArrowRight size={11} /></Link>
               </div>
             )}
-            <div style={{ background: '#fff', borderRadius: 16, padding: 16, border: '1px solid #E5E7EB', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <div>
-                <Dumbbell size={18} color="#7C3AED" style={{ marginBottom: 6 }} />
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 4 }}>Treino</div>
-                <p style={{ fontSize: 11, color: '#6B7280', marginBottom: 8 }}>{cp ? `Fase ${pi.label}.` : 'Seus treinos.'}</p>
+            {todayWorkout ? (
+              <div style={{ background: '#fff', borderRadius: 16, padding: 16, border: '1px solid #E5E7EB', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div>
+                  <Dumbbell size={18} color="#7C3AED" style={{ marginBottom: 6 }} />
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 2 }}>{todayWorkout.workout.name}</div>
+                  <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 4 }}>{todayWorkout.workout.duration}min · {todayWorkout.workout.intensity} · RPE {todayWorkout.workout.rpe}</div>
+                  {todayWorkout.alert && <div style={{ fontSize: 10, color: '#DC2626', marginBottom: 4 }}>{todayWorkout.alert}</div>}
+                </div>
+                <Link to="/training" style={{ display: 'inline-flex', alignItems: 'center', gap: 3, background: '#7C3AED', color: '#fff', borderRadius: 999, padding: '5px 12px', fontSize: 11, fontWeight: 600, textDecoration: 'none', alignSelf: 'flex-start' }}>Iniciar <ArrowRight size={11} /></Link>
               </div>
-              <Link to="/training" style={{ display: 'inline-flex', alignItems: 'center', gap: 3, background: '#7C3AED', color: '#fff', borderRadius: 999, padding: '5px 12px', fontSize: 11, fontWeight: 600, textDecoration: 'none', alignSelf: 'flex-start' }}>Ver treinos <ArrowRight size={11} /></Link>
-            </div>
+            ) : (
+              <div style={{ background: '#fff', borderRadius: 16, padding: 16, border: '1px solid #E5E7EB', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div>
+                  <Dumbbell size={18} color="#7C3AED" style={{ marginBottom: 6 }} />
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 4 }}>Treino</div>
+                  <p style={{ fontSize: 11, color: '#6B7280', marginBottom: 8 }}>{cp ? `Fase ${pi.label}.` : 'Seus treinos.'}</p>
+                </div>
+                <Link to="/training" style={{ display: 'inline-flex', alignItems: 'center', gap: 3, background: '#7C3AED', color: '#fff', borderRadius: 999, padding: '5px 12px', fontSize: 11, fontWeight: 600, textDecoration: 'none', alignSelf: 'flex-start' }}>Ver treinos <ArrowRight size={11} /></Link>
+              </div>
+            )}
           </div>
 
           {/* Feed */}
@@ -232,6 +269,40 @@ export default function Home() {
             )}
           </div>
         </>
+      )}
+
+      {/* AI Chat Elia */}
+      {showChat && (
+        <div style={{ position: 'fixed', bottom: 80, right: 16, width: 320, maxHeight: 400, background: '#fff', borderRadius: 16, border: '1px solid #E5E7EB', boxShadow: '0 8px 32px rgba(0,0,0,0.12)', zIndex: 40, display: 'flex', flexDirection: 'column' }}>
+          <div style={{ padding: '12px 16px', borderBottom: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Bot size={18} color="#7C3AED" />
+              <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>Elia</span>
+            </div>
+            <button onClick={() => setShowChat(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6B7280' }}><X size={16} /></button>
+          </div>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '12px 16px' }}>
+            {chatMessages.map((m, i) => (
+              <div key={i} style={{ marginBottom: 10, textAlign: m.from === 'user' ? 'right' : 'left' }}>
+                <div style={{ display: 'inline-block', maxWidth: '85%', padding: '8px 12px', borderRadius: 12, fontSize: 13, lineHeight: 1.5, background: m.from === 'user' ? '#7C3AED' : '#F3F4F6', color: m.from === 'user' ? '#fff' : '#111827' }}>
+                  {m.text}
+                </div>
+              </div>
+            ))}
+            {chatLoading && <div style={{ fontSize: 12, color: '#6B7280' }}>Elia esta pensando...</div>}
+          </div>
+          <form onSubmit={handleChatSend} style={{ padding: '8px 12px', borderTop: '1px solid #E5E7EB', display: 'flex', gap: 8 }}>
+            <input value={chatInput} onChange={e => setChatInput(e.target.value)} placeholder="Pergunte a Elia..." style={{ flex: 1, padding: '8px 10px', border: '1px solid #E5E7EB', borderRadius: 8, fontSize: 13, outline: 'none' }} />
+            <button type="submit" style={{ background: '#7C3AED', color: '#fff', border: 'none', borderRadius: 8, padding: '8px 12px', cursor: 'pointer' }}><Send size={14} /></button>
+          </form>
+        </div>
+      )}
+
+      {/* Chat FAB */}
+      {!showChat && (
+        <button onClick={() => setShowChat(true)} style={{ position: 'fixed', bottom: 80, right: 16, width: 52, height: 52, borderRadius: '50%', background: '#7C3AED', color: '#fff', border: 'none', cursor: 'pointer', boxShadow: '0 4px 20px rgba(124,58,237,0.3)', zIndex: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Bot size={22} />
+        </button>
       )}
     </Layout>
   );
