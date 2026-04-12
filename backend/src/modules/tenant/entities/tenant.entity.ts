@@ -20,7 +20,16 @@ export class Tenant {
   logoUrl: string;
 
   @Column({ nullable: true })
+  accentColor: string; // hex color for i-dot
+
+  @Column({ nullable: true })
   primaryColor: string;
+
+  @Column({ nullable: true })
+  slogan: string;
+
+  @Column({ nullable: true })
+  customDomain: string;
 
   @Column({ nullable: true })
   domain: string;

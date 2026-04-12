@@ -46,6 +46,8 @@ import { AcademyModule } from './modules/academy/academy.module';
 import { WeightLossModule } from './modules/weight-loss/weight-loss.module';
 import { CalendarModule } from './modules/calendar/calendar.module';
 import { GamificationModule } from './modules/gamification/gamification.module';
+import { LabAnalysisModule } from './modules/lab-analysis/lab-analysis.module';
+import { AthleteModule } from './modules/athlete/athlete.module';
 
 @Module({
   imports: [
@@ -100,6 +102,8 @@ import { GamificationModule } from './modules/gamification/gamification.module';
     WeightLossModule,
     CalendarModule,
     GamificationModule,
+    LabAnalysisModule,
+    AthleteModule,
   ],
   controllers: [AppController],
   providers: [

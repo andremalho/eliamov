@@ -47,4 +47,18 @@ export class TenantService implements OnModuleInit {
   findBySlug(slug: string) {
     return this.repo.findOne({ where: { slug } });
   }
+
+  async getBranding(slug: string) {
+    if (!slug) return null;
+    const tenant = await this.repo.findOneBy({ slug });
+    if (!tenant) return null;
+    return {
+      name: tenant.name,
+      logoUrl: tenant.logoUrl,
+      accentColor: tenant.accentColor ?? '#E85D04',
+      primaryColor: tenant.primaryColor ?? '#7C3AED',
+      slogan: tenant.slogan ?? 'Movimento inteligente. Vida ativa.',
+      customDomain: tenant.customDomain,
+    };
+  }
 }
