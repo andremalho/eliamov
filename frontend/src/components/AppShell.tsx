@@ -6,7 +6,7 @@ import Logo from './Logo';
 import {
   Home, Droplets, Dumbbell, Apple, Heart, MessageCircle,
   Users, Zap, BookOpen, Brain, User, LogOut,
-  Menu, X, Stethoscope, Trophy, TrendingUp, Scale, Flame,
+  Menu, X, Stethoscope, Trophy, TrendingUp, Scale, Flame, FlaskRound,
 } from 'lucide-react';
 
 const NAV_GROUPS = [
@@ -30,6 +30,7 @@ const NAV_GROUPS = [
   { title: 'Mais', items: [
     { to: '/activities', label: 'Atividades', Icon: Zap },
     { to: '/appointments', label: 'Consultas', Icon: Stethoscope },
+    { to: '/lab-analysis', label: 'Exames lab', Icon: FlaskRound },
     { to: '/insights', label: 'Insights IA', Icon: Brain },
     { to: '/profile', label: 'Perfil', Icon: User },
   ]},
