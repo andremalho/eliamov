@@ -45,6 +45,7 @@ import { TrainerModule } from './modules/trainer/trainer.module';
 import { AcademyModule } from './modules/academy/academy.module';
 import { WeightLossModule } from './modules/weight-loss/weight-loss.module';
 import { CalendarModule } from './modules/calendar/calendar.module';
+import { GamificationModule } from './modules/gamification/gamification.module';
 
 @Module({
   imports: [
@@ -98,6 +99,7 @@ import { CalendarModule } from './modules/calendar/calendar.module';
     AcademyModule,
     WeightLossModule,
     CalendarModule,
+    GamificationModule,
   ],
   controllers: [AppController],
   providers: [

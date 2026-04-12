@@ -1,0 +1,13 @@
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserStats } from './entities/user-stats.entity';
+import { GamificationService } from './gamification.service';
+import { GamificationController } from './gamification.controller';
+
+@Module({
+  imports: [TypeOrmModule.forFeature([UserStats])],
+  controllers: [GamificationController],
+  providers: [GamificationService],
+  exports: [GamificationService],
+})
+export class GamificationModule {}

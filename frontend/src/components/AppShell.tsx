@@ -1,42 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { gamificationApi } from '../services/gamification.api';
 import Logo from './Logo';
 import {
   Home, Droplets, Dumbbell, Apple, Heart, MessageCircle,
   Users, Zap, BookOpen, Brain, User, LogOut,
-  Menu, X, Activity, FlaskRound, Stethoscope, Watch,
-  Gauge, Trophy, ShoppingBag, GraduationCap, TrendingUp, Scale,
+  Menu, X, Stethoscope, Trophy, TrendingUp, Scale, Flame,
 } from 'lucide-react';
 
 const NAV_GROUPS = [
   { title: '', items: [
     { to: '/home', label: 'Home', Icon: Home },
-    { to: '/insights', label: 'Insights IA', Icon: Brain },
+    { to: '/training', label: 'Treino do dia', Icon: Dumbbell },
+    { to: '/feed', label: 'Feed', Icon: MessageCircle },
   ]},
   { title: 'Saude', items: [
     { to: '/cycle', label: 'Ciclo menstrual', Icon: Droplets },
     { to: '/mood', label: 'Humor', Icon: Heart },
+    { to: '/nutrition', label: 'Nutricao', Icon: Apple },
     { to: '/evolution', label: 'Evolucao', Icon: TrendingUp },
   ]},
-  { title: 'Treino e nutricao', items: [
-    { to: '/training', label: 'Treino', Icon: Dumbbell },
-    { to: '/nutrition', label: 'Nutricao', Icon: Apple },
+  { title: 'Programas', items: [
     { to: '/weight-loss', label: 'Emagrecimento', Icon: Scale },
-    { to: '/activities', label: 'Atividades', Icon: Zap },
-  ]},
-  { title: 'Social', items: [
-    { to: '/feed', label: 'Feed', Icon: MessageCircle },
-    { to: '/communities', label: 'Grupos', Icon: Users },
     { to: '/challenges', label: 'Desafios', Icon: Trophy },
+    { to: '/communities', label: 'Comunidades', Icon: Users },
     { to: '/content', label: 'Conteudo', Icon: BookOpen },
   ]},
   { title: 'Mais', items: [
-    { to: '/glucometer', label: 'Glicemia', Icon: Activity },
-    { to: '/blood-pressure', label: 'Pressao arterial', Icon: Gauge },
-    { to: '/lab-exams', label: 'Exames', Icon: FlaskRound },
+    { to: '/activities', label: 'Atividades', Icon: Zap },
     { to: '/appointments', label: 'Consultas', Icon: Stethoscope },
-    { to: '/wearables', label: 'Wearables', Icon: Watch },
+    { to: '/insights', label: 'Insights IA', Icon: Brain },
     { to: '/profile', label: 'Perfil', Icon: User },
   ]},
 ];
@@ -44,8 +38,7 @@ const NAV_GROUPS = [
 const TABS = [
   { to: '/home', label: 'Home', Icon: Home },
   { to: '/training', label: 'Treino', Icon: Dumbbell },
-  { to: '/feed', label: 'Social', Icon: MessageCircle },
-  { to: '/communities', label: 'Grupos', Icon: Users },
+  { to: '/feed', label: 'Feed', Icon: MessageCircle },
   { to: '/profile', label: 'Perfil', Icon: User },
 ];
 
@@ -54,7 +47,12 @@ interface Props { children: React.ReactNode; title?: string; subtitle?: string; 
 export default function AppShell({ children, title, subtitle, hideHeader }: Props) {
   const { currentUser } = useAuth();
   const [open, setOpen] = useState(false);
+  const [streak, setStreak] = useState(0);
   const ini = (n: string) => { const p = n.trim().split(/\s+/); return p.length === 1 ? (p[0][0]?.toUpperCase() ?? '?') : (p[0][0] + p[p.length - 1][0]).toUpperCase(); };
+
+  useEffect(() => {
+    gamificationApi.stats().then((s) => setStreak(s.currentStreak)).catch(() => {});
+  }, []);
 
   return (
     <>
@@ -129,7 +127,14 @@ export default function AppShell({ children, title, subtitle, hideHeader }: Prop
         {/* Top bar */}
         {!hideHeader && (
           <div className="sh-bar">
-            <button className="sh-menu" onClick={() => setOpen(true)}><Menu size={22} /></button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <button className="sh-menu" onClick={() => setOpen(true)}><Menu size={22} /></button>
+              {streak > 0 && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 3, background: '#FEF3C7', padding: '3px 8px', borderRadius: 999, fontSize: 11, fontWeight: 600, color: '#92400E' }}>
+                  <Flame size={12} /> {streak}
+                </div>
+              )}
+            </div>
             <Logo size={18} variant="dark" />
             <Link to="/profile" style={{ textDecoration:'none' }}>
               <div style={{ width:32, height:32, borderRadius:'50%', background:'#7C3AED', display:'flex', alignItems:'center', justifyContent:'center', color:'#EDE9FE', fontWeight:700, fontSize:12 }}>
