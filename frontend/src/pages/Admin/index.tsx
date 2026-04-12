@@ -1,124 +1,1095 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
+import Layout from '../../components/Layout';
+import { academyApi, AdminDashboard, SearchResult } from '../../services/academy.api';
+import { contentApi, Article, Video as VideoType, ContentListResponse, ContentCategory } from '../../services/content.api';
+import { useAuth, getHomeRoute } from '../../contexts/AuthContext';
+import api from '../../services/api';
 import {
   LayoutDashboard,
-  Users,
-  UserCheck,
-  Award,
   FileText,
+  Search,
   Settings,
+  Users,
+  UserPlus,
+  Activity,
+  TrendingUp,
+  Award,
+  UserCheck,
+  Plus,
+  X,
+  Video,
+  Trash2,
+  Sprout,
+  Info,
 } from 'lucide-react';
-import Overview from './Overview';
-import Members from './Members';
-import Trainers from './Trainers';
-import Challenges from './Challenges';
-import Content from './Content';
-import SettingsPanel from './Settings';
 
-type Section = 'overview' | 'members' | 'trainers' | 'challenges' | 'content' | 'settings';
-
-const NAV_ITEMS: { key: Section; label: string; icon: React.ReactNode }[] = [
-  { key: 'overview', label: 'Visao geral', icon: <LayoutDashboard size={20} /> },
-  { key: 'members', label: 'Membros', icon: <Users size={20} /> },
-  { key: 'trainers', label: 'Profissionais', icon: <UserCheck size={20} /> },
-  { key: 'challenges', label: 'Desafios', icon: <Award size={20} /> },
-  { key: 'content', label: 'Conteudo', icon: <FileText size={20} /> },
-  { key: 'settings', label: 'Config', icon: <Settings size={20} /> },
-];
+type Tab = 'dashboard' | 'conteudo' | 'pesquisa' | 'config';
 
 const ALLOWED_ROLES = ['academy_admin', 'academy_manager', 'admin', 'super_admin', 'tenant_admin'];
+
+const CYCLE_PHASES = [
+  { value: 'all', label: 'Todas as fases' },
+  { value: 'follicular', label: 'Folicular' },
+  { value: 'ovulatory', label: 'Ovulatoria' },
+  { value: 'luteal', label: 'Lutea' },
+  { value: 'menstrual', label: 'Menstrual' },
+];
+
+/* ------------------------------------------------------------------ */
+/*  Inline styles                                                      */
+/* ------------------------------------------------------------------ */
+
+const S = {
+  wrapper: {
+    display: 'flex',
+    minHeight: 'calc(100vh - 120px)',
+    fontFamily: "'DM Sans', sans-serif",
+  } as React.CSSProperties,
+
+  sidebar: {
+    width: 220,
+    background: '#fafafa',
+    borderRight: '1px solid #e5e7eb',
+    padding: '24px 0',
+    flexShrink: 0,
+  } as React.CSSProperties,
+
+  sidebarBrand: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+    padding: '0 20px 20px',
+    fontWeight: 700,
+    fontSize: 18,
+    color: '#1e1e2f',
+    borderBottom: '1px solid #e5e7eb',
+    marginBottom: 8,
+  } as React.CSSProperties,
+
+  navBtn: (active: boolean) => ({
+    display: 'flex',
+    alignItems: 'center',
+    gap: 10,
+    width: '100%',
+    padding: '10px 20px',
+    border: 'none',
+    background: active ? '#ede9fe' : 'transparent',
+    color: active ? '#7c3aed' : '#64748b',
+    fontWeight: active ? 600 : 400,
+    fontSize: 14,
+    cursor: 'pointer',
+    fontFamily: "'DM Sans', sans-serif",
+    borderLeft: active ? '3px solid #7c3aed' : '3px solid transparent',
+    transition: 'all 0.15s',
+  }) as React.CSSProperties,
+
+  userBox: {
+    padding: '16px 20px',
+    marginTop: 'auto',
+    borderTop: '1px solid #e5e7eb',
+    fontSize: 12,
+    color: '#94a3b8',
+  } as React.CSSProperties,
+
+  main: {
+    flex: 1,
+    padding: '24px 32px',
+    background: '#fff',
+    overflowY: 'auto' as const,
+  } as React.CSSProperties,
+
+  mobileNav: {
+    display: 'none',
+    position: 'fixed' as const,
+    bottom: 60,
+    left: 0,
+    right: 0,
+    background: '#fff',
+    borderTop: '1px solid #e5e7eb',
+    zIndex: 40,
+    justifyContent: 'space-around',
+    padding: '6px 0',
+  } as React.CSSProperties,
+
+  mobileTab: (active: boolean) => ({
+    display: 'flex',
+    flexDirection: 'column' as const,
+    alignItems: 'center',
+    gap: 2,
+    border: 'none',
+    background: 'transparent',
+    color: active ? '#7c3aed' : '#94a3b8',
+    fontSize: 10,
+    fontWeight: active ? 600 : 400,
+    cursor: 'pointer',
+    padding: '4px 8px',
+    fontFamily: "'DM Sans', sans-serif",
+  }) as React.CSSProperties,
+
+  pageTitle: {
+    fontSize: 22,
+    fontWeight: 700,
+    color: '#1e1e2f',
+    marginBottom: 24,
+  } as React.CSSProperties,
+
+  grid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+    gap: 16,
+    marginBottom: 28,
+  } as React.CSSProperties,
+
+  card: {
+    background: '#f8f7ff',
+    border: '1px solid #e5e7eb',
+    borderRadius: 12,
+    padding: '20px 18px',
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: 6,
+  } as React.CSSProperties,
+
+  cardIcon: {
+    color: '#7c3aed',
+    marginBottom: 4,
+  } as React.CSSProperties,
+
+  cardValue: {
+    fontSize: 28,
+    fontWeight: 700,
+    color: '#1e1e2f',
+  } as React.CSSProperties,
+
+  cardLabel: {
+    fontSize: 13,
+    color: '#64748b',
+  } as React.CSSProperties,
+
+  section: {
+    background: '#fafafa',
+    border: '1px solid #e5e7eb',
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 20,
+  } as React.CSSProperties,
+
+  sectionTitle: {
+    fontSize: 15,
+    fontWeight: 600,
+    color: '#1e1e2f',
+    marginBottom: 12,
+  } as React.CSSProperties,
+
+  breakdownRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 8,
+    fontSize: 13,
+  } as React.CSSProperties,
+
+  breakdownBar: (pct: number) => ({
+    height: 8,
+    width: 120,
+    background: '#e5e7eb',
+    borderRadius: 4,
+    overflow: 'hidden' as const,
+  }) as React.CSSProperties,
+
+  breakdownFill: (pct: number) => ({
+    height: '100%',
+    width: `${pct}%`,
+    background: '#7c3aed',
+    borderRadius: 4,
+    transition: 'width 0.3s',
+  }) as React.CSSProperties,
+
+  btnPrimary: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 6,
+    padding: '10px 18px',
+    background: '#7c3aed',
+    color: '#fff',
+    border: 'none',
+    borderRadius: 8,
+    fontSize: 14,
+    fontWeight: 600,
+    cursor: 'pointer',
+    fontFamily: "'DM Sans', sans-serif",
+    transition: 'background 0.15s',
+  } as React.CSSProperties,
+
+  btnSecondary: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 6,
+    padding: '8px 14px',
+    background: '#f1f5f9',
+    color: '#475569',
+    border: '1px solid #e2e8f0',
+    borderRadius: 8,
+    fontSize: 13,
+    fontWeight: 500,
+    cursor: 'pointer',
+    fontFamily: "'DM Sans', sans-serif",
+  } as React.CSSProperties,
+
+  btnDanger: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '6px 8px',
+    background: '#fef2f2',
+    color: '#dc2626',
+    border: '1px solid #fecaca',
+    borderRadius: 6,
+    cursor: 'pointer',
+    fontSize: 12,
+    fontFamily: "'DM Sans', sans-serif",
+  } as React.CSSProperties,
+
+  input: {
+    width: '100%',
+    padding: '10px 12px',
+    border: '1px solid #e2e8f0',
+    borderRadius: 8,
+    fontSize: 14,
+    fontFamily: "'DM Sans', sans-serif",
+    outline: 'none',
+    boxSizing: 'border-box' as const,
+  } as React.CSSProperties,
+
+  textarea: {
+    width: '100%',
+    padding: '10px 12px',
+    border: '1px solid #e2e8f0',
+    borderRadius: 8,
+    fontSize: 14,
+    fontFamily: "'DM Sans', sans-serif",
+    outline: 'none',
+    resize: 'vertical' as const,
+    boxSizing: 'border-box' as const,
+  } as React.CSSProperties,
+
+  select: {
+    padding: '10px 12px',
+    border: '1px solid #e2e8f0',
+    borderRadius: 8,
+    fontSize: 14,
+    fontFamily: "'DM Sans', sans-serif",
+    outline: 'none',
+    background: '#fff',
+    boxSizing: 'border-box' as const,
+    width: '100%',
+  } as React.CSSProperties,
+
+  formGroup: {
+    marginBottom: 14,
+  } as React.CSSProperties,
+
+  formLabel: {
+    display: 'block',
+    fontSize: 13,
+    fontWeight: 500,
+    color: '#475569',
+    marginBottom: 4,
+  } as React.CSSProperties,
+
+  formRow: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: 12,
+  } as React.CSSProperties,
+
+  contentItem: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '12px 0',
+    borderBottom: '1px solid #f1f5f9',
+  } as React.CSSProperties,
+
+  contentTitle: {
+    fontWeight: 600,
+    fontSize: 14,
+    color: '#1e1e2f',
+  } as React.CSSProperties,
+
+  contentMeta: {
+    fontSize: 12,
+    color: '#94a3b8',
+    marginTop: 2,
+  } as React.CSSProperties,
+
+  searchInput: {
+    width: '100%',
+    padding: '12px 12px 12px 42px',
+    border: '1px solid #e2e8f0',
+    borderRadius: 10,
+    fontSize: 15,
+    fontFamily: "'DM Sans', sans-serif",
+    outline: 'none',
+    boxSizing: 'border-box' as const,
+  } as React.CSSProperties,
+
+  searchIcon: {
+    position: 'absolute' as const,
+    left: 14,
+    top: '50%',
+    transform: 'translateY(-50%)',
+    color: '#94a3b8',
+  } as React.CSSProperties,
+
+  userCard: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 14,
+    padding: '14px 16px',
+    background: '#f8f7ff',
+    border: '1px solid #e5e7eb',
+    borderRadius: 10,
+    marginBottom: 10,
+  } as React.CSSProperties,
+
+  userAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: '50%',
+    background: '#ede9fe',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: '#7c3aed',
+    fontWeight: 700,
+    fontSize: 16,
+    flexShrink: 0,
+  } as React.CSSProperties,
+
+  badge: {
+    display: 'inline-block',
+    padding: '2px 8px',
+    borderRadius: 20,
+    fontSize: 11,
+    fontWeight: 600,
+    background: '#ede9fe',
+    color: '#7c3aed',
+    marginLeft: 8,
+  } as React.CSSProperties,
+
+  empty: {
+    textAlign: 'center' as const,
+    color: '#94a3b8',
+    padding: '32px 0',
+    fontSize: 14,
+  } as React.CSSProperties,
+
+  loading: {
+    textAlign: 'center' as const,
+    color: '#94a3b8',
+    padding: '40px 0',
+    fontSize: 14,
+  } as React.CSSProperties,
+
+  tabRow: {
+    display: 'flex',
+    gap: 4,
+    marginBottom: 16,
+  } as React.CSSProperties,
+
+  tab: (active: boolean) => ({
+    padding: '8px 16px',
+    border: 'none',
+    borderBottom: active ? '2px solid #7c3aed' : '2px solid transparent',
+    background: 'transparent',
+    color: active ? '#7c3aed' : '#64748b',
+    fontWeight: active ? 600 : 400,
+    fontSize: 14,
+    cursor: 'pointer',
+    fontFamily: "'DM Sans', sans-serif",
+    display: 'flex',
+    alignItems: 'center',
+    gap: 6,
+  }) as React.CSSProperties,
+
+  configRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 12,
+    padding: '12px 0',
+    borderBottom: '1px solid #f1f5f9',
+    fontSize: 14,
+  } as React.CSSProperties,
+
+  configLabel: {
+    fontWeight: 500,
+    color: '#475569',
+    minWidth: 160,
+  } as React.CSSProperties,
+
+  configValue: {
+    color: '#1e1e2f',
+  } as React.CSSProperties,
+
+  successMsg: {
+    padding: '10px 14px',
+    background: '#f0fdf4',
+    border: '1px solid #bbf7d0',
+    borderRadius: 8,
+    color: '#166534',
+    fontSize: 13,
+    marginTop: 12,
+  } as React.CSSProperties,
+
+  errorMsg: {
+    padding: '10px 14px',
+    background: '#fef2f2',
+    border: '1px solid #fecaca',
+    borderRadius: 8,
+    color: '#dc2626',
+    fontSize: 13,
+    marginTop: 12,
+  } as React.CSSProperties,
+
+  responsiveStyle: `
+    @media (max-width: 768px) {
+      .cms-sidebar { display: none !important; }
+      .cms-mobile-nav { display: flex !important; }
+      .cms-main { padding: 16px !important; }
+    }
+    @media (min-width: 769px) {
+      .cms-mobile-nav { display: none !important; }
+    }
+  `,
+};
+
+const NAV_ITEMS: { key: Tab; label: string; icon: React.ReactElement }[] = [
+  { key: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
+  { key: 'conteudo', label: 'Conteudo', icon: <FileText size={18} /> },
+  { key: 'pesquisa', label: 'Pesquisa', icon: <Search size={18} /> },
+  { key: 'config', label: 'Config', icon: <Settings size={18} /> },
+];
+
+/* ------------------------------------------------------------------ */
+/*  Component                                                          */
+/* ------------------------------------------------------------------ */
 
 const AdminPanel: React.FC = () => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
-  const [activeSection, setActiveSection] = useState<Section>('overview');
+  const [activeTab, setActiveTab] = useState<Tab>('dashboard');
 
+  // Dashboard state
+  const [dashData, setDashData] = useState<AdminDashboard | null>(null);
+  const [dashLoading, setDashLoading] = useState(false);
+  const [dashError, setDashError] = useState('');
+
+  // Content state
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [videos, setVideos] = useState<VideoType[]>([]);
+  const [categories, setCategories] = useState<ContentCategory[]>([]);
+  const [contentLoading, setContentLoading] = useState(false);
+  const [contentTab, setContentTab] = useState<'articles' | 'videos'>('articles');
+  const [showArticleForm, setShowArticleForm] = useState(false);
+  const [showVideoForm, setShowVideoForm] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [articleForm, setArticleForm] = useState({
+    title: '', summary: '', body: '', category: '', cyclePhase: 'all', coverImageUrl: '',
+  });
+  const [videoForm, setVideoForm] = useState({
+    title: '', description: '', videoUrl: '', thumbnailUrl: '', category: '', cyclePhase: 'all',
+  });
+
+  // Search state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<SearchResult | null>(null);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Seed state
+  const [seedLoading, setSeedLoading] = useState(false);
+  const [seedMsg, setSeedMsg] = useState('');
+  const [seedError, setSeedError] = useState('');
+
+  // Role check
   useEffect(() => {
     if (currentUser && !ALLOWED_ROLES.includes(currentUser.role)) {
-      navigate('/home');
+      navigate(getHomeRoute(currentUser));
     }
   }, [currentUser, navigate]);
 
+  // Load dashboard on mount
+  useEffect(() => {
+    if (activeTab === 'dashboard') {
+      setDashLoading(true);
+      setDashError('');
+      academyApi.dashboard()
+        .then(setDashData)
+        .catch(() => setDashError('Erro ao carregar dashboard.'))
+        .finally(() => setDashLoading(false));
+    }
+  }, [activeTab]);
+
+  // Load content
+  useEffect(() => {
+    if (activeTab === 'conteudo') {
+      setContentLoading(true);
+      Promise.all([
+        contentApi.listArticles(),
+        contentApi.listVideos(),
+        contentApi.listCategories().catch(() => [] as ContentCategory[]),
+      ])
+        .then(([a, v, c]) => {
+          setArticles(a.data);
+          setVideos(v.data);
+          if (Array.isArray(c)) setCategories(c);
+        })
+        .catch(() => {})
+        .finally(() => setContentLoading(false));
+    }
+  }, [activeTab]);
+
+  // Debounced search
+  const doSearch = useCallback((q: string) => {
+    if (!q.trim()) { setSearchResults(null); return; }
+    setSearchLoading(true);
+    academyApi.search(q)
+      .then(setSearchResults)
+      .catch(() => setSearchResults(null))
+      .finally(() => setSearchLoading(false));
+  }, []);
+
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => doSearch(searchQuery), 400);
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+  }, [searchQuery, doSearch]);
+
+  // Seed content
+  const handleSeed = async () => {
+    setSeedLoading(true);
+    setSeedMsg('');
+    setSeedError('');
+    try {
+      const res = await academyApi.seedContent();
+      setSeedMsg(res.message || 'Conteudo semeado com sucesso!');
+    } catch {
+      setSeedError('Erro ao semear conteudo.');
+    } finally {
+      setSeedLoading(false);
+    }
+  };
+
+  // Article submit
+  const handleArticleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      await api.post('/content/articles', {
+        title: articleForm.title,
+        summary: articleForm.summary || undefined,
+        body: articleForm.body,
+        category: articleForm.category || undefined,
+        cyclePhase: articleForm.cyclePhase,
+        coverImageUrl: articleForm.coverImageUrl || undefined,
+      });
+      setShowArticleForm(false);
+      setArticleForm({ title: '', summary: '', body: '', category: '', cyclePhase: 'all', coverImageUrl: '' });
+      contentApi.listArticles().then((r) => setArticles(r.data)).catch(() => {});
+    } catch {
+      alert('Erro ao criar artigo.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Video submit
+  const handleVideoSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      await api.post('/content/videos', {
+        title: videoForm.title,
+        description: videoForm.description || undefined,
+        videoUrl: videoForm.videoUrl,
+        thumbnailUrl: videoForm.thumbnailUrl || undefined,
+        category: videoForm.category || undefined,
+        cyclePhase: videoForm.cyclePhase,
+      });
+      setShowVideoForm(false);
+      setVideoForm({ title: '', description: '', videoUrl: '', thumbnailUrl: '', category: '', cyclePhase: 'all' });
+      contentApi.listVideos().then((r) => setVideos(r.data)).catch(() => {});
+    } catch {
+      alert('Erro ao criar video.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Delete article
+  const handleDeleteArticle = async (id: string) => {
+    if (!window.confirm('Apagar este artigo?')) return;
+    try {
+      await api.delete(`/content/articles/${id}`);
+      setArticles((prev) => prev.filter((a) => a.id !== id));
+    } catch {
+      alert('Erro ao apagar artigo.');
+    }
+  };
+
+  // Delete video
+  const handleDeleteVideo = async (id: string) => {
+    if (!window.confirm('Apagar este video?')) return;
+    try {
+      await api.delete(`/content/videos/${id}`);
+      setVideos((prev) => prev.filter((v) => v.id !== id));
+    } catch {
+      alert('Erro ao apagar video.');
+    }
+  };
+
+  const formatDate = (d: string | null | undefined) => {
+    if (!d) return '-';
+    return new Date(d).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+  };
+
   if (!currentUser) {
+    return <Layout title="Admin"><p style={S.loading}>Carregando...</p></Layout>;
+  }
+  if (!ALLOWED_ROLES.includes(currentUser.role)) return null;
+
+  /* ---- Dashboard Tab ---- */
+  const renderDashboard = () => {
+    if (dashLoading) return <p style={S.loading}>Carregando metricas...</p>;
+    if (dashError) return <p style={S.errorMsg}>{dashError}</p>;
+    if (!dashData) return <p style={S.loading}>Carregando...</p>;
+
+    const maxRole = Math.max(...dashData.usersByRole.map((r) => Number(r.count)), 1);
+    const maxGoal = Math.max(...dashData.usersByGoal.map((g) => Number(g.count)), 1);
+
     return (
-      <div className="adm-screen">
-        <p className="adm-loading">Carregando...</p>
-      </div>
+      <>
+        <h2 style={S.pageTitle}>Dashboard</h2>
+
+        <div style={S.grid}>
+          <div style={S.card}>
+            <Users size={22} style={S.cardIcon} />
+            <div style={S.cardValue}>{dashData.totalUsers}</div>
+            <div style={S.cardLabel}>Usuarios totais</div>
+          </div>
+          <div style={S.card}>
+            <UserPlus size={22} style={S.cardIcon} />
+            <div style={S.cardValue}>{dashData.recentSignups}</div>
+            <div style={S.cardLabel}>Registos recentes</div>
+          </div>
+          <div style={S.card}>
+            <Activity size={22} style={S.cardIcon} />
+            <div style={S.cardValue}>{dashData.workoutsThisWeek}</div>
+            <div style={S.cardLabel}>Treinos esta semana</div>
+          </div>
+          <div style={S.card}>
+            <TrendingUp size={22} style={S.cardIcon} />
+            <div style={S.cardValue}>{(dashData.avgFrequency * 100).toFixed(0)}%</div>
+            <div style={S.cardLabel}>Frequencia media</div>
+          </div>
+          <div style={S.card}>
+            <Award size={22} style={S.cardIcon} />
+            <div style={S.cardValue}>{dashData.activeChallenges}</div>
+            <div style={S.cardLabel}>Desafios ativos</div>
+          </div>
+          <div style={S.card}>
+            <UserCheck size={22} style={S.cardIcon} />
+            <div style={S.cardValue}>{dashData.challengeParticipants}</div>
+            <div style={S.cardLabel}>Participantes desafios</div>
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
+          <div style={S.section}>
+            <h3 style={S.sectionTitle}>Usuarios por papel</h3>
+            {dashData.usersByRole.map((r) => (
+              <div key={r.role} style={S.breakdownRow}>
+                <span style={{ minWidth: 120, color: '#475569' }}>{r.role}</span>
+                <div style={S.breakdownBar(0)}>
+                  <div style={S.breakdownFill((Number(r.count) / maxRole) * 100)} />
+                </div>
+                <span style={{ fontWeight: 600, color: '#1e1e2f' }}>{r.count}</span>
+              </div>
+            ))}
+          </div>
+          <div style={S.section}>
+            <h3 style={S.sectionTitle}>Usuarios por objetivo</h3>
+            {dashData.usersByGoal.map((g) => (
+              <div key={g.goal} style={S.breakdownRow}>
+                <span style={{ minWidth: 120, color: '#475569' }}>{g.goal || 'Nenhum'}</span>
+                <div style={S.breakdownBar(0)}>
+                  <div style={S.breakdownFill((Number(g.count) / maxGoal) * 100)} />
+                </div>
+                <span style={{ fontWeight: 600, color: '#1e1e2f' }}>{g.count}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={S.section}>
+          <button style={S.btnPrimary} onClick={handleSeed} disabled={seedLoading}>
+            <Sprout size={16} />
+            {seedLoading ? 'Semeando...' : 'Semear conteudo'}
+          </button>
+          {seedMsg && <div style={S.successMsg}>{seedMsg}</div>}
+          {seedError && <div style={S.errorMsg}>{seedError}</div>}
+        </div>
+      </>
     );
-  }
+  };
 
-  if (!ALLOWED_ROLES.includes(currentUser.role)) {
-    return null;
-  }
+  /* ---- Conteudo Tab ---- */
+  const renderConteudo = () => {
+    if (contentLoading) return <p style={S.loading}>Carregando conteudo...</p>;
 
-  const renderSection = () => {
-    switch (activeSection) {
-      case 'overview':
-        return <Overview />;
-      case 'members':
-        return <Members />;
-      case 'trainers':
-        return <Trainers />;
-      case 'challenges':
-        return <Challenges />;
-      case 'content':
-        return <Content />;
-      case 'settings':
-        return <SettingsPanel />;
+    return (
+      <>
+        <h2 style={S.pageTitle}>Conteudo</h2>
+
+        <div style={S.tabRow}>
+          <button style={S.tab(contentTab === 'articles')} onClick={() => { setContentTab('articles'); setShowVideoForm(false); }}>
+            <FileText size={14} /> Artigos ({articles.length})
+          </button>
+          <button style={S.tab(contentTab === 'videos')} onClick={() => { setContentTab('videos'); setShowArticleForm(false); }}>
+            <Video size={14} /> Videos ({videos.length})
+          </button>
+        </div>
+
+        {/* Article form toggle */}
+        {contentTab === 'articles' && (
+          <>
+            <div style={{ marginBottom: 16 }}>
+              <button
+                style={showArticleForm ? S.btnSecondary : S.btnPrimary}
+                onClick={() => setShowArticleForm(!showArticleForm)}
+              >
+                {showArticleForm ? <><X size={14} /> Cancelar</> : <><Plus size={14} /> Novo artigo</>}
+              </button>
+            </div>
+
+            {showArticleForm && (
+              <form style={{ ...S.section, marginBottom: 20 }} onSubmit={handleArticleSubmit}>
+                <div style={S.formGroup}>
+                  <label style={S.formLabel}>Titulo</label>
+                  <input style={S.input} type="text" value={articleForm.title}
+                    onChange={(e) => setArticleForm({ ...articleForm, title: e.target.value })}
+                    required placeholder="Titulo do artigo" />
+                </div>
+                <div style={S.formGroup}>
+                  <label style={S.formLabel}>Resumo</label>
+                  <input style={S.input} type="text" value={articleForm.summary}
+                    onChange={(e) => setArticleForm({ ...articleForm, summary: e.target.value })}
+                    placeholder="Resumo breve (opcional)" />
+                </div>
+                <div style={S.formGroup}>
+                  <label style={S.formLabel}>Corpo</label>
+                  <textarea style={S.textarea} rows={8} value={articleForm.body}
+                    onChange={(e) => setArticleForm({ ...articleForm, body: e.target.value })}
+                    required placeholder="Corpo do artigo..." />
+                </div>
+                <div style={S.formRow}>
+                  <div style={S.formGroup}>
+                    <label style={S.formLabel}>Categoria</label>
+                    <select style={S.select} value={articleForm.category}
+                      onChange={(e) => setArticleForm({ ...articleForm, category: e.target.value })}>
+                      <option value="">Selecionar...</option>
+                      {categories.map((c) => <option key={c.id} value={c.slug}>{c.name}</option>)}
+                    </select>
+                  </div>
+                  <div style={S.formGroup}>
+                    <label style={S.formLabel}>Fase do ciclo</label>
+                    <select style={S.select} value={articleForm.cyclePhase}
+                      onChange={(e) => setArticleForm({ ...articleForm, cyclePhase: e.target.value })}>
+                      {CYCLE_PHASES.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div style={S.formGroup}>
+                  <label style={S.formLabel}>URL da imagem de capa (opcional)</label>
+                  <input style={S.input} type="url" value={articleForm.coverImageUrl}
+                    onChange={(e) => setArticleForm({ ...articleForm, coverImageUrl: e.target.value })}
+                    placeholder="https://..." />
+                </div>
+                <button type="submit" style={S.btnPrimary} disabled={submitting}>
+                  {submitting ? 'Publicando...' : 'Publicar artigo'}
+                </button>
+              </form>
+            )}
+
+            <div>
+              {articles.length === 0 ? (
+                <p style={S.empty}>Nenhum artigo publicado.</p>
+              ) : (
+                articles.map((a) => (
+                  <div key={a.id} style={S.contentItem}>
+                    <div>
+                      <div style={S.contentTitle}>{a.title}</div>
+                      <div style={S.contentMeta}>
+                        {a.category?.name || '-'} &middot; {a.cyclePhase} &middot; {formatDate(a.publishedAt || a.createdAt)}
+                      </div>
+                    </div>
+                    <button style={S.btnDanger} onClick={() => handleDeleteArticle(a.id)} title="Apagar">
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          </>
+        )}
+
+        {/* Video form toggle */}
+        {contentTab === 'videos' && (
+          <>
+            <div style={{ marginBottom: 16 }}>
+              <button
+                style={showVideoForm ? S.btnSecondary : S.btnPrimary}
+                onClick={() => setShowVideoForm(!showVideoForm)}
+              >
+                {showVideoForm ? <><X size={14} /> Cancelar</> : <><Plus size={14} /> Novo video</>}
+              </button>
+            </div>
+
+            {showVideoForm && (
+              <form style={{ ...S.section, marginBottom: 20 }} onSubmit={handleVideoSubmit}>
+                <div style={S.formGroup}>
+                  <label style={S.formLabel}>Titulo</label>
+                  <input style={S.input} type="text" value={videoForm.title}
+                    onChange={(e) => setVideoForm({ ...videoForm, title: e.target.value })}
+                    required placeholder="Titulo do video" />
+                </div>
+                <div style={S.formGroup}>
+                  <label style={S.formLabel}>Descricao</label>
+                  <textarea style={S.textarea} rows={3} value={videoForm.description}
+                    onChange={(e) => setVideoForm({ ...videoForm, description: e.target.value })}
+                    placeholder="Descricao opcional..." />
+                </div>
+                <div style={S.formGroup}>
+                  <label style={S.formLabel}>URL do video</label>
+                  <input style={S.input} type="url" value={videoForm.videoUrl}
+                    onChange={(e) => setVideoForm({ ...videoForm, videoUrl: e.target.value })}
+                    required placeholder="https://..." />
+                </div>
+                <div style={S.formGroup}>
+                  <label style={S.formLabel}>URL do thumbnail (opcional)</label>
+                  <input style={S.input} type="url" value={videoForm.thumbnailUrl}
+                    onChange={(e) => setVideoForm({ ...videoForm, thumbnailUrl: e.target.value })}
+                    placeholder="https://..." />
+                </div>
+                <div style={S.formRow}>
+                  <div style={S.formGroup}>
+                    <label style={S.formLabel}>Categoria</label>
+                    <select style={S.select} value={videoForm.category}
+                      onChange={(e) => setVideoForm({ ...videoForm, category: e.target.value })}>
+                      <option value="">Selecionar...</option>
+                      {categories.map((c) => <option key={c.id} value={c.slug}>{c.name}</option>)}
+                    </select>
+                  </div>
+                  <div style={S.formGroup}>
+                    <label style={S.formLabel}>Fase do ciclo</label>
+                    <select style={S.select} value={videoForm.cyclePhase}
+                      onChange={(e) => setVideoForm({ ...videoForm, cyclePhase: e.target.value })}>
+                      {CYCLE_PHASES.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <button type="submit" style={S.btnPrimary} disabled={submitting}>
+                  {submitting ? 'Publicando...' : 'Publicar video'}
+                </button>
+              </form>
+            )}
+
+            <div>
+              {videos.length === 0 ? (
+                <p style={S.empty}>Nenhum video publicado.</p>
+              ) : (
+                videos.map((v) => (
+                  <div key={v.id} style={S.contentItem}>
+                    <div>
+                      <div style={S.contentTitle}>{v.title}</div>
+                      <div style={S.contentMeta}>
+                        {v.category?.name || '-'} &middot; {v.cyclePhase} &middot; {formatDate(v.publishedAt || v.createdAt)}
+                      </div>
+                    </div>
+                    <button style={S.btnDanger} onClick={() => handleDeleteVideo(v.id)} title="Apagar">
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          </>
+        )}
+      </>
+    );
+  };
+
+  /* ---- Pesquisa Tab ---- */
+  const renderPesquisa = () => (
+    <>
+      <h2 style={S.pageTitle}>Pesquisa</h2>
+
+      <div style={{ position: 'relative', marginBottom: 24 }}>
+        <Search size={18} style={S.searchIcon} />
+        <input
+          style={S.searchInput}
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Pesquisar usuarios por nome ou email..."
+        />
+      </div>
+
+      {searchLoading && <p style={S.loading}>Pesquisando...</p>}
+
+      {!searchLoading && searchResults && searchResults.users.length === 0 && searchQuery.trim() && (
+        <p style={S.empty}>Nenhum resultado encontrado.</p>
+      )}
+
+      {!searchLoading && searchResults && searchResults.users.map((u) => (
+        <div key={u.id} style={S.userCard}>
+          <div style={S.userAvatar}>
+            {u.name?.charAt(0)?.toUpperCase() || '?'}
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 600, fontSize: 14, color: '#1e1e2f' }}>
+              {u.name}
+              <span style={S.badge}>{u.role}</span>
+            </div>
+            <div style={{ fontSize: 13, color: '#64748b', marginTop: 2 }}>{u.email}</div>
+            <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 2 }}>
+              Registado: {formatDate(u.createdAt)}
+            </div>
+          </div>
+        </div>
+      ))}
+
+      {!searchQuery.trim() && !searchLoading && (
+        <div style={S.empty}>
+          <Search size={32} style={{ color: '#d4d4d8', marginBottom: 8 }} />
+          <div>Digite um nome ou email para pesquisar</div>
+        </div>
+      )}
+    </>
+  );
+
+  /* ---- Config Tab ---- */
+  const renderConfig = () => (
+    <>
+      <h2 style={S.pageTitle}>Configuracoes</h2>
+
+      <div style={S.section}>
+        <h3 style={S.sectionTitle}>Informacoes da conta</h3>
+        <div style={S.configRow}>
+          <span style={S.configLabel}>Nome</span>
+          <span style={S.configValue}>{currentUser.name}</span>
+        </div>
+        <div style={S.configRow}>
+          <span style={S.configLabel}>Email</span>
+          <span style={S.configValue}>{currentUser.email}</span>
+        </div>
+        <div style={S.configRow}>
+          <span style={S.configLabel}>Papel</span>
+          <span style={S.configValue}>
+            <span style={S.badge}>{currentUser.role}</span>
+          </span>
+        </div>
+        <div style={S.configRow}>
+          <span style={S.configLabel}>Tenant ID</span>
+          <span style={{ ...S.configValue, fontFamily: 'monospace', fontSize: 12 }}>
+            {currentUser.tenantId}
+          </span>
+        </div>
+      </div>
+
+      <div style={S.section}>
+        <h3 style={S.sectionTitle}>Conteudo inicial</h3>
+        <p style={{ fontSize: 13, color: '#64748b', marginBottom: 12 }}>
+          Semeia 10 artigos e 5 categorias de exemplo para popular o CMS.
+        </p>
+        <button style={S.btnPrimary} onClick={handleSeed} disabled={seedLoading}>
+          <Sprout size={16} />
+          {seedLoading ? 'Semeando...' : 'Semear conteudo inicial'}
+        </button>
+        {seedMsg && <div style={S.successMsg}>{seedMsg}</div>}
+        {seedError && <div style={S.errorMsg}>{seedError}</div>}
+      </div>
+
+      <div style={{ ...S.section, background: '#f0fdf4', border: '1px solid #bbf7d0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+          <Info size={16} style={{ color: '#166534' }} />
+          <h3 style={{ ...S.sectionTitle, marginBottom: 0, color: '#166534' }}>Versao</h3>
+        </div>
+        <p style={{ fontSize: 13, color: '#166534' }}>EliaMov CMS v1.0</p>
+      </div>
+    </>
+  );
+
+  /* ---- Render ---- */
+  const renderActiveTab = () => {
+    switch (activeTab) {
+      case 'dashboard': return renderDashboard();
+      case 'conteudo': return renderConteudo();
+      case 'pesquisa': return renderPesquisa();
+      case 'config': return renderConfig();
     }
   };
 
   return (
-    <div className="adm-screen">
-      {/* Desktop sidebar */}
-      <aside className="adm-sidebar">
-        <div className="adm-sidebar-brand">
-          <LayoutDashboard size={22} />
-          <span>Admin</span>
-        </div>
-        <nav className="adm-sidebar-nav">
-          {NAV_ITEMS.map((item) => (
-            <button
-              key={item.key}
-              className={`adm-sidebar-btn ${activeSection === item.key ? 'adm-sidebar-btn-active' : ''}`}
-              onClick={() => setActiveSection(item.key)}
-            >
-              {item.icon}
-              <span>{item.label}</span>
-            </button>
-          ))}
-        </nav>
-        <div className="adm-sidebar-user">
-          <span className="adm-sidebar-user-name">{currentUser.name}</span>
-          <span className="adm-sidebar-user-role">{currentUser.role}</span>
-        </div>
-      </aside>
+    <Layout title="Admin CMS">
+      <style>{S.responsiveStyle}</style>
+      <div style={S.wrapper}>
+        {/* Desktop sidebar */}
+        <aside className="cms-sidebar" style={S.sidebar}>
+          <div style={S.sidebarBrand}>
+            <LayoutDashboard size={20} />
+            <span>CMS</span>
+          </div>
+          <nav style={{ marginTop: 8 }}>
+            {NAV_ITEMS.map((item) => (
+              <button
+                key={item.key}
+                style={S.navBtn(activeTab === item.key)}
+                onClick={() => setActiveTab(item.key)}
+              >
+                {item.icon}
+                <span>{item.label}</span>
+              </button>
+            ))}
+          </nav>
+          <div style={S.userBox}>
+            <div style={{ fontWeight: 600, color: '#475569' }}>{currentUser.name}</div>
+            <div>{currentUser.role}</div>
+          </div>
+        </aside>
 
-      {/* Main content */}
-      <main className="adm-main">
-        <header className="adm-header">
-          <h1 className="adm-header-title">
-            {NAV_ITEMS.find((n) => n.key === activeSection)?.label || 'Admin'}
-          </h1>
-        </header>
-        <div className="adm-body">{renderSection()}</div>
-      </main>
+        {/* Main content */}
+        <main className="cms-main" style={S.main}>
+          {renderActiveTab()}
+        </main>
+      </div>
 
-      {/* Mobile bottom tabs */}
-      <nav className="adm-bottom-tabs">
-        {NAV_ITEMS.slice(0, 5).map((item) => (
+      {/* Mobile bottom nav */}
+      <nav className="cms-mobile-nav" style={S.mobileNav}>
+        {NAV_ITEMS.map((item) => (
           <button
             key={item.key}
-            className={`adm-bottom-tab ${activeSection === item.key ? 'adm-bottom-tab-active' : ''}`}
-            onClick={() => setActiveSection(item.key)}
+            style={S.mobileTab(activeTab === item.key)}
+            onClick={() => setActiveTab(item.key)}
           >
             {item.icon}
             <span>{item.label}</span>
           </button>
         ))}
       </nav>
-    </div>
+    </Layout>
   );
 };
 
