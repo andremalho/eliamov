@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import Layout from '../components/Layout';
 import { InstagramIcon, FacebookIcon, XIcon, SnapchatIcon, WhatsAppIcon } from '../components/SocialIcons';
+import { useTranslation } from '../i18n/useTranslation';
 
 function getInitials(n: string): string {
   const p = n.trim().split(/\s+/);
@@ -50,6 +51,7 @@ const S: Record<string, React.CSSProperties> = {
 
 export default function Profile() {
   const { currentUser, setCurrentUser } = useAuth();
+  const { t, lang, changeLang, languages } = useTranslation();
   const [editing, setEditing] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -236,6 +238,19 @@ export default function Profile() {
               {icalCopied ? <Check size={14} /> : <Copy size={14} />}
             </button>
           </div>
+        </div>
+      </div>
+
+      {/* Language */}
+      <div style={S.card}>
+        <span style={S.cardTitle}>Idioma / Language</span>
+        <div style={{ display: 'flex', gap: 8 }}>
+          {languages.map(l => (
+            <button key={l.code} onClick={() => changeLang(l.code)}
+              style={{ flex: 1, padding: '8px', borderRadius: 10, border: `1.5px solid ${lang === l.code ? '#7C3AED' : '#E5E7EB'}`, background: lang === l.code ? '#FAF5FF' : '#fff', cursor: 'pointer', fontSize: 13, fontWeight: lang === l.code ? 600 : 400, color: lang === l.code ? '#7C3AED' : '#374151' }}>
+              {l.label}
+            </button>
+          ))}
         </div>
       </div>
 

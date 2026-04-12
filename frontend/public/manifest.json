@@ -1,0 +1,13 @@
+{
+  "name": "eliaMov",
+  "short_name": "eliaMov",
+  "description": "Movimento inteligente. Vida ativa.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F9FAFB",
+  "theme_color": "#7C3AED",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/logo-eliamov.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
