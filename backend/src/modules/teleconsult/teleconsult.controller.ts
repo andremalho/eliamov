@@ -31,4 +31,12 @@ export class TeleconsultController {
   remove(@CurrentUser() user: { userId: string }, @Param('id') id: string) {
     return this.service.removeForUser(user.userId, id);
   }
+
+  @Post(':id/video-room')
+  createVideoRoom(
+    @CurrentUser() user: { userId: string },
+    @Param('id') id: string,
+  ) {
+    return this.service.createVideoRoom(user.userId, id);
+  }
 }

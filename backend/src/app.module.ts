@@ -48,6 +48,8 @@ import { CalendarModule } from './modules/calendar/calendar.module';
 import { GamificationModule } from './modules/gamification/gamification.module';
 import { LabAnalysisModule } from './modules/lab-analysis/lab-analysis.module';
 import { AthleteModule } from './modules/athlete/athlete.module';
+import { PregnancyModule } from './modules/pregnancy/pregnancy.module';
+import { MenopauseModule } from './modules/menopause/menopause.module';
 
 @Module({
   imports: [
@@ -104,6 +106,8 @@ import { AthleteModule } from './modules/athlete/athlete.module';
     GamificationModule,
     LabAnalysisModule,
     AthleteModule,
+    PregnancyModule,
+    MenopauseModule,
   ],
   controllers: [AppController],
   providers: [

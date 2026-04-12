@@ -37,4 +37,19 @@ export class TeleconsultService {
     await this.repo.delete(id);
     return { ok: true };
   }
+
+  async createVideoRoom(userId: string, sessionId: string) {
+    const session = await this.repo.findOneBy({ id: sessionId, userId });
+    if (!session) throw new NotFoundException();
+
+    // Generate a simple room ID (in production, integrate with Twilio/Daily.co/Jitsi)
+    const roomId = `eliamov-${sessionId.slice(0, 8)}-${Date.now()}`;
+    const roomUrl = `https://meet.jit.si/${roomId}`; // Free Jitsi integration
+
+    session.meetingUrl = roomUrl;
+    session.status = 'in_progress';
+    await this.repo.save(session);
+
+    return { roomId, roomUrl, sessionId };
+  }
 }
