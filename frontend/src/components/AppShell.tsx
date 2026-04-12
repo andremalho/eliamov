@@ -22,11 +22,13 @@ const NAV_GROUPS = [
     { to: '/evolution', label: 'Evolucao', Icon: TrendingUp },
     { to: '/pregnancy', label: 'Gravidez', Icon: Heart },
     { to: '/menopause', label: 'Menopausa', Icon: Sun },
+    { to: '/mental-health', label: 'Saude mental', Icon: Brain },
   ]},
   { title: 'Programas', items: [
     { to: '/weight-loss', label: 'Emagrecimento', Icon: Scale },
     { to: '/challenges', label: 'Desafios', Icon: Trophy },
     { to: '/communities', label: 'Comunidades', Icon: Users },
+    { to: '/fertility', label: 'Fertilidade', Icon: Heart },
     { to: '/content', label: 'Conteudo', Icon: BookOpen },
   ]},
   { title: 'Mais', items: [
