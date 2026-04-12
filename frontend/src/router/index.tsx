@@ -36,6 +36,8 @@ import Evolution from '../pages/Evolution';
 import WeightLoss from '../pages/WeightLoss';
 import LabAnalysis from '../pages/LabAnalysis';
 import AthleteDashboard from '../pages/AthleteDashboard';
+import Pregnancy from '../pages/Pregnancy';
+import Menopause from '../pages/Menopause';
 import NotFound from '../pages/NotFound';
 
 function SmartRedirect() {
@@ -80,6 +82,8 @@ export default function AppRouter() {
       <Route path="/weight-loss" element={<FemaleRoute><WeightLoss /></FemaleRoute>} />
       <Route path="/lab-analysis" element={<FemaleRoute><LabAnalysis /></FemaleRoute>} />
       <Route path="/athlete" element={<FemaleRoute><AthleteDashboard /></FemaleRoute>} />
+      <Route path="/pregnancy" element={<FemaleRoute><Pregnancy /></FemaleRoute>} />
+      <Route path="/menopause" element={<FemaleRoute><Menopause /></FemaleRoute>} />
 
       {/* Trainer zone */}
       <Route path="/trainer" element={<RoleRoute roles={['personal_trainer', 'professional']}><TrainerPanel /></RoleRoute>} />

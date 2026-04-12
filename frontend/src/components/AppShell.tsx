@@ -6,7 +6,7 @@ import Logo from './Logo';
 import {
   Home, Droplets, Dumbbell, Apple, Heart, MessageCircle,
   Users, Zap, BookOpen, Brain, User, LogOut,
-  Menu, X, Stethoscope, Trophy, TrendingUp, Scale, Flame, FlaskRound,
+  Menu, X, Stethoscope, Trophy, TrendingUp, Scale, Flame, FlaskRound, Sun,
 } from 'lucide-react';
 
 const NAV_GROUPS = [
@@ -20,6 +20,8 @@ const NAV_GROUPS = [
     { to: '/mood', label: 'Humor', Icon: Heart },
     { to: '/nutrition', label: 'Nutricao', Icon: Apple },
     { to: '/evolution', label: 'Evolucao', Icon: TrendingUp },
+    { to: '/pregnancy', label: 'Gravidez', Icon: Heart },
+    { to: '/menopause', label: 'Menopausa', Icon: Sun },
   ]},
   { title: 'Programas', items: [
     { to: '/weight-loss', label: 'Emagrecimento', Icon: Scale },
