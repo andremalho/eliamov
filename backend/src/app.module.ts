@@ -50,6 +50,8 @@ import { LabAnalysisModule } from './modules/lab-analysis/lab-analysis.module';
 import { AthleteModule } from './modules/athlete/athlete.module';
 import { PregnancyModule } from './modules/pregnancy/pregnancy.module';
 import { MenopauseModule } from './modules/menopause/menopause.module';
+import { MentalHealthModule } from './modules/mental-health/mental-health.module';
+import { FertilityModule } from './modules/fertility/fertility.module';
 
 @Module({
   imports: [
@@ -108,6 +110,8 @@ import { MenopauseModule } from './modules/menopause/menopause.module';
     AthleteModule,
     PregnancyModule,
     MenopauseModule,
+    MentalHealthModule,
+    FertilityModule,
   ],
   controllers: [AppController],
   providers: [
