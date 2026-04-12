@@ -7,6 +7,7 @@ import {
   Home, Droplets, Dumbbell, Apple, Heart, MessageCircle,
   Users, Zap, BookOpen, Brain, User, LogOut,
   Menu, X, Stethoscope, Trophy, TrendingUp, Scale, Flame, FlaskRound, Sun,
+  Sparkles, Bell,
 } from 'lucide-react';
 
 const NAV_GROUPS = [
@@ -14,6 +15,7 @@ const NAV_GROUPS = [
     { to: '/home', label: 'Home', Icon: Home },
     { to: '/training', label: 'Treino do dia', Icon: Dumbbell },
     { to: '/feed', label: 'Feed', Icon: MessageCircle },
+    { to: '/insights', label: 'Insights IA', Icon: Sparkles },
   ]},
   { title: 'Saude', items: [
     { to: '/cycle', label: 'Ciclo menstrual', Icon: Droplets },
@@ -35,7 +37,6 @@ const NAV_GROUPS = [
     { to: '/activities', label: 'Atividades', Icon: Zap },
     { to: '/appointments', label: 'Consultas', Icon: Stethoscope },
     { to: '/lab-analysis', label: 'Exames lab', Icon: FlaskRound },
-    { to: '/insights', label: 'Insights IA', Icon: Brain },
     { to: '/profile', label: 'Perfil', Icon: User },
   ]},
 ];
@@ -43,6 +44,7 @@ const NAV_GROUPS = [
 const TABS = [
   { to: '/home', label: 'Home', Icon: Home },
   { to: '/training', label: 'Treino', Icon: Dumbbell },
+  { to: '/insights', label: 'Insights', Icon: Sparkles, center: true },
   { to: '/feed', label: 'Feed', Icon: MessageCircle },
   { to: '/profile', label: 'Perfil', Icon: User },
 ];
@@ -62,29 +64,99 @@ export default function AppShell({ children, title, subtitle, hideHeader }: Prop
   return (
     <>
       <style>{`
-        .sh { min-height:100vh; background:#F9FAFB; font-family:'DM Sans',sans-serif; }
-        .sh-bar { display:flex; align-items:center; justify-content:space-between; padding:10px 16px; background:#fff; border-bottom:1px solid #E5E7EB; position:sticky; top:0; z-index:30; }
-        .sh-menu { background:none; border:none; cursor:pointer; padding:6px; color:#374151; display:flex; align-items:center; border-radius:8px; }
-        .sh-menu:hover { background:#F3F4F6; }
-        .sh-body { max-width:800px; margin:0 auto; padding:20px 16px 90px; }
+        .sh { min-height:100vh; background:#F8F7FC; font-family:'DM Sans',sans-serif; }
+
+        /* ─── Top bar ─── */
+        .sh-bar {
+          display:flex; align-items:center; justify-content:space-between;
+          padding:12px 20px;
+          background:linear-gradient(135deg, #2D1B4E 0%, #4C1D95 100%);
+          position:sticky; top:0; z-index:30;
+        }
+        .sh-menu { background:none; border:none; cursor:pointer; padding:6px; color:rgba(255,255,255,0.85); display:flex; align-items:center; border-radius:10px; transition:background 0.15s; }
+        .sh-menu:hover { background:rgba(255,255,255,0.1); }
+
+        /* ─── Content ─── */
+        .sh-body { max-width:800px; margin:0 auto; padding:20px 16px 100px; }
         .sh-title { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:600; color:#2D1B4E; margin:0 0 4px; }
         .sh-sub { font-size:14px; color:#6B7280; margin:0 0 20px; }
-        .sh-tabs { display:flex; position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid #E5E7EB; padding:6px 0 env(safe-area-inset-bottom,6px); z-index:30; }
-        .sh-tab { flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; text-decoration:none; padding:4px 0; color:#9CA3AF; font-size:9px; font-weight:500; transition:color 0.15s; }
+
+        /* ─── Bottom tab bar ─── */
+        .sh-tabs {
+          display:flex; align-items:flex-end; justify-content:space-around;
+          position:fixed; bottom:0; left:0; right:0;
+          background:#fff;
+          border-top:1px solid #EDE9FE;
+          padding:0 0 env(safe-area-inset-bottom,4px);
+          z-index:30;
+          box-shadow:0 -2px 20px rgba(45,27,78,0.06);
+        }
+        .sh-tab {
+          flex:1; display:flex; flex-direction:column; align-items:center; gap:2px;
+          text-decoration:none; padding:8px 0 6px;
+          color:#9CA3AF; font-size:10px; font-weight:500;
+          transition:color 0.15s;
+        }
         .sh-tab.active { color:#7C3AED; }
-        .sh-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(2px); z-index:45; opacity:0; pointer-events:none; transition:opacity 0.25s; }
+        .sh-tab .sh-tab-icon { transition:transform 0.15s; }
+        .sh-tab.active .sh-tab-icon { transform:scale(1.1); }
+
+        /* ─── Center tab (Insights) ─── */
+        .sh-tab-center {
+          flex:1; display:flex; flex-direction:column; align-items:center;
+          text-decoration:none; color:#9CA3AF; font-size:10px; font-weight:600;
+          padding:0 0 6px; margin-top:-18px;
+          transition:color 0.15s;
+        }
+        .sh-tab-center.active { color:#7C3AED; }
+        .sh-tab-center-btn {
+          width:52px; height:52px; border-radius:50%;
+          background:linear-gradient(135deg, #7C3AED 0%, #9333EA 100%);
+          display:flex; align-items:center; justify-content:center;
+          box-shadow:0 4px 20px rgba(124,58,237,0.35);
+          margin-bottom:2px;
+          transition:transform 0.2s, box-shadow 0.2s;
+        }
+        .sh-tab-center:hover .sh-tab-center-btn { transform:scale(1.08); box-shadow:0 6px 24px rgba(124,58,237,0.45); }
+        .sh-tab-center.active .sh-tab-center-btn {
+          background:linear-gradient(135deg, #6D28D9 0%, #7C3AED 100%);
+          box-shadow:0 4px 24px rgba(124,58,237,0.5);
+        }
+
+        /* ─── Drawer ─── */
+        .sh-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); z-index:45; opacity:0; pointer-events:none; transition:opacity 0.3s; }
         .sh-overlay.open { opacity:1; pointer-events:auto; }
-        .sh-drawer { position:fixed; top:0; left:0; width:280px; height:100vh; background:#fff; z-index:50; transform:translateX(-100%); transition:transform 0.25s ease; display:flex; flex-direction:column; box-shadow:4px 0 24px rgba(0,0,0,0.08); }
+        .sh-drawer {
+          position:fixed; top:0; left:0; width:300px; height:100vh;
+          background:#fff; z-index:50;
+          transform:translateX(-100%); transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);
+          display:flex; flex-direction:column;
+          box-shadow:8px 0 40px rgba(0,0,0,0.12);
+        }
         .sh-drawer.open { transform:translateX(0); }
-        .sh-dh { display:flex; justify-content:space-between; align-items:center; padding:16px 16px 12px; border-bottom:1px solid #E5E7EB; }
-        .sh-dp { padding:12px 16px; border-bottom:1px solid #E5E7EB; }
-        .sh-dn { flex:1; overflow-y:auto; padding:8px; }
-        .sh-gt { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:#9CA3AF; padding:14px 10px 4px; }
-        .sh-nl { display:flex; align-items:center; gap:10px; padding:9px 10px; border-radius:8px; text-decoration:none; font-size:13px; font-weight:500; color:#6B7280; transition:all 0.15s; }
-        .sh-nl:hover { background:#F9FAFB; color:#111827; }
-        .sh-nl.active { background:#EDE9FE; color:#7C3AED; }
-        .sh-df { padding:12px; border-top:1px solid #E5E7EB; }
-        @media(min-width:768px) { .sh-body { padding:28px 32px 40px; } }
+        .sh-dh {
+          display:flex; justify-content:space-between; align-items:center;
+          padding:20px 20px 16px;
+          background:linear-gradient(135deg, #2D1B4E 0%, #4C1D95 100%);
+        }
+        .sh-dp {
+          padding:16px 20px;
+          border-bottom:1px solid #F3F4F6;
+          background:#FAFAFE;
+        }
+        .sh-dn { flex:1; overflow-y:auto; padding:8px 12px; }
+        .sh-gt { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1.2px; color:#C4B5FD; padding:18px 10px 6px; }
+        .sh-nl {
+          display:flex; align-items:center; gap:12px;
+          padding:10px 12px; border-radius:10px;
+          text-decoration:none; font-size:13.5px; font-weight:500;
+          color:#4B5563; transition:all 0.15s;
+        }
+        .sh-nl:hover { background:#F5F3FF; color:#2D1B4E; }
+        .sh-nl.active { background:#EDE9FE; color:#7C3AED; font-weight:600; }
+        .sh-df { padding:16px; border-top:1px solid #F3F4F6; }
+
+        @media(min-width:768px) { .sh-body { padding:28px 32px 100px; } }
       `}</style>
 
       <div className="sh">
@@ -94,18 +166,18 @@ export default function AppShell({ children, title, subtitle, hideHeader }: Prop
         {/* Drawer */}
         <nav className={`sh-drawer ${open ? 'open' : ''}`}>
           <div className="sh-dh">
-            <Logo size={22} variant="dark" />
-            <button onClick={() => setOpen(false)} style={{ background:'none', border:'none', cursor:'pointer', color:'#6B7280', padding:4 }}><X size={20} /></button>
+            <Logo size={22} variant="light" />
+            <button onClick={() => setOpen(false)} style={{ background:'none', border:'none', cursor:'pointer', color:'rgba(255,255,255,0.7)', padding:4 }}><X size={20} /></button>
           </div>
           {currentUser && (
             <div className="sh-dp">
-              <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-                <div style={{ width:36, height:36, borderRadius:'50%', background:'#7C3AED', display:'flex', alignItems:'center', justifyContent:'center', color:'#EDE9FE', fontWeight:700, fontSize:13 }}>
+              <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+                <div style={{ width:40, height:40, borderRadius:'50%', background:'linear-gradient(135deg, #7C3AED, #9333EA)', display:'flex', alignItems:'center', justifyContent:'center', color:'#fff', fontWeight:700, fontSize:14, boxShadow:'0 2px 8px rgba(124,58,237,0.25)' }}>
                   {ini(currentUser.name)}
                 </div>
                 <div>
                   <div style={{ fontSize:14, fontWeight:600, color:'#111827' }}>{currentUser.name}</div>
-                  <div style={{ fontSize:11, color:'#6B7280' }}>{currentUser.email}</div>
+                  <div style={{ fontSize:11, color:'#6B7280', marginTop:1 }}>{currentUser.email}</div>
                 </div>
               </div>
             </div>
@@ -113,18 +185,18 @@ export default function AppShell({ children, title, subtitle, hideHeader }: Prop
           <div className="sh-dn">
             {NAV_GROUPS.map(g => (
               <div key={g.title}>
-                <div className="sh-gt">{g.title}</div>
+                {g.title && <div className="sh-gt">{g.title}</div>}
                 {g.items.map(it => (
                   <NavLink key={it.to} to={it.to} onClick={() => setOpen(false)} className={({ isActive }) => `sh-nl ${isActive ? 'active' : ''}`}>
-                    <it.Icon size={16} /> {it.label}
+                    <it.Icon size={17} /> {it.label}
                   </NavLink>
                 ))}
               </div>
             ))}
           </div>
           <div className="sh-df">
-            <button onClick={() => { localStorage.removeItem('eliamov_token'); window.location.href = '/login'; }} style={{ display:'flex', alignItems:'center', gap:8, padding:'9px 10px', borderRadius:8, background:'none', border:'none', cursor:'pointer', fontSize:13, fontWeight:500, color:'#DC2626', width:'100%' }}>
-              <LogOut size={16} /> Sair da conta
+            <button onClick={() => { localStorage.removeItem('eliamov_token'); window.location.href = '/login'; }} style={{ display:'flex', alignItems:'center', gap:10, padding:'10px 12px', borderRadius:10, background:'none', border:'none', cursor:'pointer', fontSize:13.5, fontWeight:500, color:'#DC2626', width:'100%', transition:'background 0.15s' }}>
+              <LogOut size={17} /> Sair da conta
             </button>
           </div>
         </nav>
@@ -132,20 +204,22 @@ export default function AppShell({ children, title, subtitle, hideHeader }: Prop
         {/* Top bar */}
         {!hideHeader && (
           <div className="sh-bar">
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <button className="sh-menu" onClick={() => setOpen(true)}><Menu size={22} /></button>
               {streak > 0 && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 3, background: '#FEF3C7', padding: '3px 8px', borderRadius: 999, fontSize: 11, fontWeight: 600, color: '#92400E' }}>
-                  <Flame size={12} /> {streak}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'rgba(255,255,255,0.15)', padding: '4px 10px', borderRadius: 999, fontSize: 11, fontWeight: 700, color: '#FCD34D', backdropFilter: 'blur(4px)' }}>
+                  <Flame size={13} /> {streak}
                 </div>
               )}
             </div>
-            <Logo size={18} variant="dark" />
-            <Link to="/profile" style={{ textDecoration:'none' }}>
-              <div style={{ width:32, height:32, borderRadius:'50%', background:'#7C3AED', display:'flex', alignItems:'center', justifyContent:'center', color:'#EDE9FE', fontWeight:700, fontSize:12 }}>
-                {ini(currentUser?.name ?? '?')}
-              </div>
-            </Link>
+            <Logo size={20} variant="light" />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Link to="/profile" style={{ textDecoration:'none' }}>
+                <div style={{ width:34, height:34, borderRadius:'50%', background:'rgba(255,255,255,0.15)', border:'2px solid rgba(255,255,255,0.3)', display:'flex', alignItems:'center', justifyContent:'center', color:'#fff', fontWeight:700, fontSize:12, transition:'border-color 0.15s' }}>
+                  {ini(currentUser?.name ?? '?')}
+                </div>
+              </Link>
+            </div>
           </div>
         )}
 
@@ -156,12 +230,22 @@ export default function AppShell({ children, title, subtitle, hideHeader }: Prop
           {children}
         </div>
 
-        {/* Tab bar */}
+        {/* Tab bar with center Insights button */}
         <div className="sh-tabs">
-          {TABS.map(({ to, label, Icon }) => (
-            <NavLink key={to} to={to} className={({ isActive }) => `sh-tab ${isActive ? 'active' : ''}`}>
-              <Icon size={20} /> <span>{label}</span>
-            </NavLink>
+          {TABS.map(({ to, label, Icon, center }) => (
+            center ? (
+              <NavLink key={to} to={to} className={({ isActive }) => `sh-tab-center ${isActive ? 'active' : ''}`}>
+                <div className="sh-tab-center-btn">
+                  <Icon size={24} color="#fff" />
+                </div>
+                <span>{label}</span>
+              </NavLink>
+            ) : (
+              <NavLink key={to} to={to} className={({ isActive }) => `sh-tab ${isActive ? 'active' : ''}`}>
+                <span className="sh-tab-icon"><Icon size={21} /></span>
+                <span>{label}</span>
+              </NavLink>
+            )
           ))}
         </div>
       </div>
