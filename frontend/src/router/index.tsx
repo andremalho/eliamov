@@ -40,11 +40,13 @@ import Pregnancy from '../pages/Pregnancy';
 import Menopause from '../pages/Menopause';
 import MentalHealth from '../pages/MentalHealth';
 import Fertility from '../pages/Fertility';
+import Landing from '../pages/Landing';
 import NotFound from '../pages/NotFound';
 
 function SmartRedirect() {
   const { currentUser, loading } = useAuth();
   if (loading) return <div className="centered-screen"><p className="muted">Carregando...</p></div>;
+  if (!currentUser) return <Landing />;
   return <Navigate to={getHomeRoute(currentUser)} replace />;
 }
 
@@ -54,6 +56,7 @@ export default function AppRouter() {
       {/* Public */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/landing" element={<Landing />} />
 
       {/* Smart redirect */}
       <Route path="/" element={<SmartRedirect />} />

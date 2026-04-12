@@ -25,7 +25,7 @@ echo "=== eliaMov API Tests ==="
 echo ""
 
 # 1. Health check
-STATUS=$(curl -s -o /dev/null -w "%{http_code}" $BASE/)
+STATUS=$(curl -s -o /dev/null -w "%{http_code}" $BASE/health)
 assert_status "Health check" "200" "$STATUS"
 
 # 2. Register
