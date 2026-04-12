@@ -1,0 +1,80 @@
+export const SEED_ARTICLES = [
+  {
+    title: 'Como o ciclo menstrual afeta seu treino',
+    summary: 'Entenda as 4 fases do ciclo e como adaptar seu treino para cada uma delas.',
+    body: `## O ciclo menstrual e o treino\n\nO ciclo menstrual dura em media 28 dias e e dividido em 4 fases...\n\n### Fase Menstrual (dias 1-5)\nNesta fase, os niveis de estrogeno e progesterona estao baixos. Voce pode sentir fadiga e colicas. **Recomendacao**: exercicios leves como yoga, caminhada e alongamento.\n\n### Fase Folicular (dias 6-12)\nO estrogeno comeca a subir. Energia e disposicao aumentam. **Recomendacao**: treinos de forca progressiva, HIIT, cardio intenso. E a melhor fase para bater recordes!\n\n### Fase Ovulatoria (dias 13-15)\nPico de estrogeno. Energia maxima. **Recomendacao**: performance maxima, treinos pesados. **Atencao**: risco ligamentar aumentado pela relaxina.\n\n### Fase Lutea (dias 16-28)\nProgesterona sobe, estrogeno cai. Fadiga e alteracao de humor. **Recomendacao**: pilates, treino moderado, mobilidade.\n\n### Referencia\nMcNulty KL et al. The Effects of Menstrual Cycle Phase on Exercise Performance. Sports Medicine. 2020;50(10):1813-1827.`,
+    categorySlug: 'ciclo',
+    cyclePhase: 'all',
+  },
+  {
+    title: 'Proteina e ciclo menstrual: quanto consumir em cada fase',
+    summary: 'A demanda proteica varia ao longo do ciclo. Saiba ajustar sua dieta.',
+    body: '## Proteina por fase do ciclo\n\nA International Society of Sports Nutrition recomenda 1.4-2.0g de proteina por kg de peso corporal para mulheres ativas.\n\n### Fase folicular\nConsumo padrao: 1.4g/kg. Foco em fontes completas (ovos, frango, peixe, whey).\n\n### Fase lutea\nAumente para 1.6-1.8g/kg. A progesterona aumenta o catabolismo proteico.\n\n### Referencia\nJager R et al. ISSN Position Stand: protein and exercise. J Int Soc Sports Nutr. 2017;14:20.',
+    categorySlug: 'nutricao',
+    cyclePhase: 'all',
+  },
+  {
+    title: 'HIIT na fase folicular: por que e o momento ideal',
+    summary: 'A ciencia explica por que a fase folicular e perfeita para treinos intensos.',
+    body: '## HIIT e a fase folicular\n\nEstudos mostram que a fase folicular (dias 6-12) e o periodo de maior capacidade para exercicios de alta intensidade.\n\n### Evidencia cientifica\nUm estudo com 18 atletas eumenorreicas demonstrou que a forca dinamica maxima no half-squat atingiu seu pico na fase folicular tardia e na ovulacao.\n\n### Protocolo sugerido\n- 4-6 intervalos de 30s a 90% FCmax\n- 60-90s de recuperacao\n- 2-3 sessoes por semana nesta fase\n\n### Referencia\nWen Y et al. Exercise performance at different phases of the menstrual cycle. Front Endocrinol. 2025;16:1448686.',
+    categorySlug: 'treino',
+    cyclePhase: 'follicular',
+  },
+  {
+    title: 'Alimentos anti-inflamatorios para a TPM',
+    summary: 'Reduza sintomas pre-menstruais com alimentacao estrategica.',
+    body: '## Combatendo a TPM com alimentacao\n\n### Alimentos recomendados\n- **Omega-3**: salmao, sardinha, chia, linhaca\n- **Magnesio**: chocolate amargo 70%+, castanhas, espinafre\n- **Vitamina B6**: banana, batata doce, frango\n- **Calcio**: iogurte natural, brocolis\n\n### Alimentos a evitar\n- Excesso de sodio (inchaço)\n- Cafeina em excesso (ansiedade)\n- Acucar refinado (oscilacao de humor)\n\n### Referencia\nGuia Alimentar para a Populacao Brasileira. MS, 2014.',
+    categorySlug: 'nutricao',
+    cyclePhase: 'luteal',
+  },
+  {
+    title: 'Treino de forca e saude ossea na menopausa',
+    summary: 'Como o exercicio resistido previne osteoporose apos a menopausa.',
+    body: '## Forca e ossos\n\nApos a menopausa, a queda de estrogeno acelera a perda de massa ossea. O treino de forca e a intervencao mais eficaz para prevencao.\n\n### Protocolo recomendado\n- 2-3 sessoes/semana de treino resistido\n- Foco em exercicios de carga axial (agachamento, terra)\n- Progressao gradual de carga\n- Incluir exercicios de equilibrio\n\n### Referencia\nACSM Position Stand on Exercise and Physical Activity for Older Adults.',
+    categorySlug: 'treino',
+    cyclePhase: 'all',
+  },
+  {
+    title: 'Sono e recuperacao: o papel do ciclo hormonal',
+    summary: 'Qualidade do sono varia ao longo do ciclo. Aprenda a otimizar.',
+    body: '## Sono e hormonios\n\nA progesterona tem efeito sedativo natural, enquanto o estrogeno influencia a arquitetura do sono.\n\n### Fase folicular\nMenor progesterona = sono pode ser mais leve. Foco em higiene do sono.\n\n### Fase lutea\nProgesterona alta = sonolencia diurna possivel. Temperatura corporal basal sobe, dificultando o sono.\n\n### Dicas\n- Ambiente fresco (18-20C)\n- Evitar telas 1h antes\n- 7-9 horas por noite\n\n### Referencia\nEstudo com atletas: motivacao e qualidade do sono nao variaram significativamente entre fases (p = 0.424-0.698).',
+    categorySlug: 'ciclo',
+    cyclePhase: 'all',
+  },
+  {
+    title: 'Ansiedade e exercicio: PHQ e GAD como ferramentas',
+    summary: 'Como monitorar saude mental e usar exercicio como terapia.',
+    body: '## Saude mental e movimento\n\nO exercicio regular reduz sintomas de ansiedade e depressao. Instrumentos como PHQ-9 e GAD-7 ajudam a monitorar.\n\n### Exercicio como intervencao\n- 150 min/semana de atividade moderada\n- Yoga e pilates para reducao de cortisol\n- Treino ao ar livre (exposicao solar)\n\n### Na fase lutea\nEstudos mostram aumento de fadiga e depressao no POMS durante a fase lutea tardia. Exercicios leves ajudam.\n\n### Referencia\nKroenke K et al. The PHQ-9. J Gen Intern Med. 2001.\nSpitzer RL et al. The GAD-7. Arch Intern Med. 2006.',
+    categorySlug: 'ciclo',
+    cyclePhase: 'luteal',
+  },
+  {
+    title: 'Yoga restaurativa na fase menstrual',
+    summary: 'Posturas suaves para aliviar colicas e acolher seu corpo.',
+    body: '## Yoga na menstruacao\n\n### Posturas recomendadas\n- **Balasana** (postura da crianca): alivia dor lombar\n- **Supta Baddha Konasana** (borboleta deitada): abre quadril\n- **Viparita Karani** (pernas na parede): reduz inchaço\n- **Savasana** com bolster: relaxamento profundo\n\n### Evitar\n- Inversoes prolongadas\n- Posturas de compressao abdominal intensa\n\n### Duracao\n20-30 minutos, com respiracao diafragmatica.\n\n### Referencia\nSchlie J et al. 2025: pior performance percebida durante sangramento.',
+    categorySlug: 'treino',
+    cyclePhase: 'menstrual',
+  },
+  {
+    title: 'Deficit calorico seguro: como calcular',
+    summary: 'Aprenda a calcular seu deficit sem prejudicar a saude.',
+    body: '## Calculando o deficit\n\n### Formula de Mifflin-St Jeor\nMulher: TMB = (10 x peso kg) + (6.25 x altura cm) - (5 x idade) - 161\n\n### TDEE\nTDEE = TMB x fator de atividade\n- Sedentaria: 1.2\n- Leve: 1.375\n- Moderada: 1.55\n- Ativa: 1.725\n\n### Deficit seguro\n- 500-750 kcal/dia\n- Nunca abaixo de 1200 kcal/dia\n- Perda esperada: 0.5-0.75 kg/semana\n\n### Referencia\nMifflin MD et al. Am J Clin Nutr. 1990.\nHall KD et al. Am J Clin Nutr. 2012.',
+    categorySlug: 'nutricao',
+    cyclePhase: 'all',
+  },
+  {
+    title: 'Risco ligamentar na ovulacao: o que toda atleta deve saber',
+    summary: 'Estrogeno alto aumenta laxidez ligamentar. Saiba se proteger.',
+    body: '## Ligamentos e hormonios\n\nDurante a ovulacao, o pico de estrogeno aumenta a producao de relaxina, que pode aumentar a laxidez ligamentar.\n\n### Risco\n- LCA (ligamento cruzado anterior) e o mais vulneravel\n- Incidencia de lesao de LCA em mulheres: 2-8x maior que em homens\n- Maior risco nos dias 10-14 do ciclo\n\n### Prevencao\n- Aquecimento prolongado (15 min)\n- Exercicios neuromusculares de estabilizacao\n- Fortalecimento de isquiotibiais\n- Evitar superficies irregulares\n\n### Referencia\nEstudo com 18 atletas: performance maxima na ovulacao, mas risco ligamentar aumentado.',
+    categorySlug: 'ciclo',
+    cyclePhase: 'ovulatory',
+  },
+];
+
+export const SEED_CATEGORIES = [
+  { name: 'Ciclo menstrual', slug: 'ciclo' },
+  { name: 'Treino', slug: 'treino' },
+  { name: 'Nutricao', slug: 'nutricao' },
+  { name: 'Saude mental', slug: 'saude-mental' },
+  { name: 'Geral', slug: 'geral' },
+];

@@ -5,6 +5,9 @@ import { User } from '../users/entities/user.entity';
 import { Activity } from '../activities/entities/activity.entity';
 import { Challenge } from '../challenges/entities/challenge.entity';
 import { ChallengeParticipant } from '../challenges/entities/challenge-participant.entity';
+import { Article } from '../content/entities/article.entity';
+import { ContentCategory } from '../content/entities/content-category.entity';
+import { SEED_ARTICLES, SEED_CATEGORIES } from '../../seeds/content-seed';
 
 @Injectable()
 export class AcademyService {
@@ -14,6 +17,8 @@ export class AcademyService {
     @InjectRepository(Challenge) private challengeRepo: Repository<Challenge>,
     @InjectRepository(ChallengeParticipant)
     private participantRepo: Repository<ChallengeParticipant>,
+    @InjectRepository(Article) private articleRepo: Repository<Article>,
+    @InjectRepository(ContentCategory) private categoryRepo: Repository<ContentCategory>,
   ) {}
 
   async getOverview(academyId: string) {
@@ -64,5 +69,97 @@ export class AcademyService {
       activeChallenges,
       challengeParticipants,
     };
+  }
+
+  async getAdminDashboard(tenantId: string) {
+    const totalUsers = await this.userRepo.count({ where: { tenantId } });
+
+    // Users by role
+    const usersByRole = await this.userRepo
+      .createQueryBuilder('u')
+      .select('u.role', 'role')
+      .addSelect('COUNT(*)', 'count')
+      .where('u.tenantId = :tenantId', { tenantId })
+      .groupBy('u.role')
+      .getRawMany();
+
+    // Users by fitness goal
+    const usersByGoal = await this.userRepo
+      .createQueryBuilder('u')
+      .select('u.fitnessGoal', 'goal')
+      .addSelect('COUNT(*)', 'count')
+      .where('u.tenantId = :tenantId', { tenantId })
+      .andWhere('u.fitnessGoal IS NOT NULL')
+      .groupBy('u.fitnessGoal')
+      .getRawMany();
+
+    // Recent signups (last 30 days)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const recentSignups = await this.userRepo
+      .createQueryBuilder('u')
+      .where('u.tenantId = :tenantId', { tenantId })
+      .andWhere('u.createdAt >= :since', { since: thirtyDaysAgo })
+      .getCount();
+
+    const overview = await this.getOverview(tenantId);
+
+    return { ...overview, totalUsers, usersByRole, usersByGoal, recentSignups };
+  }
+
+  // Search across all data
+  async globalSearch(tenantId: string, query: string) {
+    const q = `%${query.toLowerCase()}%`;
+
+    const users = await this.userRepo
+      .createQueryBuilder('u')
+      .where('u.tenantId = :tenantId', { tenantId })
+      .andWhere('(LOWER(u.name) LIKE :q OR LOWER(u.email) LIKE :q)', { q })
+      .select(['u.id', 'u.name', 'u.email', 'u.role', 'u.createdAt'])
+      .take(10)
+      .getMany();
+
+    return { users };
+  }
+
+  async seedContent(tenantId: string) {
+    let categoriesCreated = 0;
+    let articlesCreated = 0;
+
+    // Create categories if they don't exist
+    const categoryMap = new Map<string, string>();
+    for (const cat of SEED_CATEGORIES) {
+      let existing = await this.categoryRepo.findOne({ where: { slug: cat.slug } });
+      if (!existing) {
+        existing = await this.categoryRepo.save(this.categoryRepo.create(cat));
+        categoriesCreated++;
+      }
+      categoryMap.set(cat.slug, existing.id);
+    }
+
+    // Create articles
+    for (const article of SEED_ARTICLES) {
+      const exists = await this.articleRepo.findOne({
+        where: { title: article.title, academyId: tenantId },
+      });
+      if (!exists) {
+        const categoryId = categoryMap.get(article.categorySlug) ?? null;
+        await this.articleRepo.save(
+          this.articleRepo.create({
+            title: article.title,
+            summary: article.summary,
+            body: article.body,
+            cyclePhase: article.cyclePhase as any,
+            categoryId,
+            authorId: tenantId,
+            academyId: tenantId,
+            publishedAt: new Date(),
+          }),
+        );
+        articlesCreated++;
+      }
+    }
+
+    return { categoriesCreated, articlesCreated };
   }
 }
