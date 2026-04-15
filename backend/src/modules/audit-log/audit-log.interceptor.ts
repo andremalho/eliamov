@@ -1,4 +1,4 @@
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
+import { CallHandler, ExecutionContext, Injectable, Logger, NestInterceptor } from '@nestjs/common';
 import { Observable, tap } from 'rxjs';
 import { AuditLogService } from './audit-log.service';
 
@@ -11,11 +11,12 @@ const METHOD_ACTION: Record<string, string> = {
   DELETE: 'DELETE',
 };
 
-// Paths to skip logging (noisy or auth-related)
-const SKIP_PATHS = ['/auth/', '/health', '/audit-logs'];
+const SKIP_PATHS = ['/auth/', '/health', '/audit-logs', '/ai-engine/chat', '/mood', '/gamification/xp'];
 
 @Injectable()
 export class AuditLogInterceptor implements NestInterceptor {
+  private readonly logger = new Logger(AuditLogInterceptor.name);
+
   constructor(private readonly auditService: AuditLogService) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
@@ -32,10 +33,11 @@ export class AuditLogInterceptor implements NestInterceptor {
     }
 
     const user = req.user;
-    const resource = path.split('/').filter(Boolean)[0] || 'unknown';
     const segments = path.split('/').filter(Boolean);
-    const resourceId = segments.length > 1 && segments[segments.length - 1].match(/^[0-9a-f-]{36}$/)
-      ? segments[segments.length - 1]
+    const resource = segments[0] || 'unknown';
+    const lastSegment = segments[segments.length - 1];
+    const resourceId = segments.length > 1 && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(lastSegment)
+      ? lastSegment
       : null;
 
     return next.handle().pipe(
@@ -50,7 +52,7 @@ export class AuditLogInterceptor implements NestInterceptor {
           path,
           tenantId: user?.tenantId,
           details: method === 'DELETE' ? `Deleted ${resource}` : undefined,
-        }).catch(() => {}); // fire-and-forget
+        }).catch((err) => this.logger.warn(`Audit log failed: ${err?.message}`));
       }),
     );
   }

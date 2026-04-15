@@ -34,6 +34,25 @@ type Tab = 'dashboard' | 'conteudo' | 'treinos' | 'pesquisa' | 'logs' | 'config'
 
 const ALLOWED_ROLES = ['academy_admin', 'academy_manager', 'admin', 'super_admin', 'tenant_admin'];
 
+const WORKOUT_TYPES = ['strength', 'hiit', 'cardio', 'yoga', 'pilates', 'mobility', 'functional', 'recovery'];
+const INTENSITIES = [
+  { value: 'low', label: 'Baixa' },
+  { value: 'moderate', label: 'Moderada' },
+  { value: 'high', label: 'Alta' },
+  { value: 'max', label: 'Maxima' },
+];
+const PHASE_LABELS: Record<string, string> = {
+  menstrual: 'Menstrual', follicular: 'Folicular', ovulatory: 'Ovulatoria', luteal: 'Lutea',
+};
+const PHASE_COLORS: Record<string, string> = {
+  menstrual: '#ef4444', follicular: '#10b981', ovulatory: '#f59e0b', luteal: '#8b5cf6',
+};
+const ACTION_COLORS: Record<string, { bg: string; color: string }> = {
+  CREATE: { bg: '#dcfce7', color: '#166534' },
+  UPDATE: { bg: '#dbeafe', color: '#1e40af' },
+  DELETE: { bg: '#fef2f2', color: '#dc2626' },
+};
+
 const CYCLE_PHASES = [
   { value: 'all', label: 'Todas as fases' },
   { value: 'follicular', label: 'Folicular' },
@@ -1315,20 +1334,6 @@ const AdminPanel: React.FC = () => {
   };
 
   /* ---- Treinos Tab ---- */
-  const WORKOUT_TYPES = ['strength', 'hiit', 'cardio', 'yoga', 'pilates', 'mobility', 'functional', 'recovery'];
-  const INTENSITIES = [
-    { value: 'low', label: 'Baixa' },
-    { value: 'moderate', label: 'Moderada' },
-    { value: 'high', label: 'Alta' },
-    { value: 'max', label: 'Maxima' },
-  ];
-  const PHASE_LABELS: Record<string, string> = {
-    menstrual: 'Menstrual', follicular: 'Folicular', ovulatory: 'Ovulatoria', luteal: 'Lutea',
-  };
-  const PHASE_COLORS: Record<string, string> = {
-    menstrual: '#ef4444', follicular: '#10b981', ovulatory: '#f59e0b', luteal: '#8b5cf6',
-  };
-
   const renderTreinos = () => {
     if (trainingLoading) return <p style={S.loading}>Carregando treinos...</p>;
     if (!fullLibrary) return <p style={S.loading}>Carregando...</p>;
@@ -1524,11 +1529,6 @@ const AdminPanel: React.FC = () => {
   );
 
   /* ---- Logs Tab ---- */
-  const ACTION_COLORS: Record<string, { bg: string; color: string }> = {
-    CREATE: { bg: '#dcfce7', color: '#166534' },
-    UPDATE: { bg: '#dbeafe', color: '#1e40af' },
-    DELETE: { bg: '#fef2f2', color: '#dc2626' },
-  };
 
   const renderLogs = () => {
     if (auditLoading) return <p style={S.loading}>Carregando logs...</p>;

@@ -123,7 +123,6 @@ export default function Training() {
   const [timerPaused, setTimerPaused] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [restTimer, setRestTimer] = useState(0);
-  const [restTarget, setRestTarget] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const restRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -179,28 +178,27 @@ export default function Training() {
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [timerActive, timerPaused]);
 
-  useEffect(() => {
-    if (restTimer > 0) {
-      restRef.current = setInterval(() => {
-        setRestTimer((t) => {
-          if (t <= 1) {
-            if (restRef.current) clearInterval(restRef.current);
-            return 0;
-          }
-          return t - 1;
-        });
-      }, 1000);
-    }
-    return () => { if (restRef.current) clearInterval(restRef.current); };
-  }, [restTarget]);
-
   const startRestTimer = (restStr: string) => {
     const secs = parseInt(restStr.replace(/[^0-9]/g, ''), 10);
-    if (secs > 0) {
-      setRestTimer(secs);
-      setRestTarget((t) => t + 1); // trigger effect
-    }
+    if (secs <= 0) return;
+    if (restRef.current) clearInterval(restRef.current);
+    setRestTimer(secs);
+    restRef.current = setInterval(() => {
+      setRestTimer((t) => {
+        if (t <= 1) {
+          if (restRef.current) clearInterval(restRef.current);
+          restRef.current = null;
+          return 0;
+        }
+        return t - 1;
+      });
+    }, 1000);
   };
+
+  // Cleanup rest timer on unmount
+  useEffect(() => {
+    return () => { if (restRef.current) clearInterval(restRef.current); };
+  }, []);
 
   const formatTime = (secs: number) => {
     const m = Math.floor(secs / 60);

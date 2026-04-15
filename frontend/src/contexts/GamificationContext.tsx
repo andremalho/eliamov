@@ -69,10 +69,10 @@ export const GamificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       setTimeout(() => {
         setXpEvents((prev) => prev.filter((e) => e.id !== event.id));
       }, 3000);
-      // Refresh stats
-      await refreshStats();
+      // Use returned stats directly instead of re-fetching
+      if (result.stats) setStats(result.stats);
     } catch { /* ignore */ }
-  }, [refreshStats]);
+  }, []);
 
   const dismissEvent = useCallback((id: number) => {
     setXpEvents((prev) => prev.filter((e) => e.id !== id));

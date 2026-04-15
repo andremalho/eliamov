@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { UserStats } from './entities/user-stats.entity';
 import { User } from '../users/entities/user.entity';
 
@@ -102,14 +102,20 @@ export class GamificationService {
       take: 20,
     });
 
-    const entries = [];
-    for (const s of stats) {
-      const user = await this.userRepo.findOne({
-        where: { id: s.userId },
-        select: ['id', 'name', 'profile'],
-      });
-      if (user) {
-        entries.push({
+    if (stats.length === 0) return [];
+
+    const userIds = stats.map((s) => s.userId);
+    const users = await this.userRepo.find({
+      where: { id: In(userIds) },
+      select: ['id', 'name', 'profile'],
+    });
+    const userMap = new Map(users.map((u) => [u.id, u]));
+
+    return stats
+      .filter((s) => userMap.has(s.userId))
+      .map((s) => {
+        const user = userMap.get(s.userId)!;
+        return {
           id: user.id,
           name: user.name,
           xp: s.xp,
@@ -118,9 +124,7 @@ export class GamificationService {
           totalWorkouts: s.totalWorkouts,
           badges: s.badges,
           profile: user.profile,
-        });
-      }
-    }
-    return entries;
+        };
+      });
   }
 }

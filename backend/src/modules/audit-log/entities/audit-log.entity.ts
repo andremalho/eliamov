@@ -9,17 +9,17 @@ export class AuditLog {
 
   @Column({ nullable: true }) userName: string;
 
-  @Column() action: string; // 'CREATE' | 'UPDATE' | 'DELETE'
+  @Column() action: string;
 
-  @Column() resource: string; // 'article', 'recipe', 'user', etc.
+  @Column() resource: string;
 
   @Column({ type: 'uuid', nullable: true }) resourceId: string;
 
   @Column({ nullable: true }) details: string;
 
-  @Column({ nullable: true }) method: string; // HTTP method
+  @Column({ nullable: true }) method: string;
 
-  @Column({ nullable: true }) path: string; // request path
+  @Column({ nullable: true }) path: string;
 
   @Column({ type: 'uuid', nullable: true }) tenantId: string;
 

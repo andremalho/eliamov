@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { TrainingPlan } from './entities/training.entity';
 import { CustomWorkout } from './entities/custom-workout.entity';
 import { WorkoutLog } from './entities/workout-log.entity';
@@ -103,7 +103,7 @@ export class TrainingService {
 
   // --- Custom Workouts (admin-managed) ---
   findCustomWorkouts(tenantId?: string) {
-    const where = tenantId ? [{ academyId: tenantId }, { academyId: undefined as any }] : {};
+    const where = tenantId ? [{ academyId: tenantId }, { academyId: IsNull() }] : {};
     return this.customRepo.find({ order: { createdAt: 'DESC' }, where });
   }
 

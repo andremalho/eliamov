@@ -402,14 +402,14 @@ Regras:
 6. Em respostas sobre saude, sintomas ou condicoes, SEMPRE inclua ao final: "⚕️ Lembre-se: sou uma assistente virtual e nao substituo a consulta com um profissional de saude."
 7. NUNCA prescreva medicamentos, dosagens especificas de suplementos que requerem orientacao medica, ou tratamentos.`;
 
-    // Load conversation history (last 10 messages for context)
+    // Load last 10 messages for context (DESC then reverse for chronological order)
     const conversationId = `elia-${userId}`;
     const history = await this.chatRepo.find({
       where: { userId, conversationId },
-      order: { createdAt: 'ASC' },
-      take: 20,
+      order: { createdAt: 'DESC' },
+      take: 10,
     });
-    const messageHistory = history.map((m) => ({
+    const messageHistory = history.reverse().map((m) => ({
       role: m.sender === 'user' ? 'user' : 'assistant',
       content: m.content,
     }));
