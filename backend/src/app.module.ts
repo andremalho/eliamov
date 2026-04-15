@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { User } from './modules/users/entities/user.entity';
 
@@ -52,6 +52,9 @@ import { PregnancyModule } from './modules/pregnancy/pregnancy.module';
 import { MenopauseModule } from './modules/menopause/menopause.module';
 import { MentalHealthModule } from './modules/mental-health/mental-health.module';
 import { FertilityModule } from './modules/fertility/fertility.module';
+import { RecipesModule } from './modules/recipes/recipes.module';
+import { AuditLogModule } from './modules/audit-log/audit-log.module';
+import { AuditLogInterceptor } from './modules/audit-log/audit-log.interceptor';
 
 @Module({
   imports: [
@@ -112,12 +115,15 @@ import { FertilityModule } from './modules/fertility/fertility.module';
     MenopauseModule,
     MentalHealthModule,
     FertilityModule,
+    RecipesModule,
+    AuditLogModule,
   ],
   controllers: [AppController],
   providers: [
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     { provide: APP_GUARD, useClass: OnboardingGuard },
     { provide: APP_GUARD, useClass: ThrottlerGuard },
+    { provide: APP_INTERCEPTOR, useClass: AuditLogInterceptor },
   ],
 })
 export class AppModule {}

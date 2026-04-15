@@ -1,3 +1,14 @@
+export interface WorkoutExercise {
+  name: string;
+  sets?: number;
+  reps?: string;
+  duration?: string;
+  rest?: string;
+  notes?: string;
+  description?: string;
+  videoUrl?: string;
+}
+
 export interface WorkoutTemplate {
   name: string;
   phase: 'menstrual' | 'follicular' | 'ovulatory' | 'luteal';
@@ -5,7 +16,7 @@ export interface WorkoutTemplate {
   duration: number; // minutes
   intensity: 'low' | 'moderate' | 'high' | 'max';
   rpe: string; // "3-5", "7-9", etc
-  exercises: { name: string; sets?: number; reps?: string; duration?: string; rest?: string; notes?: string }[];
+  exercises: WorkoutExercise[];
   description: string;
   reference: string;
 }
@@ -16,12 +27,12 @@ export const WORKOUT_LIBRARY: WorkoutTemplate[] = [
     name: 'Yoga restaurativa',
     phase: 'menstrual', type: 'yoga', duration: 25, intensity: 'low', rpe: '3-4',
     exercises: [
-      { name: 'Balasana (crianca)', duration: '3 min', notes: 'Alivia dor lombar' },
-      { name: 'Supta Baddha Konasana', duration: '3 min', notes: 'Abre quadril' },
-      { name: 'Cat-Cow', sets: 1, reps: '10 ciclos', notes: 'Mobilidade coluna' },
-      { name: 'Viparita Karani (pernas na parede)', duration: '5 min', notes: 'Reduz inchaco' },
-      { name: 'Respiracao diafragmatica', duration: '5 min' },
-      { name: 'Savasana com bolster', duration: '5 min' },
+      { name: 'Balasana (crianca)', duration: '3 min', notes: 'Alivia dor lombar', description: 'Ajoelhe-se, sente nos calcanhares e estenda os bracos a frente, descansando a testa no chao. Respire profundamente.' },
+      { name: 'Supta Baddha Konasana', duration: '3 min', notes: 'Abre quadril', description: 'Deite-se de costas, junte as solas dos pes e deixe os joelhos cairem para os lados. Use apoios sob os joelhos se necessario.' },
+      { name: 'Cat-Cow', sets: 1, reps: '10 ciclos', notes: 'Mobilidade coluna', description: 'Em quatro apoios, alterne entre arquear (inspirar) e arredondar (expirar) a coluna. Movimento lento e fluido.' },
+      { name: 'Viparita Karani (pernas na parede)', duration: '5 min', notes: 'Reduz inchaco', description: 'Deite-se com as pernas apoiadas na parede, quadril proximo a ela. Relaxe os bracos ao lado do corpo.' },
+      { name: 'Respiracao diafragmatica', duration: '5 min', description: 'Deite-se confortavelmente. Inspire pelo nariz expandindo o abdomen (4s), expire pela boca contraindo suavemente (6s).' },
+      { name: 'Savasana com bolster', duration: '5 min', description: 'Deite-se de costas com um bolster ou travesseiro sob os joelhos. Feche os olhos e relaxe completamente.' },
     ],
     description: 'Pratica suave para acolher seu corpo. Alivia colicas e reduz estresse.',
     reference: 'Schlie et al. 2025: pior performance durante sangramento. Exercicios leves recomendados.',
@@ -58,12 +69,12 @@ export const WORKOUT_LIBRARY: WorkoutTemplate[] = [
     name: 'Forca progressiva - membros inferiores',
     phase: 'follicular', type: 'strength', duration: 45, intensity: 'high', rpe: '7-9',
     exercises: [
-      { name: 'Agachamento livre', sets: 4, reps: '8-10', rest: '90s' },
-      { name: 'Leg press', sets: 3, reps: '10-12', rest: '60s' },
-      { name: 'Stiff', sets: 3, reps: '10', rest: '60s' },
-      { name: 'Cadeira extensora', sets: 3, reps: '12', rest: '45s' },
-      { name: 'Elevacao de panturrilha', sets: 3, reps: '15', rest: '30s' },
-      { name: 'Prancha', sets: 3, duration: '30s', rest: '30s' },
+      { name: 'Agachamento livre', sets: 4, reps: '8-10', rest: '90s', description: 'Pes na largura dos ombros, descer controladamente ate coxas paralelas ao chao. Manter core ativado e joelhos alinhados com pes.' },
+      { name: 'Leg press', sets: 3, reps: '10-12', rest: '60s', description: 'Pes na plataforma na largura dos ombros. Flexionar joelhos ate 90 graus e estender sem travar.' },
+      { name: 'Stiff', sets: 3, reps: '10', rest: '60s', description: 'Em pe com barra/halteres, inclinar o tronco a frente mantendo coluna neutra. Sentir alongamento nos isquiotibiais.' },
+      { name: 'Cadeira extensora', sets: 3, reps: '12', rest: '45s', description: 'Ajustar o apoio para ficar acima dos tornozelos. Estender os joelhos de forma controlada.' },
+      { name: 'Elevacao de panturrilha', sets: 3, reps: '15', rest: '30s', description: 'Em pe na borda de um step, elevar os calcanhares e descer lentamente abaixo do step.' },
+      { name: 'Prancha', sets: 3, duration: '30s', rest: '30s', description: 'Apoiar antebracos e pontas dos pes no chao. Manter corpo alinhado, core contraido, sem elevar quadril.' },
     ],
     description: 'Estrogeno crescente favorece ganho de forca. Momento ideal para progressao de carga!',
     reference: 'Estudo 18 atletas: pico de forca no half-squat na fase folicular tardia. Blagrove et al. 2022.',
@@ -101,11 +112,11 @@ export const WORKOUT_LIBRARY: WorkoutTemplate[] = [
     name: 'Performance maxima - full body',
     phase: 'ovulatory', type: 'strength', duration: 50, intensity: 'max', rpe: '8-10',
     exercises: [
-      { name: 'Agachamento pesado', sets: 5, reps: '5', rest: '2 min', notes: '85-95% 1RM' },
-      { name: 'Terra', sets: 4, reps: '5', rest: '2 min' },
-      { name: 'Supino', sets: 4, reps: '6', rest: '90s' },
-      { name: 'Barra fixa (ou assistida)', sets: 3, reps: 'max', rest: '90s' },
-      { name: 'Core: ab wheel', sets: 3, reps: '10', rest: '45s' },
+      { name: 'Agachamento pesado', sets: 5, reps: '5', rest: '2 min', notes: '85-95% 1RM', description: 'Aquecimento progressivo obrigatorio. Descer controladamente, manter core firme. Dia de buscar PRs!' },
+      { name: 'Terra', sets: 4, reps: '5', rest: '2 min', description: 'Barra no chao, pes largura do quadril. Levantar com extensao de quadril e joelhos simultanea. Coluna neutra sempre.' },
+      { name: 'Supino', sets: 4, reps: '6', rest: '90s', description: 'Deitar no banco, descer a barra ate o peito controladamente. Empurrar explosivamente.' },
+      { name: 'Barra fixa (ou assistida)', sets: 3, reps: 'max', rest: '90s', description: 'Pegada pronada na largura dos ombros. Puxar ate o queixo passar a barra. Usar elastico se necessario.' },
+      { name: 'Core: ab wheel', sets: 3, reps: '10', rest: '45s', description: 'Ajoelhar, segurar a roda e estender o corpo a frente mantendo core contraido. Voltar controladamente.' },
     ],
     description: 'Pico de estrogeno = pico de forca. Dia de tentar PRs! ATENCAO: aquecimento prolongado pela laxidez ligamentar.',
     reference: 'Estudo 18 atletas: performance maxima na ovulacao. ALERTA: risco ligamentar aumentado (relaxina).',

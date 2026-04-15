@@ -8,10 +8,11 @@ import { Challenge } from '../challenges/entities/challenge.entity';
 import { ChallengeParticipant } from '../challenges/entities/challenge-participant.entity';
 import { Article } from '../content/entities/article.entity';
 import { ContentCategory } from '../content/entities/content-category.entity';
+import { Recipe } from '../recipes/entities/recipe.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Activity, Challenge, ChallengeParticipant, Article, ContentCategory]),
+    TypeOrmModule.forFeature([User, Activity, Challenge, ChallengeParticipant, Article, ContentCategory, Recipe]),
   ],
   controllers: [AcademyController],
   providers: [AcademyService],

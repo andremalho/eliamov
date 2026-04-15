@@ -47,4 +47,9 @@ export class AiEngineController {
   chat(@CurrentUser() user: { userId: string }, @Body() dto: { message: string }) {
     return this.service.chat(user.userId, dto.message);
   }
+
+  @Get('chat/history')
+  chatHistory(@CurrentUser() user: { userId: string }) {
+    return this.service.getChatHistory(user.userId);
+  }
 }

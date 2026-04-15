@@ -1,8 +1,10 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../../components/Layout';
-import { academyApi, AdminDashboard, SearchResult } from '../../services/academy.api';
+import { academyApi, AdminDashboard, SearchResult, AuditLogEntry, AuditLogResponse } from '../../services/academy.api';
 import { contentApi, Article, Video as VideoType, ContentListResponse, ContentCategory } from '../../services/content.api';
+import { recipesApi, Recipe } from '../../services/recipes.api';
+import { trainingApi, CustomWorkout, WorkoutTemplate, FullLibrary } from '../../services/training.api';
 import { useAuth, getHomeRoute } from '../../contexts/AuthContext';
 import api from '../../services/api';
 import {
@@ -22,9 +24,13 @@ import {
   Trash2,
   Sprout,
   Info,
+  UtensilsCrossed,
+  Dumbbell,
+  Download,
+  ClipboardList,
 } from 'lucide-react';
 
-type Tab = 'dashboard' | 'conteudo' | 'pesquisa' | 'config';
+type Tab = 'dashboard' | 'conteudo' | 'treinos' | 'pesquisa' | 'logs' | 'config';
 
 const ALLOWED_ROLES = ['academy_admin', 'academy_manager', 'admin', 'super_admin', 'tenant_admin'];
 
@@ -468,7 +474,9 @@ const S = {
 const NAV_ITEMS: { key: Tab; label: string; icon: React.ReactElement }[] = [
   { key: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
   { key: 'conteudo', label: 'Conteudo', icon: <FileText size={18} /> },
+  { key: 'treinos', label: 'Treinos', icon: <Dumbbell size={18} /> },
   { key: 'pesquisa', label: 'Pesquisa', icon: <Search size={18} /> },
+  { key: 'logs', label: 'Logs', icon: <ClipboardList size={18} /> },
   { key: 'config', label: 'Config', icon: <Settings size={18} /> },
 ];
 
@@ -490,10 +498,12 @@ const AdminPanel: React.FC = () => {
   const [articles, setArticles] = useState<Article[]>([]);
   const [videos, setVideos] = useState<VideoType[]>([]);
   const [categories, setCategories] = useState<ContentCategory[]>([]);
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [contentLoading, setContentLoading] = useState(false);
-  const [contentTab, setContentTab] = useState<'articles' | 'videos'>('articles');
+  const [contentTab, setContentTab] = useState<'articles' | 'videos' | 'recipes'>('articles');
   const [showArticleForm, setShowArticleForm] = useState(false);
   const [showVideoForm, setShowVideoForm] = useState(false);
+  const [showRecipeForm, setShowRecipeForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [articleForm, setArticleForm] = useState({
     title: '', summary: '', body: '', category: '', cyclePhase: 'all', coverImageUrl: '',
@@ -501,12 +511,34 @@ const AdminPanel: React.FC = () => {
   const [videoForm, setVideoForm] = useState({
     title: '', description: '', videoUrl: '', thumbnailUrl: '', category: '', cyclePhase: 'all',
   });
+  const [recipeForm, setRecipeForm] = useState({
+    title: '', summary: '', instructions: '', category: '', cyclePhase: 'all', coverImageUrl: '',
+    prepTimeMinutes: '', cookTimeMinutes: '', servings: '1',
+    ingredientsText: '', calories: '', protein: '', carbs: '', fat: '', fiber: '',
+    dietaryRestrictions: '',
+  });
+
+  // Training state
+  const [fullLibrary, setFullLibrary] = useState<FullLibrary | null>(null);
+  const [trainingLoading, setTrainingLoading] = useState(false);
+  const [showWorkoutForm, setShowWorkoutForm] = useState(false);
+  const [workoutForm, setWorkoutForm] = useState({
+    name: '', phase: 'follicular', type: 'strength', duration: '30',
+    intensity: 'moderate', rpe: '5-7', description: '', reference: '',
+    exercisesText: '',
+  });
 
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResult | null>(null);
   const [searchLoading, setSearchLoading] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Audit logs state
+  const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>([]);
+  const [auditTotal, setAuditTotal] = useState(0);
+  const [auditPage, setAuditPage] = useState(1);
+  const [auditLoading, setAuditLoading] = useState(false);
 
   // Seed state
   const [seedLoading, setSeedLoading] = useState(false);
@@ -540,16 +572,40 @@ const AdminPanel: React.FC = () => {
         contentApi.listArticles(),
         contentApi.listVideos(),
         contentApi.listCategories().catch(() => [] as ContentCategory[]),
+        recipesApi.list().catch(() => ({ data: [] as Recipe[] })),
       ])
-        .then(([a, v, c]) => {
+        .then(([a, v, c, r]) => {
           setArticles(a.data);
           setVideos(v.data);
           if (Array.isArray(c)) setCategories(c);
+          setRecipes(r.data);
         })
         .catch(() => {})
         .finally(() => setContentLoading(false));
     }
   }, [activeTab]);
+
+  // Load training
+  useEffect(() => {
+    if (activeTab === 'treinos') {
+      setTrainingLoading(true);
+      trainingApi.getFullLibrary()
+        .then(setFullLibrary)
+        .catch(() => {})
+        .finally(() => setTrainingLoading(false));
+    }
+  }, [activeTab]);
+
+  // Load audit logs
+  useEffect(() => {
+    if (activeTab === 'logs') {
+      setAuditLoading(true);
+      academyApi.auditLogs(auditPage)
+        .then((res) => { setAuditLogs(res.data); setAuditTotal(res.total); })
+        .catch(() => {})
+        .finally(() => setAuditLoading(false));
+    }
+  }, [activeTab, auditPage]);
 
   // Debounced search
   const doSearch = useCallback((q: string) => {
@@ -566,6 +622,34 @@ const AdminPanel: React.FC = () => {
     debounceRef.current = setTimeout(() => doSearch(searchQuery), 400);
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   }, [searchQuery, doSearch]);
+
+  // CSV export helper
+  const downloadCsv = (blob: Blob, filename: string) => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExportUsers = async () => {
+    try {
+      const blob = await academyApi.exportUsers();
+      downloadCsv(blob, 'usuarios.csv');
+    } catch {
+      alert('Erro ao exportar usuarios.');
+    }
+  };
+
+  const handleExportContent = async () => {
+    try {
+      const blob = await academyApi.exportContent();
+      downloadCsv(blob, 'conteudo.csv');
+    } catch {
+      alert('Erro ao exportar conteudo.');
+    }
+  };
 
   // Seed content
   const handleSeed = async () => {
@@ -647,6 +731,130 @@ const AdminPanel: React.FC = () => {
       setVideos((prev) => prev.filter((v) => v.id !== id));
     } catch {
       alert('Erro ao apagar video.');
+    }
+  };
+
+  // Workout submit
+  const handleWorkoutSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      const exercises = workoutForm.exercisesText
+        .split('\n')
+        .filter((l) => l.trim())
+        .map((line) => {
+          const parts = line.trim().split('|').map((p) => p.trim());
+          return {
+            name: parts[0] || '',
+            sets: parts[1] ? Number(parts[1]) : undefined,
+            reps: parts[2] || undefined,
+            duration: parts[3] || undefined,
+            rest: parts[4] || undefined,
+            notes: parts[5] || undefined,
+          };
+        });
+
+      await trainingApi.createCustomWorkout({
+        name: workoutForm.name,
+        phase: workoutForm.phase,
+        type: workoutForm.type,
+        duration: Number(workoutForm.duration) || 30,
+        intensity: workoutForm.intensity,
+        rpe: workoutForm.rpe,
+        exercises,
+        description: workoutForm.description || undefined,
+        reference: workoutForm.reference || undefined,
+      });
+      setShowWorkoutForm(false);
+      setWorkoutForm({
+        name: '', phase: 'follicular', type: 'strength', duration: '30',
+        intensity: 'moderate', rpe: '5-7', description: '', reference: '',
+        exercisesText: '',
+      });
+      trainingApi.getFullLibrary().then(setFullLibrary).catch(() => {});
+    } catch {
+      alert('Erro ao criar treino.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Delete custom workout
+  const handleDeleteWorkout = async (id: string) => {
+    if (!window.confirm('Apagar este treino personalizado?')) return;
+    try {
+      await trainingApi.removeCustomWorkout(id);
+      trainingApi.getFullLibrary().then(setFullLibrary).catch(() => {});
+    } catch {
+      alert('Erro ao apagar treino.');
+    }
+  };
+
+  // Recipe submit
+  const handleRecipeSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      const ingredients = recipeForm.ingredientsText
+        .split('\n')
+        .filter((l) => l.trim())
+        .map((line) => {
+          const parts = line.trim().split(/\s+/);
+          const quantity = parts[0] || '';
+          const unit = parts[1] || '';
+          const name = parts.slice(2).join(' ') || parts.slice(1).join(' ');
+          return { quantity, unit, name };
+        });
+
+      const macros = recipeForm.calories ? {
+        calories: Number(recipeForm.calories) || 0,
+        protein: Number(recipeForm.protein) || 0,
+        carbs: Number(recipeForm.carbs) || 0,
+        fat: Number(recipeForm.fat) || 0,
+        fiber: recipeForm.fiber ? Number(recipeForm.fiber) : undefined,
+      } : undefined;
+
+      const restrictions = recipeForm.dietaryRestrictions
+        .split(',')
+        .map((r) => r.trim())
+        .filter(Boolean);
+
+      await recipesApi.create({
+        title: recipeForm.title,
+        summary: recipeForm.summary || undefined,
+        instructions: recipeForm.instructions,
+        ingredients,
+        macros: macros as any,
+        coverImageUrl: recipeForm.coverImageUrl || undefined,
+        prepTimeMinutes: recipeForm.prepTimeMinutes ? Number(recipeForm.prepTimeMinutes) : 0,
+        cookTimeMinutes: recipeForm.cookTimeMinutes ? Number(recipeForm.cookTimeMinutes) : 0,
+        servings: Number(recipeForm.servings) || 1,
+        dietaryRestrictions: restrictions,
+        cyclePhase: recipeForm.cyclePhase as any,
+      });
+      setShowRecipeForm(false);
+      setRecipeForm({
+        title: '', summary: '', instructions: '', category: '', cyclePhase: 'all', coverImageUrl: '',
+        prepTimeMinutes: '', cookTimeMinutes: '', servings: '1',
+        ingredientsText: '', calories: '', protein: '', carbs: '', fat: '', fiber: '',
+        dietaryRestrictions: '',
+      });
+      recipesApi.list().then((r) => setRecipes(r.data)).catch(() => {});
+    } catch {
+      alert('Erro ao criar receita.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Delete recipe
+  const handleDeleteRecipe = async (id: string) => {
+    if (!window.confirm('Apagar esta receita?')) return;
+    try {
+      await recipesApi.remove(id);
+      setRecipes((prev) => prev.filter((r) => r.id !== id));
+    } catch {
+      alert('Erro ao apagar receita.');
     }
   };
 
@@ -734,6 +942,18 @@ const AdminPanel: React.FC = () => {
         </div>
 
         <div style={S.section}>
+          <h3 style={S.sectionTitle}>Exportar dados</h3>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            <button style={S.btnSecondary} onClick={handleExportUsers}>
+              <Download size={14} /> Exportar usuarios (CSV)
+            </button>
+            <button style={S.btnSecondary} onClick={handleExportContent}>
+              <Download size={14} /> Exportar conteudo (CSV)
+            </button>
+          </div>
+        </div>
+
+        <div style={S.section}>
           <button style={S.btnPrimary} onClick={handleSeed} disabled={seedLoading}>
             <Sprout size={16} />
             {seedLoading ? 'Semeando...' : 'Semear conteudo'}
@@ -754,11 +974,14 @@ const AdminPanel: React.FC = () => {
         <h2 style={S.pageTitle}>Conteudo</h2>
 
         <div style={S.tabRow}>
-          <button style={S.tab(contentTab === 'articles')} onClick={() => { setContentTab('articles'); setShowVideoForm(false); }}>
+          <button style={S.tab(contentTab === 'articles')} onClick={() => { setContentTab('articles'); setShowVideoForm(false); setShowRecipeForm(false); }}>
             <FileText size={14} /> Artigos ({articles.length})
           </button>
-          <button style={S.tab(contentTab === 'videos')} onClick={() => { setContentTab('videos'); setShowArticleForm(false); }}>
+          <button style={S.tab(contentTab === 'videos')} onClick={() => { setContentTab('videos'); setShowArticleForm(false); setShowRecipeForm(false); }}>
             <Video size={14} /> Videos ({videos.length})
+          </button>
+          <button style={S.tab(contentTab === 'recipes')} onClick={() => { setContentTab('recipes'); setShowArticleForm(false); setShowVideoForm(false); }}>
+            <UtensilsCrossed size={14} /> Receitas ({recipes.length})
           </button>
         </div>
 
@@ -927,6 +1150,326 @@ const AdminPanel: React.FC = () => {
             </div>
           </>
         )}
+
+        {/* Recipe form toggle */}
+        {contentTab === 'recipes' && (
+          <>
+            <div style={{ marginBottom: 16 }}>
+              <button
+                style={showRecipeForm ? S.btnSecondary : S.btnPrimary}
+                onClick={() => setShowRecipeForm(!showRecipeForm)}
+              >
+                {showRecipeForm ? <><X size={14} /> Cancelar</> : <><Plus size={14} /> Nova receita</>}
+              </button>
+            </div>
+
+            {showRecipeForm && (
+              <form style={{ ...S.section, marginBottom: 20 }} onSubmit={handleRecipeSubmit}>
+                <div style={S.formGroup}>
+                  <label style={S.formLabel}>Titulo</label>
+                  <input style={S.input} type="text" value={recipeForm.title}
+                    onChange={(e) => setRecipeForm({ ...recipeForm, title: e.target.value })}
+                    required placeholder="Nome da receita" />
+                </div>
+                <div style={S.formGroup}>
+                  <label style={S.formLabel}>Resumo</label>
+                  <input style={S.input} type="text" value={recipeForm.summary}
+                    onChange={(e) => setRecipeForm({ ...recipeForm, summary: e.target.value })}
+                    placeholder="Descricao breve (opcional)" />
+                </div>
+                <div style={S.formGroup}>
+                  <label style={S.formLabel}>Ingredientes (um por linha: quantidade unidade nome)</label>
+                  <textarea style={S.textarea} rows={6} value={recipeForm.ingredientsText}
+                    onChange={(e) => setRecipeForm({ ...recipeForm, ingredientsText: e.target.value })}
+                    required placeholder={"2 xic arroz integral\n1 un peito de frango\n200 g brocolis"} />
+                </div>
+                <div style={S.formGroup}>
+                  <label style={S.formLabel}>Modo de preparo</label>
+                  <textarea style={S.textarea} rows={8} value={recipeForm.instructions}
+                    onChange={(e) => setRecipeForm({ ...recipeForm, instructions: e.target.value })}
+                    required placeholder="Passo a passo do preparo..." />
+                </div>
+
+                <div style={{ ...S.section, background: '#f0fdf4', border: '1px solid #bbf7d0', padding: 16, marginBottom: 14 }}>
+                  <h4 style={{ fontSize: 13, fontWeight: 600, color: '#166534', marginBottom: 10 }}>Macros por porcao</h4>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
+                    <div>
+                      <label style={{ ...S.formLabel, fontSize: 11 }}>Calorias</label>
+                      <input style={S.input} type="number" value={recipeForm.calories}
+                        onChange={(e) => setRecipeForm({ ...recipeForm, calories: e.target.value })}
+                        placeholder="kcal" />
+                    </div>
+                    <div>
+                      <label style={{ ...S.formLabel, fontSize: 11 }}>Proteina (g)</label>
+                      <input style={S.input} type="number" value={recipeForm.protein}
+                        onChange={(e) => setRecipeForm({ ...recipeForm, protein: e.target.value })}
+                        placeholder="g" />
+                    </div>
+                    <div>
+                      <label style={{ ...S.formLabel, fontSize: 11 }}>Carbos (g)</label>
+                      <input style={S.input} type="number" value={recipeForm.carbs}
+                        onChange={(e) => setRecipeForm({ ...recipeForm, carbs: e.target.value })}
+                        placeholder="g" />
+                    </div>
+                    <div>
+                      <label style={{ ...S.formLabel, fontSize: 11 }}>Gordura (g)</label>
+                      <input style={S.input} type="number" value={recipeForm.fat}
+                        onChange={(e) => setRecipeForm({ ...recipeForm, fat: e.target.value })}
+                        placeholder="g" />
+                    </div>
+                    <div>
+                      <label style={{ ...S.formLabel, fontSize: 11 }}>Fibra (g)</label>
+                      <input style={S.input} type="number" value={recipeForm.fiber}
+                        onChange={(e) => setRecipeForm({ ...recipeForm, fiber: e.target.value })}
+                        placeholder="g" />
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 14 }}>
+                  <div style={S.formGroup}>
+                    <label style={S.formLabel}>Preparo (min)</label>
+                    <input style={S.input} type="number" value={recipeForm.prepTimeMinutes}
+                      onChange={(e) => setRecipeForm({ ...recipeForm, prepTimeMinutes: e.target.value })}
+                      placeholder="15" />
+                  </div>
+                  <div style={S.formGroup}>
+                    <label style={S.formLabel}>Cozimento (min)</label>
+                    <input style={S.input} type="number" value={recipeForm.cookTimeMinutes}
+                      onChange={(e) => setRecipeForm({ ...recipeForm, cookTimeMinutes: e.target.value })}
+                      placeholder="30" />
+                  </div>
+                  <div style={S.formGroup}>
+                    <label style={S.formLabel}>Porcoes</label>
+                    <input style={S.input} type="number" value={recipeForm.servings}
+                      onChange={(e) => setRecipeForm({ ...recipeForm, servings: e.target.value })}
+                      placeholder="1" />
+                  </div>
+                </div>
+
+                <div style={S.formRow}>
+                  <div style={S.formGroup}>
+                    <label style={S.formLabel}>Fase do ciclo</label>
+                    <select style={S.select} value={recipeForm.cyclePhase}
+                      onChange={(e) => setRecipeForm({ ...recipeForm, cyclePhase: e.target.value })}>
+                      {CYCLE_PHASES.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
+                    </select>
+                  </div>
+                  <div style={S.formGroup}>
+                    <label style={S.formLabel}>Restricoes (separadas por virgula)</label>
+                    <input style={S.input} type="text" value={recipeForm.dietaryRestrictions}
+                      onChange={(e) => setRecipeForm({ ...recipeForm, dietaryRestrictions: e.target.value })}
+                      placeholder="sem gluten, sem lactose, vegana" />
+                  </div>
+                </div>
+
+                <div style={S.formGroup}>
+                  <label style={S.formLabel}>URL da imagem de capa (opcional)</label>
+                  <input style={S.input} type="url" value={recipeForm.coverImageUrl}
+                    onChange={(e) => setRecipeForm({ ...recipeForm, coverImageUrl: e.target.value })}
+                    placeholder="https://..." />
+                </div>
+
+                <button type="submit" style={S.btnPrimary} disabled={submitting}>
+                  {submitting ? 'Publicando...' : 'Publicar receita'}
+                </button>
+              </form>
+            )}
+
+            <div>
+              {recipes.length === 0 ? (
+                <p style={S.empty}>Nenhuma receita publicada.</p>
+              ) : (
+                recipes.map((r) => (
+                  <div key={r.id} style={S.contentItem}>
+                    <div style={{ flex: 1 }}>
+                      <div style={S.contentTitle}>{r.title}</div>
+                      <div style={S.contentMeta}>
+                        {r.cyclePhase} &middot; {r.macros ? `${r.macros.calories} kcal` : '-'} &middot;
+                        {r.prepTimeMinutes + r.cookTimeMinutes > 0
+                          ? ` ${r.prepTimeMinutes + r.cookTimeMinutes} min`
+                          : ''} &middot; {r.servings} {r.servings === 1 ? 'porcao' : 'porcoes'} &middot;
+                        {formatDate(r.publishedAt || r.createdAt)}
+                      </div>
+                      {r.dietaryRestrictions.length > 0 && (
+                        <div style={{ marginTop: 4 }}>
+                          {r.dietaryRestrictions.map((dr) => (
+                            <span key={dr} style={{ ...S.badge, fontSize: 10, marginLeft: 0, marginRight: 4, background: '#fef3c7', color: '#92400e' }}>
+                              {dr}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <button style={S.btnDanger} onClick={() => handleDeleteRecipe(r.id)} title="Apagar">
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          </>
+        )}
+      </>
+    );
+  };
+
+  /* ---- Treinos Tab ---- */
+  const WORKOUT_TYPES = ['strength', 'hiit', 'cardio', 'yoga', 'pilates', 'mobility', 'functional', 'recovery'];
+  const INTENSITIES = [
+    { value: 'low', label: 'Baixa' },
+    { value: 'moderate', label: 'Moderada' },
+    { value: 'high', label: 'Alta' },
+    { value: 'max', label: 'Maxima' },
+  ];
+  const PHASE_LABELS: Record<string, string> = {
+    menstrual: 'Menstrual', follicular: 'Folicular', ovulatory: 'Ovulatoria', luteal: 'Lutea',
+  };
+  const PHASE_COLORS: Record<string, string> = {
+    menstrual: '#ef4444', follicular: '#10b981', ovulatory: '#f59e0b', luteal: '#8b5cf6',
+  };
+
+  const renderTreinos = () => {
+    if (trainingLoading) return <p style={S.loading}>Carregando treinos...</p>;
+    if (!fullLibrary) return <p style={S.loading}>Carregando...</p>;
+
+    return (
+      <>
+        <h2 style={S.pageTitle}>Biblioteca de Treinos</h2>
+
+        <div style={{ marginBottom: 16, display: 'flex', gap: 8 }}>
+          <button
+            style={showWorkoutForm ? S.btnSecondary : S.btnPrimary}
+            onClick={() => setShowWorkoutForm(!showWorkoutForm)}
+          >
+            {showWorkoutForm ? <><X size={14} /> Cancelar</> : <><Plus size={14} /> Novo treino</>}
+          </button>
+        </div>
+
+        {showWorkoutForm && (
+          <form style={{ ...S.section, marginBottom: 20 }} onSubmit={handleWorkoutSubmit}>
+            <div style={S.formGroup}>
+              <label style={S.formLabel}>Nome do treino</label>
+              <input style={S.input} type="text" value={workoutForm.name}
+                onChange={(e) => setWorkoutForm({ ...workoutForm, name: e.target.value })}
+                required placeholder="Ex: Forca progressiva - membros inferiores" />
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 12, marginBottom: 14 }}>
+              <div style={S.formGroup}>
+                <label style={S.formLabel}>Fase</label>
+                <select style={S.select} value={workoutForm.phase}
+                  onChange={(e) => setWorkoutForm({ ...workoutForm, phase: e.target.value })}>
+                  <option value="menstrual">Menstrual</option>
+                  <option value="follicular">Folicular</option>
+                  <option value="ovulatory">Ovulatoria</option>
+                  <option value="luteal">Lutea</option>
+                </select>
+              </div>
+              <div style={S.formGroup}>
+                <label style={S.formLabel}>Tipo</label>
+                <select style={S.select} value={workoutForm.type}
+                  onChange={(e) => setWorkoutForm({ ...workoutForm, type: e.target.value })}>
+                  {WORKOUT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+                </select>
+              </div>
+              <div style={S.formGroup}>
+                <label style={S.formLabel}>Intensidade</label>
+                <select style={S.select} value={workoutForm.intensity}
+                  onChange={(e) => setWorkoutForm({ ...workoutForm, intensity: e.target.value })}>
+                  {INTENSITIES.map((i) => <option key={i.value} value={i.value}>{i.label}</option>)}
+                </select>
+              </div>
+              <div style={S.formGroup}>
+                <label style={S.formLabel}>RPE</label>
+                <input style={S.input} type="text" value={workoutForm.rpe}
+                  onChange={(e) => setWorkoutForm({ ...workoutForm, rpe: e.target.value })}
+                  placeholder="5-7" />
+              </div>
+            </div>
+            <div style={S.formGroup}>
+              <label style={S.formLabel}>Duracao (min)</label>
+              <input style={S.input} type="number" value={workoutForm.duration}
+                onChange={(e) => setWorkoutForm({ ...workoutForm, duration: e.target.value })}
+                placeholder="30" />
+            </div>
+            <div style={S.formGroup}>
+              <label style={S.formLabel}>Exercicios (um por linha: nome | series | reps | duracao | descanso | notas)</label>
+              <textarea style={S.textarea} rows={6} value={workoutForm.exercisesText}
+                onChange={(e) => setWorkoutForm({ ...workoutForm, exercisesText: e.target.value })}
+                required placeholder={"Agachamento livre | 4 | 8-10 | | 90s |\nLeg press | 3 | 10-12 | | 60s |\nPrancha | 3 | | 30s | 30s |"} />
+            </div>
+            <div style={S.formGroup}>
+              <label style={S.formLabel}>Descricao</label>
+              <textarea style={S.textarea} rows={3} value={workoutForm.description}
+                onChange={(e) => setWorkoutForm({ ...workoutForm, description: e.target.value })}
+                placeholder="Descricao do treino e orientacoes..." />
+            </div>
+            <div style={S.formGroup}>
+              <label style={S.formLabel}>Referencia cientifica (opcional)</label>
+              <input style={S.input} type="text" value={workoutForm.reference}
+                onChange={(e) => setWorkoutForm({ ...workoutForm, reference: e.target.value })}
+                placeholder="McNulty et al. 2020, Sports Med" />
+            </div>
+            <button type="submit" style={S.btnPrimary} disabled={submitting}>
+              {submitting ? 'Criando...' : 'Criar treino'}
+            </button>
+          </form>
+        )}
+
+        {/* Custom workouts */}
+        {fullLibrary.custom.length > 0 && (
+          <div style={S.section}>
+            <h3 style={S.sectionTitle}>Treinos personalizados ({fullLibrary.custom.length})</h3>
+            {fullLibrary.custom.map((w) => (
+              <div key={w.id} style={S.contentItem}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div style={S.contentTitle}>{w.name}</div>
+                    <span style={{ ...S.badge, background: PHASE_COLORS[w.phase] + '20', color: PHASE_COLORS[w.phase] }}>
+                      {PHASE_LABELS[w.phase] || w.phase}
+                    </span>
+                  </div>
+                  <div style={S.contentMeta}>
+                    {w.type} &middot; {w.duration} min &middot; RPE {w.rpe} &middot; {w.exercises.length} exercicios
+                  </div>
+                </div>
+                <button style={S.btnDanger} onClick={() => handleDeleteWorkout(w.id)} title="Apagar">
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Built-in library */}
+        <div style={S.section}>
+          <h3 style={S.sectionTitle}>Biblioteca padrao ({fullLibrary.builtin.length} treinos)</h3>
+          {(['menstrual', 'follicular', 'ovulatory', 'luteal'] as const).map((phase) => {
+            const phaseWorkouts = fullLibrary.builtin.filter((w) => w.phase === phase);
+            if (phaseWorkouts.length === 0) return null;
+            return (
+              <div key={phase} style={{ marginBottom: 16 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                  <div style={{ width: 10, height: 10, borderRadius: '50%', background: PHASE_COLORS[phase] }} />
+                  <span style={{ fontSize: 13, fontWeight: 600, color: '#475569' }}>
+                    {PHASE_LABELS[phase]} ({phaseWorkouts.length})
+                  </span>
+                </div>
+                {phaseWorkouts.map((w, i) => (
+                  <div key={i} style={{ ...S.contentItem, opacity: 0.8 }}>
+                    <div>
+                      <div style={S.contentTitle}>{w.name}</div>
+                      <div style={S.contentMeta}>
+                        {w.type} &middot; {w.duration} min &middot; RPE {w.rpe} &middot; {w.intensity} &middot; {w.exercises.length} exercicios
+                      </div>
+                    </div>
+                    <span style={{ ...S.badge, background: '#f1f5f9', color: '#64748b', fontSize: 10 }}>padrao</span>
+                  </div>
+                ))}
+              </div>
+            );
+          })}
+        </div>
       </>
     );
   };
@@ -980,6 +1523,87 @@ const AdminPanel: React.FC = () => {
     </>
   );
 
+  /* ---- Logs Tab ---- */
+  const ACTION_COLORS: Record<string, { bg: string; color: string }> = {
+    CREATE: { bg: '#dcfce7', color: '#166534' },
+    UPDATE: { bg: '#dbeafe', color: '#1e40af' },
+    DELETE: { bg: '#fef2f2', color: '#dc2626' },
+  };
+
+  const renderLogs = () => {
+    if (auditLoading) return <p style={S.loading}>Carregando logs...</p>;
+
+    return (
+      <>
+        <h2 style={S.pageTitle}>Logs de atividade</h2>
+        <p style={{ fontSize: 13, color: '#64748b', marginBottom: 16 }}>
+          Total: {auditTotal} registros
+        </p>
+
+        {auditLogs.length === 0 ? (
+          <p style={S.empty}>Nenhum log de atividade registrado.</p>
+        ) : (
+          <>
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                <thead>
+                  <tr style={{ borderBottom: '2px solid #e5e7eb', textAlign: 'left' }}>
+                    <th style={{ padding: '8px 12px', color: '#475569', fontWeight: 600 }}>Data</th>
+                    <th style={{ padding: '8px 12px', color: '#475569', fontWeight: 600 }}>Usuario</th>
+                    <th style={{ padding: '8px 12px', color: '#475569', fontWeight: 600 }}>Acao</th>
+                    <th style={{ padding: '8px 12px', color: '#475569', fontWeight: 600 }}>Recurso</th>
+                    <th style={{ padding: '8px 12px', color: '#475569', fontWeight: 600 }}>Caminho</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {auditLogs.map((log) => {
+                    const actionStyle = ACTION_COLORS[log.action] || { bg: '#f1f5f9', color: '#64748b' };
+                    return (
+                      <tr key={log.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                        <td style={{ padding: '8px 12px', color: '#64748b', whiteSpace: 'nowrap' }}>
+                          {new Date(log.createdAt).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                        </td>
+                        <td style={{ padding: '8px 12px', color: '#1e1e2f' }}>{log.userName || '-'}</td>
+                        <td style={{ padding: '8px 12px' }}>
+                          <span style={{
+                            display: 'inline-block', padding: '2px 8px', borderRadius: 4,
+                            fontSize: 11, fontWeight: 600, background: actionStyle.bg, color: actionStyle.color,
+                          }}>
+                            {log.action}
+                          </span>
+                        </td>
+                        <td style={{ padding: '8px 12px', color: '#475569' }}>{log.resource}</td>
+                        <td style={{ padding: '8px 12px', color: '#94a3b8', fontFamily: 'monospace', fontSize: 11 }}>
+                          {log.method} {log.path}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {auditTotal > 30 && (
+              <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginTop: 16 }}>
+                <button style={S.btnSecondary} disabled={auditPage <= 1}
+                  onClick={() => setAuditPage((p) => Math.max(1, p - 1))}>
+                  Anterior
+                </button>
+                <span style={{ padding: '8px 12px', fontSize: 13, color: '#64748b' }}>
+                  Pagina {auditPage} de {Math.ceil(auditTotal / 30)}
+                </span>
+                <button style={S.btnSecondary} disabled={auditPage >= Math.ceil(auditTotal / 30)}
+                  onClick={() => setAuditPage((p) => p + 1)}>
+                  Proxima
+                </button>
+              </div>
+            )}
+          </>
+        )}
+      </>
+    );
+  };
+
   /* ---- Config Tab ---- */
   const renderConfig = () => (
     <>
@@ -1012,7 +1636,7 @@ const AdminPanel: React.FC = () => {
       <div style={S.section}>
         <h3 style={S.sectionTitle}>Conteudo inicial</h3>
         <p style={{ fontSize: 13, color: '#64748b', marginBottom: 12 }}>
-          Semeia 10 artigos e 5 categorias de exemplo para popular o CMS.
+          Semeia 20 artigos, 8 receitas e 5 categorias de exemplo para popular o CMS.
         </p>
         <button style={S.btnPrimary} onClick={handleSeed} disabled={seedLoading}>
           <Sprout size={16} />
@@ -1037,7 +1661,9 @@ const AdminPanel: React.FC = () => {
     switch (activeTab) {
       case 'dashboard': return renderDashboard();
       case 'conteudo': return renderConteudo();
+      case 'treinos': return renderTreinos();
       case 'pesquisa': return renderPesquisa();
+      case 'logs': return renderLogs();
       case 'config': return renderConfig();
     }
   };

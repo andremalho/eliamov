@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Header, Post, Query, Res, UseGuards } from '@nestjs/common';
+import { Response } from 'express';
 import { AcademyService } from './academy.service';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { Roles } from '../auth/roles.decorator';
@@ -28,5 +29,21 @@ export class AcademyController {
   @Post('seed-content')
   async seedContent(@CurrentUser() user: { tenantId: string }) {
     return this.service.seedContent(user.tenantId);
+  }
+
+  @Get('export/users')
+  async exportUsers(@CurrentUser() user: { tenantId: string }, @Res() res: Response) {
+    const csv = await this.service.exportUsersCsv(user.tenantId);
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename=usuarios.csv');
+    res.send(csv);
+  }
+
+  @Get('export/content')
+  async exportContent(@CurrentUser() user: { tenantId: string }, @Res() res: Response) {
+    const csv = await this.service.exportContentCsv(user.tenantId);
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename=conteudo.csv');
+    res.send(csv);
   }
 }

@@ -6,6 +6,7 @@ import { MoodService } from '../mood/mood.service';
 import { GlucometerService } from '../glucometer/glucometer.service';
 import { BloodPressureService } from '../blood-pressure/blood-pressure.service';
 import { User } from '../users/entities/user.entity';
+import { ChatMessage } from '../chat/entities/chat.entity';
 
 @Injectable()
 export class AiEngineService {
@@ -19,6 +20,7 @@ export class AiEngineService {
     private readonly glucoseService: GlucometerService,
     private readonly bpService: BloodPressureService,
     @InjectRepository(User) private readonly usersRepo: Repository<User>,
+    @InjectRepository(ChatMessage) private readonly chatRepo: Repository<ChatMessage>,
   ) {}
 
   private hasApiKey() {
@@ -26,8 +28,12 @@ export class AiEngineService {
     return !!key && key !== 'sua_chave_aqui';
   }
 
-  private async callClaude(prompt: string, systemPrompt?: string) {
+  private async callClaude(prompt: string, systemPrompt?: string, messageHistory?: { role: string; content: string }[]) {
     try {
+      const messages = messageHistory
+        ? [...messageHistory, { role: 'user', content: prompt }]
+        : [{ role: 'user', content: prompt }];
+
       const res = await fetch(this.anthropicUrl, {
         method: 'POST',
         headers: {
@@ -39,7 +45,7 @@ export class AiEngineService {
           model: this.model,
           max_tokens: 2048,
           system: systemPrompt,
-          messages: [{ role: 'user', content: prompt }],
+          messages,
         }),
       });
       const json: any = await res.json();
@@ -388,11 +394,33 @@ Adapte o plano à fase do ciclo, priorizando nutrientes relevantes para a fase a
 - Humor recente: ${(moodSummary as any)?.avgMood ?? 'nao registrado'}/5
 
 Regras:
-1. NUNCA de diagnosticos medicos. Sempre recomende consultar um profissional quando relevante.
+1. NUNCA de diagnosticos medicos. Voce NAO e profissional de saude. Sempre recomende consultar um profissional quando relevante.
 2. Base suas recomendacoes de treino na fase do ciclo (McNulty 2020, Schlie 2025).
 3. Para nutricao, use o Guia Alimentar Brasileiro e ISSN 2017.
 4. Seja breve (max 200 palavras). Use markdown leve.
-5. Se nao souber, diga que nao sabe.`;
+5. Se nao souber, diga que nao sabe.
+6. Em respostas sobre saude, sintomas ou condicoes, SEMPRE inclua ao final: "⚕️ Lembre-se: sou uma assistente virtual e nao substituo a consulta com um profissional de saude."
+7. NUNCA prescreva medicamentos, dosagens especificas de suplementos que requerem orientacao medica, ou tratamentos.`;
+
+    // Load conversation history (last 10 messages for context)
+    const conversationId = `elia-${userId}`;
+    const history = await this.chatRepo.find({
+      where: { userId, conversationId },
+      order: { createdAt: 'ASC' },
+      take: 20,
+    });
+    const messageHistory = history.map((m) => ({
+      role: m.sender === 'user' ? 'user' : 'assistant',
+      content: m.content,
+    }));
+
+    // Persist user message
+    await this.chatRepo.save(this.chatRepo.create({
+      userId,
+      sender: 'user' as const,
+      content: message,
+      conversationId,
+    }));
 
     if (!this.hasApiKey()) {
       // Offline fallback
@@ -413,13 +441,37 @@ Regras:
       };
     }
 
-    const result = await this.callClaude(message, systemPrompt);
+    const result = await this.callClaude(message, systemPrompt, messageHistory.slice(-10));
+    const disclaimer = '\n\n---\n*⚕️ Elia e uma assistente virtual e nao substitui a consulta com profissionais de saude. Para diagnosticos e tratamentos, consulte seu medico.*';
+    const responseText = (result.text ?? 'Desculpe, nao consegui processar sua pergunta. Tente novamente.') + disclaimer;
+
+    // Persist AI response
+    await this.chatRepo.save(this.chatRepo.create({
+      userId,
+      sender: 'ai' as const,
+      content: responseText,
+      conversationId,
+    }));
+
     return {
-      response:
-        result.text ??
-        'Desculpe, nao consegui processar sua pergunta. Tente novamente.',
+      response: responseText,
       usingAi: true,
+      disclaimer: 'As informacoes fornecidas pela Elia sao de carater informativo e educacional. Nao constituem aconselhamento medico, diagnostico ou tratamento.',
     };
+  }
+
+  async getChatHistory(userId: string) {
+    const conversationId = `elia-${userId}`;
+    const messages = await this.chatRepo.find({
+      where: { userId, conversationId },
+      order: { createdAt: 'ASC' },
+      take: 50,
+    });
+    return messages.map((m) => ({
+      from: m.sender === 'user' ? 'user' : 'elia',
+      text: m.content,
+      createdAt: m.createdAt,
+    }));
   }
 
   async searchPubmed(query: string) {

@@ -41,6 +41,7 @@ export default function Home() {
   ]);
   const [chatInput, setChatInput] = useState('');
   const [chatLoading, setChatLoading] = useState(false);
+  const [chatHistoryLoaded, setChatHistoryLoaded] = useState(false);
 
   const userName = currentUser?.name?.split(' ')[0] ?? 'Voce';
 
@@ -75,6 +76,22 @@ export default function Home() {
     setLiked(p => ({ ...p, [id]: !was }));
     try { if (was) await feedApi.unlike(id); else await feedApi.like(id); }
     catch { setLiked(p => ({ ...p, [id]: was })); }
+  };
+
+  const openChat = async () => {
+    setShowChat(true);
+    if (!chatHistoryLoaded) {
+      try {
+        const history = await aiChatApi.history();
+        if (history.length > 0) {
+          setChatMessages([
+            { from: 'elia', text: 'Ola! Sou a Elia, sua assistente de saude. Como posso ajudar?' },
+            ...history.map(h => ({ from: h.from as 'user' | 'elia', text: h.text })),
+          ]);
+        }
+      } catch { /* ignore */ }
+      setChatHistoryLoaded(true);
+    }
   };
 
   const handleChatSend = async (e: React.FormEvent) => {
@@ -433,6 +450,9 @@ export default function Home() {
             </div>
             <button onClick={() => setShowChat(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6B7280', padding: 4 }}><X size={18} /></button>
           </div>
+          <div style={{ padding: '6px 14px', background: '#FEF3C7', borderBottom: '1px solid #FDE68A', fontSize: 10, color: '#92400E', lineHeight: 1.4 }}>
+            ⚕️ Elia e uma assistente virtual e nao substitui profissionais de saude. Para diagnosticos e tratamentos, consulte seu medico.
+          </div>
           <div style={{ flex: 1, overflowY: 'auto', padding: '14px 16px' }}>
             {chatMessages.map((m, i) => (
               <div key={i} style={{ marginBottom: 12, display: 'flex', justifyContent: m.from === 'user' ? 'flex-end' : 'flex-start' }}>
@@ -464,7 +484,7 @@ export default function Home() {
 
       {/* Chat FAB */}
       {!showChat && (
-        <button onClick={() => setShowChat(true)} style={{
+        <button onClick={openChat} style={{
           position: 'fixed', bottom: 90, right: 16,
           width: 54, height: 54, borderRadius: '50%',
           background: 'linear-gradient(135deg, #7C3AED, #9333EA)',

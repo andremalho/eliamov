@@ -8,6 +8,8 @@ import { ChallengeParticipant } from '../challenges/entities/challenge-participa
 import { Article } from '../content/entities/article.entity';
 import { ContentCategory } from '../content/entities/content-category.entity';
 import { SEED_ARTICLES, SEED_CATEGORIES } from '../../seeds/content-seed';
+import { SEED_RECIPES } from '../../seeds/recipe-seed';
+import { Recipe } from '../recipes/entities/recipe.entity';
 
 @Injectable()
 export class AcademyService {
@@ -19,6 +21,7 @@ export class AcademyService {
     private participantRepo: Repository<ChallengeParticipant>,
     @InjectRepository(Article) private articleRepo: Repository<Article>,
     @InjectRepository(ContentCategory) private categoryRepo: Repository<ContentCategory>,
+    @InjectRepository(Recipe) private recipeRepo: Repository<Recipe>,
   ) {}
 
   async getOverview(academyId: string) {
@@ -122,6 +125,56 @@ export class AcademyService {
     return { users };
   }
 
+  async exportUsersCsv(tenantId: string): Promise<string> {
+    const users = await this.userRepo.find({
+      where: { tenantId },
+      order: { createdAt: 'DESC' },
+      select: ['id', 'name', 'email', 'role', 'gender', 'birthDate', 'weight', 'height', 'fitnessLevel', 'fitnessGoal', 'isProfileComplete', 'createdAt'],
+    });
+
+    const header = 'id,nome,email,papel,genero,nascimento,peso_kg,altura_cm,nivel,objetivo,perfil_completo,criado_em';
+    const rows = users.map((u) =>
+      [
+        u.id,
+        `"${(u.name || '').replace(/"/g, '""')}"`,
+        u.email,
+        u.role,
+        u.gender || '',
+        u.birthDate ? new Date(u.birthDate).toISOString().slice(0, 10) : '',
+        u.weight ?? '',
+        u.height ?? '',
+        u.fitnessLevel || '',
+        u.fitnessGoal || '',
+        u.isProfileComplete ? 'sim' : 'nao',
+        new Date(u.createdAt).toISOString(),
+      ].join(','),
+    );
+
+    return [header, ...rows].join('\n');
+  }
+
+  async exportContentCsv(tenantId: string): Promise<string> {
+    const articles = await this.articleRepo.find({
+      where: [{ academyId: tenantId }, { academyId: undefined as any }],
+      relations: ['category'],
+      order: { createdAt: 'DESC' },
+    });
+
+    const header = 'id,titulo,categoria,fase_ciclo,publicado_em,criado_em';
+    const rows = articles.map((a) =>
+      [
+        a.id,
+        `"${(a.title || '').replace(/"/g, '""')}"`,
+        a.category?.name || '',
+        a.cyclePhase,
+        a.publishedAt ? new Date(a.publishedAt).toISOString() : '',
+        new Date(a.createdAt).toISOString(),
+      ].join(','),
+    );
+
+    return [header, ...rows].join('\n');
+  }
+
   async seedContent(tenantId: string) {
     let categoriesCreated = 0;
     let articlesCreated = 0;
@@ -160,6 +213,36 @@ export class AcademyService {
       }
     }
 
-    return { categoriesCreated, articlesCreated };
+    // Create recipes
+    let recipesCreated = 0;
+    for (const recipe of SEED_RECIPES) {
+      const exists = await this.recipeRepo.findOne({
+        where: { title: recipe.title, academyId: tenantId },
+      });
+      if (!exists) {
+        const categoryId = categoryMap.get(recipe.categorySlug) ?? null;
+        await this.recipeRepo.save(
+          this.recipeRepo.create({
+            title: recipe.title,
+            summary: recipe.summary,
+            instructions: recipe.instructions,
+            ingredients: recipe.ingredients,
+            macros: recipe.macros,
+            prepTimeMinutes: recipe.prepTimeMinutes,
+            cookTimeMinutes: recipe.cookTimeMinutes,
+            servings: recipe.servings,
+            dietaryRestrictions: recipe.dietaryRestrictions,
+            cyclePhase: recipe.cyclePhase as any,
+            categoryId,
+            authorId: tenantId,
+            academyId: tenantId,
+            publishedAt: new Date(),
+          }),
+        );
+        recipesCreated++;
+      }
+    }
+
+    return { categoriesCreated, articlesCreated, recipesCreated };
   }
 }

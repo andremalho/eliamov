@@ -1,7 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { TrainingService } from './training.service';
 import { CreateTrainingDto } from './dto/create-training.dto';
+import { CreateCustomWorkoutDto } from './dto/create-custom-workout.dto';
+import { CreateWorkoutLogDto } from './dto/create-workout-log.dto';
 import { CurrentUser } from '../auth/current-user.decorator';
+import { Roles } from '../auth/roles.decorator';
+import { RolesGuard } from '../auth/roles.guard';
 
 @Controller('training')
 export class TrainingController {
@@ -45,5 +49,50 @@ export class TrainingController {
   @Delete(':id')
   remove(@CurrentUser() user: { userId: string }, @Param('id') id: string) {
     return this.service.removeForUser(user.userId, id);
+  }
+
+  // --- Workout Logs ---
+  @Post('logs')
+  createLog(@CurrentUser() user: { userId: string }, @Body() dto: CreateWorkoutLogDto) {
+    return this.service.createWorkoutLog(user.userId, dto);
+  }
+
+  @Get('logs')
+  getLogs(@CurrentUser() user: { userId: string }, @Query('page') page?: string) {
+    return this.service.findWorkoutLogs(user.userId, page ? parseInt(page, 10) : 1);
+  }
+
+  @Get('progress')
+  getProgress(@CurrentUser() user: { userId: string }) {
+    return this.service.getProgressStats(user.userId);
+  }
+
+  // --- Admin: Custom Workouts ---
+  @Get('admin/workouts')
+  @UseGuards(RolesGuard)
+  @Roles('admin', 'tenant_admin')
+  getFullLibrary(@CurrentUser() user: { tenantId: string }) {
+    return this.service.getFullLibrary(user.tenantId);
+  }
+
+  @Post('admin/workouts')
+  @UseGuards(RolesGuard)
+  @Roles('admin', 'tenant_admin')
+  createCustomWorkout(@CurrentUser() user: { userId: string }, @Body() dto: CreateCustomWorkoutDto) {
+    return this.service.createCustomWorkout(user.userId, dto);
+  }
+
+  @Patch('admin/workouts/:id')
+  @UseGuards(RolesGuard)
+  @Roles('admin', 'tenant_admin')
+  updateCustomWorkout(@Param('id') id: string, @Body() dto: Partial<CreateCustomWorkoutDto>) {
+    return this.service.updateCustomWorkout(id, dto);
+  }
+
+  @Delete('admin/workouts/:id')
+  @UseGuards(RolesGuard)
+  @Roles('admin', 'tenant_admin')
+  removeCustomWorkout(@Param('id') id: string) {
+    return this.service.removeCustomWorkout(id);
   }
 }

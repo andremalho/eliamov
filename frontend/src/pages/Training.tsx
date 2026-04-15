@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import {
   trainingEngineApi,
   TodayWorkout,
   WorkoutTemplate,
   WorkoutExercise,
+  workoutLogApi,
 } from '../services/training-engine.api';
 import Layout from '../components/Layout';
 import {
@@ -14,6 +15,11 @@ import {
   ChevronDown,
   ChevronUp,
   Play,
+  Pause,
+  RotateCcw,
+  Check,
+  CheckCircle,
+  Trophy,
   Shield,
   Droplets,
   Sprout,
@@ -111,6 +117,22 @@ export default function Training() {
   const [activeWorkout, setActiveWorkout] = useState<WorkoutTemplate | null>(null);
   const [openPhases, setOpenPhases] = useState<Record<string, boolean>>({});
 
+  // Timer state
+  const [timerActive, setTimerActive] = useState(false);
+  const [timerPaused, setTimerPaused] = useState(false);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [restTimer, setRestTimer] = useState(0);
+  const [restTarget, setRestTarget] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const restRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Exercise log state
+  const [exerciseLogs, setExerciseLogs] = useState<Record<number, { reps?: number; weight?: number; duration?: number; completed: boolean }[]>>({});
+  const [sessionRpe, setSessionRpe] = useState<number | null>(null);
+  const [sessionNotes, setSessionNotes] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [showComplete, setShowComplete] = useState(false);
+
   useEffect(() => {
     Promise.all([
       trainingEngineApi.today().catch(() => null),
@@ -124,6 +146,114 @@ export default function Training() {
       .catch(() => setError('Nao foi possivel carregar os treinos.'))
       .finally(() => setLoading(false));
   }, []);
+
+  // Timer logic
+  const startTimer = useCallback(() => {
+    setTimerActive(true);
+    setTimerPaused(false);
+    setElapsedSeconds(0);
+    setShowExercises(true);
+    // Init exercise logs
+    if (workout) {
+      const logs: typeof exerciseLogs = {};
+      workout.exercises.forEach((ex, i) => {
+        const numSets = ex.sets || 1;
+        logs[i] = Array.from({ length: numSets }, () => ({ completed: false }));
+      });
+      setExerciseLogs(logs);
+    }
+  }, [workout]);
+
+  useEffect(() => {
+    if (timerActive && !timerPaused) {
+      timerRef.current = setInterval(() => setElapsedSeconds((s) => s + 1), 1000);
+    }
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [timerActive, timerPaused]);
+
+  useEffect(() => {
+    if (restTimer > 0) {
+      restRef.current = setInterval(() => {
+        setRestTimer((t) => {
+          if (t <= 1) {
+            if (restRef.current) clearInterval(restRef.current);
+            return 0;
+          }
+          return t - 1;
+        });
+      }, 1000);
+    }
+    return () => { if (restRef.current) clearInterval(restRef.current); };
+  }, [restTarget]);
+
+  const startRestTimer = (restStr: string) => {
+    const secs = parseInt(restStr.replace(/[^0-9]/g, ''), 10);
+    if (secs > 0) {
+      setRestTimer(secs);
+      setRestTarget((t) => t + 1); // trigger effect
+    }
+  };
+
+  const formatTime = (secs: number) => {
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
+  const toggleSetComplete = (exIdx: number, setIdx: number) => {
+    setExerciseLogs((prev) => {
+      const copy = { ...prev };
+      copy[exIdx] = [...(copy[exIdx] || [])];
+      copy[exIdx][setIdx] = { ...copy[exIdx][setIdx], completed: !copy[exIdx][setIdx]?.completed };
+      return copy;
+    });
+  };
+
+  const updateSetField = (exIdx: number, setIdx: number, field: 'reps' | 'weight', value: string) => {
+    setExerciseLogs((prev) => {
+      const copy = { ...prev };
+      copy[exIdx] = [...(copy[exIdx] || [])];
+      copy[exIdx][setIdx] = { ...copy[exIdx][setIdx], [field]: value ? Number(value) : undefined };
+      return copy;
+    });
+  };
+
+  const finishWorkout = async () => {
+    if (!workout) return;
+    setSaving(true);
+    try {
+      const exercises = workout.exercises.map((ex, i) => ({
+        name: ex.name,
+        sets: exerciseLogs[i] || [{ completed: true }],
+      }));
+      await workoutLogApi.create({
+        workoutName: workout.name,
+        phase: phaseKey,
+        durationSeconds: elapsedSeconds,
+        rpe: sessionRpe,
+        exercises,
+        notes: sessionNotes || undefined,
+      });
+      setShowComplete(true);
+      setTimerActive(false);
+      if (timerRef.current) clearInterval(timerRef.current);
+    } catch {
+      alert('Erro ao salvar treino.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const resetWorkout = () => {
+    setShowComplete(false);
+    setTimerActive(false);
+    setTimerPaused(false);
+    setElapsedSeconds(0);
+    setExerciseLogs({});
+    setSessionRpe(null);
+    setSessionNotes('');
+    setShowExercises(false);
+  };
 
   const togglePhase = (p: string) =>
     setOpenPhases((prev) => ({ ...prev, [p]: !prev[p] }));
@@ -221,15 +351,42 @@ export default function Training() {
                 </div>
               )}
 
-              {/* Start button */}
+              {/* Timer bar */}
+              {timerActive && (
+                <div style={{
+                  background: '#1e1e2f', borderRadius: 12, padding: '12px 16px',
+                  marginBottom: 14, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                }}>
+                  <div style={{ color: '#fff', fontSize: 28, fontWeight: 700, fontFamily: 'monospace' }}>
+                    {formatTime(elapsedSeconds)}
+                  </div>
+                  {restTimer > 0 && (
+                    <div style={{ color: '#F59E0B', fontSize: 14, fontWeight: 600 }}>
+                      Descanso: {formatTime(restTimer)}
+                    </div>
+                  )}
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button onClick={() => setTimerPaused(!timerPaused)}
+                      style={{ background: '#374151', border: 'none', borderRadius: 8, padding: '8px 12px', cursor: 'pointer', color: '#fff', display: 'flex', alignItems: 'center', gap: 4, fontSize: 13 }}>
+                      {timerPaused ? <><Play size={14} /> Retomar</> : <><Pause size={14} /> Pausar</>}
+                    </button>
+                    <button onClick={finishWorkout} disabled={saving}
+                      style={{ background: '#22C55E', border: 'none', borderRadius: 8, padding: '8px 12px', cursor: 'pointer', color: '#fff', display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 600 }}>
+                      <CheckCircle size={14} /> {saving ? 'Salvando...' : 'Finalizar'}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Start / Toggle button */}
               <button
-                onClick={() => setShowExercises(!showExercises)}
+                onClick={() => timerActive ? setShowExercises(!showExercises) : startTimer()}
                 style={{
                   width: '100%',
                   padding: '14px 0',
                   borderRadius: 14,
                   border: 'none',
-                  background: '#7C3AED',
+                  background: timerActive ? '#374151' : '#7C3AED',
                   color: '#fff',
                   fontWeight: 600,
                   fontSize: 15,
@@ -241,14 +398,10 @@ export default function Training() {
                   gap: 8,
                 }}
               >
-                {showExercises ? (
-                  <>
-                    <ChevronUp size={18} /> Ocultar exercicios
-                  </>
+                {timerActive ? (
+                  showExercises ? <><ChevronUp size={18} /> Ocultar exercicios</> : <><ChevronDown size={18} /> Ver exercicios</>
                 ) : (
-                  <>
-                    <Play size={18} /> Iniciar treino
-                  </>
+                  <><Play size={18} /> Iniciar treino</>
                 )}
               </button>
 
@@ -336,10 +489,23 @@ export default function Training() {
                         {ex.rest && <span>Descanso: {ex.rest}</span>}
                       </div>
 
+                      {ex.description && (
+                        <p style={{ fontSize: 12, color: '#6b7280', margin: '4px 0 0', lineHeight: 1.4 }}>
+                          {ex.description}
+                        </p>
+                      )}
+
+                      {ex.videoUrl && (
+                        <a href={ex.videoUrl} target="_blank" rel="noopener noreferrer"
+                          style={{ fontSize: 12, color: '#7C3AED', display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 4, textDecoration: 'none' }}>
+                          <Play size={12} /> Ver video
+                        </a>
+                      )}
+
                       {ex.notes && (
                         <p
                           style={{
-                            fontSize: 12,
+                            fontSize: 11,
                             color: '#9CA3AF',
                             margin: '4px 0 0',
                             fontStyle: 'italic',
@@ -348,31 +514,110 @@ export default function Training() {
                           {ex.notes}
                         </p>
                       )}
+
+                      {/* Set tracking (when timer active) */}
+                      {timerActive && exerciseLogs[i] && (
+                        <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                          {exerciseLogs[i].map((setLog, si) => (
+                            <div key={si} style={{
+                              display: 'flex', alignItems: 'center', gap: 8, fontSize: 12,
+                              padding: '4px 8px', background: setLog.completed ? '#DCFCE7' : '#fff',
+                              borderRadius: 6, border: '1px solid #E5E7EB',
+                            }}>
+                              <button
+                                onClick={() => toggleSetComplete(i, si)}
+                                style={{
+                                  background: setLog.completed ? '#22C55E' : '#E5E7EB',
+                                  border: 'none', borderRadius: 4, width: 20, height: 20,
+                                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                  color: '#fff', flexShrink: 0,
+                                }}
+                              >
+                                {setLog.completed && <Check size={12} />}
+                              </button>
+                              <span style={{ color: '#6b7280', minWidth: 32 }}>S{si + 1}</span>
+                              <input type="number" placeholder="reps" value={setLog.reps ?? ''}
+                                onChange={(e) => updateSetField(i, si, 'reps', e.target.value)}
+                                style={{ width: 50, padding: '2px 6px', border: '1px solid #E5E7EB', borderRadius: 4, fontSize: 12, textAlign: 'center' }} />
+                              <span style={{ color: '#9CA3AF' }}>x</span>
+                              <input type="number" placeholder="kg" value={setLog.weight ?? ''}
+                                onChange={(e) => updateSetField(i, si, 'weight', e.target.value)}
+                                style={{ width: 50, padding: '2px 6px', border: '1px solid #E5E7EB', borderRadius: 4, fontSize: 12, textAlign: 'center' }} />
+                              <span style={{ color: '#9CA3AF' }}>kg</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
 
-                    {/* timer placeholder */}
-                    <button
-                      style={{
-                        background: 'none',
-                        border: '1px solid #E5E7EB',
-                        borderRadius: 8,
-                        padding: '4px 8px',
-                        cursor: 'pointer',
-                        fontSize: 12,
-                        color: '#6b7280',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 4,
-                        flexShrink: 0,
-                      }}
-                      title="Timer"
-                    >
-                      <Clock size={12} />
-                      {ex.duration ?? (ex.rest || '—')}
-                    </button>
+                    {/* Actions: rest timer + set tracking */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4, flexShrink: 0, alignItems: 'flex-end' }}>
+                      {ex.rest && timerActive && (
+                        <button
+                          onClick={() => startRestTimer(ex.rest!)}
+                          style={{
+                            background: restTimer > 0 ? '#F59E0B' : '#F3F4F6',
+                            border: 'none', borderRadius: 6, padding: '4px 8px',
+                            cursor: 'pointer', fontSize: 11, fontWeight: 600,
+                            color: restTimer > 0 ? '#fff' : '#6b7280',
+                            display: 'flex', alignItems: 'center', gap: 3,
+                          }}
+                        >
+                          <Clock size={10} /> {ex.rest}
+                        </button>
+                      )}
+                      {!timerActive && (
+                        <span style={{ fontSize: 12, color: '#9CA3AF' }}>
+                          {ex.duration ?? (ex.rest || '')}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* ── Completion Screen ── */}
+          {showComplete && workout && (
+            <div style={{
+              ...card, textAlign: 'center' as const, background: '#F0FDF4',
+              border: '1px solid #BBF7D0', padding: 32,
+            }}>
+              <Trophy size={48} style={{ color: '#22C55E', marginBottom: 12 }} />
+              <h3 style={{ ...heading, fontSize: 22, marginBottom: 8, color: '#166534' }}>Treino concluido!</h3>
+              <p style={{ color: '#166534', fontSize: 14, margin: '0 0 16px' }}>
+                {workout.name} — {formatTime(elapsedSeconds)}
+              </p>
+
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#475569', marginBottom: 6 }}>
+                  Como foi o esforco? (RPE)
+                </label>
+                <div style={{ display: 'flex', gap: 4, justifyContent: 'center' }}>
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
+                    <button key={n} onClick={() => setSessionRpe(n)}
+                      style={{
+                        width: 32, height: 32, borderRadius: '50%',
+                        border: sessionRpe === n ? '2px solid #7C3AED' : '1px solid #E5E7EB',
+                        background: sessionRpe === n ? '#7C3AED' : '#fff',
+                        color: sessionRpe === n ? '#fff' : '#6b7280',
+                        fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                      }}>
+                      {n}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <button onClick={resetWorkout} style={{
+                padding: '10px 24px', borderRadius: 10, border: 'none',
+                background: '#7C3AED', color: '#fff', fontWeight: 600,
+                fontSize: 14, cursor: 'pointer', display: 'inline-flex',
+                alignItems: 'center', gap: 6, fontFamily: "'DM Sans', sans-serif",
+              }}>
+                <RotateCcw size={14} /> Novo treino
+              </button>
             </div>
           )}
 

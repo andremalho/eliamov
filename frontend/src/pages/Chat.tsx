@@ -60,6 +60,11 @@ export default function Chat() {
       title="Chat"
       subtitle="Converse com profissionais ou com a IA."
     >
+      {/* Medical disclaimer */}
+      <div style={{ padding: '10px 14px', background: '#FEF3C7', border: '1px solid #FDE68A', borderRadius: 10, fontSize: 12, color: '#92400E', lineHeight: 1.5, marginBottom: 16 }}>
+        ⚕️ <strong>Aviso importante:</strong> As informacoes fornecidas neste chat sao de carater informativo e educacional. Nao constituem aconselhamento medico, diagnostico ou tratamento. Para questoes de saude, consulte um profissional qualificado.
+      </div>
+
       {loading ? (
         <p className="muted">Carregando…</p>
       ) : (
