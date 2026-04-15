@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { athleteApi, PerformanceLog, ACWR } from '../services/athlete.api';
+import { athleteApi, PerformanceLog, ACWR, DashboardResponse } from '../services/athlete.api';
 import Layout from '../components/Layout';
 import { formatBR } from '../utils/format';
-import { Activity, Heart, Zap, Moon, TrendingUp, AlertTriangle, Shield } from 'lucide-react';
+import { Activity, Heart, Zap, Moon, TrendingUp, AlertTriangle, Shield, Battery, ThermometerSun } from 'lucide-react';
+import { SkeletonCard } from '../components/Skeleton';
 
 const RPE_LABELS: Record<number, string> = {
   1: 'Muito facil',
@@ -27,6 +28,7 @@ const RISK_MAP: Record<string, { label: string; color: string; bg: string }> = {
 export default function AthleteDashboard() {
   const [logs, setLogs] = useState<PerformanceLog[]>([]);
   const [acwr, setAcwr] = useState<ACWR | null>(null);
+  const [readiness, setReadiness] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -48,8 +50,9 @@ export default function AthleteDashboard() {
   const refresh = async () => {
     try {
       const [dash, acwrData] = await Promise.all([athleteApi.dashboard(), athleteApi.acwr()]);
-      setLogs(Array.isArray(dash) ? dash : (dash.logs ?? dash.last7Days ?? []));
+      setLogs(Array.isArray(dash) ? dash : ((dash as any).logs ?? (dash as any).last7Days ?? []));
       setAcwr(acwrData);
+      if (dash.readiness != null) setReadiness(dash.readiness);
     } catch {
       setError('Nao foi possivel carregar dados.');
     }
@@ -139,7 +142,7 @@ export default function AthleteDashboard() {
       `}</style>
 
       {loading ? (
-        <p className="muted">Carregando...</p>
+        <><SkeletonCard /><SkeletonCard /><SkeletonCard /></>
       ) : (
         <>
           {/* ── Section A: Daily Log ── */}
@@ -235,6 +238,73 @@ export default function AthleteDashboard() {
               </button>
             </form>
           </section>
+
+          {/* ── Section A2: Readiness Score ── */}
+          {readiness !== null && (
+            <section className="ad-card" style={{
+              background: readiness >= 70 ? 'linear-gradient(135deg, #F0FDF4, #DCFCE7)' :
+                readiness >= 40 ? 'linear-gradient(135deg, #FFFBEB, #FEF3C7)' :
+                'linear-gradient(135deg, #FEF2F2, #FEE2E2)',
+              borderColor: readiness >= 70 ? '#BBF7D0' : readiness >= 40 ? '#FDE68A' : '#FECACA',
+            }}>
+              <h3><Battery size={18} style={{ color: readiness >= 70 ? '#16A34A' : readiness >= 40 ? '#D97706' : '#DC2626' }} /> Prontidao</h3>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+                <div style={{ position: 'relative', width: 80, height: 80 }}>
+                  <svg width="80" height="80" viewBox="0 0 80 80">
+                    <circle cx="40" cy="40" r="34" fill="none" stroke="#E5E7EB" strokeWidth="6" />
+                    <circle cx="40" cy="40" r="34" fill="none"
+                      stroke={readiness >= 70 ? '#22C55E' : readiness >= 40 ? '#F59E0B' : '#EF4444'}
+                      strokeWidth="6" strokeLinecap="round"
+                      strokeDasharray={`${(readiness / 100) * 213.6} 213.6`}
+                      transform="rotate(-90 40 40)" />
+                  </svg>
+                  <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, fontWeight: 700, color: '#1F2937' }}>
+                    {readiness}
+                  </div>
+                </div>
+                <div>
+                  <div style={{ fontSize: 16, fontWeight: 600, color: '#1F2937', marginBottom: 4 }}>
+                    {readiness >= 80 ? 'Excelente! Pronta para intensidade maxima.' :
+                     readiness >= 60 ? 'Boa prontidao. Treino normal.' :
+                     readiness >= 40 ? 'Moderada. Considere reduzir intensidade.' :
+                     'Baixa. Priorize recuperacao hoje.'}
+                  </div>
+                  <div style={{ fontSize: 12, color: '#6B7280' }}>
+                    Baseado em HRV, sono, fadiga e vigor do ultimo registro.
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* ── Risk Alerts ── */}
+          {acwr && acwr.risk === 'high_injury_risk' && (
+            <section className="ad-card" style={{ background: '#FEF2F2', borderColor: '#FECACA' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                <AlertTriangle size={24} style={{ color: '#DC2626', flexShrink: 0, marginTop: 2 }} />
+                <div>
+                  <h3 style={{ color: '#991B1B', margin: '0 0 4px', fontSize: 15 }}>Alerta: risco elevado de lesao</h3>
+                  <p style={{ fontSize: 13, color: '#991B1B', margin: 0, lineHeight: 1.5 }}>
+                    Seu ACWR esta acima de 1.5. Reduza o volume de treino esta semana para evitar overtraining.
+                    Considere sessoes de recuperacao ativa, mobilidade e yoga.
+                  </p>
+                </div>
+              </div>
+            </section>
+          )}
+          {acwr && acwr.risk === 'elevated' && (
+            <section className="ad-card" style={{ background: '#FFFBEB', borderColor: '#FDE68A' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                <ThermometerSun size={22} style={{ color: '#D97706', flexShrink: 0, marginTop: 2 }} />
+                <div>
+                  <h3 style={{ color: '#92400E', margin: '0 0 4px', fontSize: 15 }}>Atencao: carga elevada</h3>
+                  <p style={{ fontSize: 13, color: '#92400E', margin: 0, lineHeight: 1.5 }}>
+                    ACWR entre 1.3 e 1.5. Monitore sintomas de fadiga e ajuste a intensidade se necessario.
+                  </p>
+                </div>
+              </div>
+            </section>
+          )}
 
           {/* ── Section B: ACWR Card ── */}
           <section className="ad-card">

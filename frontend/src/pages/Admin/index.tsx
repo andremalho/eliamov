@@ -1634,6 +1634,38 @@ const AdminPanel: React.FC = () => {
       </div>
 
       <div style={S.section}>
+        <h3 style={S.sectionTitle}>White Label / Branding</h3>
+        <p style={{ fontSize: 13, color: '#64748b', marginBottom: 12 }}>
+          Configure cores e identidade visual da sua academia. As alteracoes sao aplicadas para todos os usuarios do tenant.
+        </p>
+        <div style={S.formRow}>
+          <div style={S.formGroup}>
+            <label style={S.formLabel}>Cor primaria</label>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <input type="color" defaultValue="#7C3AED" style={{ width: 40, height: 32, border: 'none', cursor: 'pointer' }}
+                onChange={(e) => {
+                  document.documentElement.style.setProperty('--color-primary', e.target.value);
+                }} />
+              <span style={{ fontSize: 12, color: '#6B7280' }}>Preview ao vivo</span>
+            </div>
+          </div>
+          <div style={S.formGroup}>
+            <label style={S.formLabel}>Cor accent (pingo do i)</label>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <input type="color" defaultValue="#E85D04" style={{ width: 40, height: 32, border: 'none', cursor: 'pointer' }}
+                onChange={(e) => {
+                  document.documentElement.style.setProperty('--color-accent', e.target.value);
+                }} />
+              <span style={{ fontSize: 12, color: '#6B7280' }}>Preview ao vivo</span>
+            </div>
+          </div>
+        </div>
+        <p style={{ fontSize: 11, color: '#9CA3AF', marginTop: 8 }}>
+          Para salvar permanentemente, use a API: PATCH /tenants/:id com primaryColor e accentColor.
+        </p>
+      </div>
+
+      <div style={S.section}>
         <h3 style={S.sectionTitle}>Conteudo inicial</h3>
         <p style={{ fontSize: 13, color: '#64748b', marginBottom: 12 }}>
           Semeia 20 artigos, 8 receitas e 5 categorias de exemplo para popular o CMS.

@@ -1,4 +1,5 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import api from '../services/api';
 
 export interface AppTheme {
   name: string;
@@ -36,10 +37,32 @@ const DEFAULT_THEME: AppTheme = {
 const ThemeContext = createContext<AppTheme>(DEFAULT_THEME);
 
 export const ThemeProvider: React.FC<{ theme?: Partial<AppTheme>; children: React.ReactNode }> = ({ theme, children }) => {
-  const merged = theme ? {
+  const [dynamicTheme, setDynamicTheme] = useState<Partial<AppTheme> | null>(null);
+
+  useEffect(() => {
+    const slug = localStorage.getItem('eliamov_tenant') || 'demo';
+    api.get(`/tenants/branding?slug=${slug}`)
+      .then((res) => {
+        if (res.data) {
+          setDynamicTheme({
+            name: res.data.name,
+            slogan: res.data.slogan,
+            logo: res.data.logoUrl,
+            colors: {
+              primary: res.data.primaryColor || DEFAULT_THEME.colors.primary,
+              accent: res.data.accentColor || DEFAULT_THEME.colors.accent,
+            },
+          } as Partial<AppTheme>);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const source = dynamicTheme || theme;
+  const merged = source ? {
     ...DEFAULT_THEME,
-    ...theme,
-    colors: { ...DEFAULT_THEME.colors, ...theme.colors },
+    ...source,
+    colors: { ...DEFAULT_THEME.colors, ...source.colors },
   } : DEFAULT_THEME;
 
   return (

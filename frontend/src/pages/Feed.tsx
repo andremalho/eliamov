@@ -7,6 +7,7 @@ import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
 import { Camera, Image, RefreshCw, MessageSquarePlus, User } from 'lucide-react';
 import { useGamification } from '../contexts/GamificationContext';
+import { SkeletonFeed } from '../components/Skeleton';
 
 const POST_TYPE_OPTIONS: { value: PostType; label: string }[] = [
   { value: 'free', label: 'Texto livre' },
@@ -388,8 +389,7 @@ export default function Feed() {
             animation: 'spin 0.8s linear infinite',
             margin: '0 auto 12px',
           }} />
-          <p style={s.muted}>Carregando...</p>
-          <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+          <SkeletonFeed />
         </div>
       ) : posts.length === 0 ? (
         <div style={{

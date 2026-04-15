@@ -1,13 +1,20 @@
 {
-  "name": "eliaMov",
+  "name": "eliaMov - Movimento inteligente",
   "short_name": "eliaMov",
-  "description": "Movimento inteligente. Vida ativa.",
+  "description": "Treino adaptativo ao ciclo menstrual. Saude feminina baseada em evidencias.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#F9FAFB",
   "theme_color": "#7C3AED",
   "orientation": "portrait",
+  "categories": ["health", "fitness", "lifestyle"],
+  "lang": "pt-BR",
   "icons": [
-    { "src": "/logo-eliamov.svg", "sizes": "any", "type": "image/svg+xml" }
-  ]
+    { "src": "/logo-eliamov.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/logo-eliamov.svg", "sizes": "192x192", "type": "image/svg+xml", "purpose": "maskable" },
+    { "src": "/logo-eliamov.svg", "sizes": "512x512", "type": "image/svg+xml", "purpose": "any maskable" }
+  ],
+  "screenshots": [],
+  "related_applications": [],
+  "prefer_related_applications": false
 }
