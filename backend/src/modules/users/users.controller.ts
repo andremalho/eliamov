@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Res, UseGuards } from '@nestjs/common';
+import { Response } from 'express';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
@@ -13,6 +14,11 @@ export class UsersController {
   @Patch('me')
   updateMe(@CurrentUser() user: { userId: string }, @Body() dto: UpdateProfileDto) {
     return this.service.updateProfile(user.userId, dto);
+  }
+
+  @Get('export-my-data')
+  async exportMyData(@CurrentUser() user: { userId: string }, @Res() res: Response) {
+    return this.service.exportUserData(user.userId, res);
   }
 
   @Get()

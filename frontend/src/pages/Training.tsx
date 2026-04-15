@@ -8,6 +8,7 @@ import {
 } from '../services/training-engine.api';
 import { useGamification } from '../contexts/GamificationContext';
 import Layout from '../components/Layout';
+import { PhaseContextCard } from '../components/PhaseContextCard';
 import {
   Dumbbell,
   Clock,
@@ -284,6 +285,9 @@ export default function Training() {
         <div style={{ ...card, background: '#FEF2F2', color: '#B91C1C' }}>{error}</div>
       ) : (
         <>
+          {/* ── Phase Context ── */}
+          <PhaseContextCard activeTab="training" />
+
           {/* ── Section 1: Today's Workout Hero ── */}
           {workout && (
             <div

@@ -41,6 +41,7 @@ import Pregnancy from '../pages/Pregnancy';
 import Menopause from '../pages/Menopause';
 import MentalHealth from '../pages/MentalHealth';
 import Fertility from '../pages/Fertility';
+import Teleconsult from '../pages/Teleconsult';
 import Landing from '../pages/Landing';
 import NotFound from '../pages/NotFound';
 
@@ -93,6 +94,7 @@ export default function AppRouter() {
       <Route path="/menopause" element={<FemaleRoute><Menopause /></FemaleRoute>} />
       <Route path="/mental-health" element={<FemaleRoute><MentalHealth /></FemaleRoute>} />
       <Route path="/fertility" element={<FemaleRoute><Fertility /></FemaleRoute>} />
+      <Route path="/teleconsult" element={<FemaleRoute><Teleconsult /></FemaleRoute>} />
 
       {/* Trainer zone */}
       <Route path="/trainer" element={<RoleRoute roles={['personal_trainer', 'professional']}><TrainerPanel /></RoleRoute>} />

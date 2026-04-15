@@ -38,6 +38,7 @@ const NAV_GROUPS = [
   { title: 'Mais', items: [
     { to: '/activities', label: 'Atividades', Icon: Zap },
     { to: '/appointments', label: 'Consultas', Icon: Stethoscope },
+    { to: '/teleconsult', label: 'Teleconsulta', Icon: Users },
     { to: '/lab-analysis', label: 'Exames lab', Icon: FlaskRound },
     { to: '/profile', label: 'Perfil', Icon: User },
   ]},

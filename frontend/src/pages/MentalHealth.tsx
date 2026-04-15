@@ -6,6 +6,7 @@ import { formatDateTimeBR } from '../utils/format';
 import { Brain, ClipboardList, TrendingUp, Clock } from 'lucide-react';
 import { MentalHealthTimeline } from '../components/MentalHealthTimeline';
 import { NextAssessmentBadge } from '../components/NextAssessmentBadge';
+import { PhaseContextCard } from '../components/PhaseContextCard';
 import api from '../services/api';
 
 type Tab = 'avaliacao' | 'padrao' | 'historico' | 'evolucao';
@@ -103,6 +104,7 @@ export default function MentalHealth() {
       {/* ── Tab 1: Avaliacao ── */}
       {tab === 'avaliacao' && !activeInstrument && !result && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <PhaseContextCard activeTab="mental" />
           <NextAssessmentBadge
             suggestedDays={pattern?.suggestedNextAssessmentDays ?? null}
             lastAssessmentDate={history.length > 0 ? history[0]?.createdAt : null}

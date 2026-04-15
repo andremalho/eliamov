@@ -9,6 +9,7 @@ import {
   MEAL_LABELS,
 } from '../services/nutrition.api';
 import Layout from '../components/Layout';
+import { PhaseContextCard } from '../components/PhaseContextCard';
 import { formatBR } from '../utils/format';
 import { TrendingDown, TrendingUp, Minus, Trash2, Apple, Scale, Target, UtensilsCrossed } from 'lucide-react';
 
@@ -366,6 +367,9 @@ export default function Nutrition() {
         </div>
       ) : (
         <>
+          {/* Phase context */}
+          <PhaseContextCard activeTab="nutrition" />
+
           {/* Daily summary card */}
           {summary && goal && (
             <section style={s.card}>

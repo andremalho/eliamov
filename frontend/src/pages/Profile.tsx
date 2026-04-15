@@ -13,6 +13,8 @@ import BadgeDisplay from '../components/BadgeDisplay';
 import { useGamification } from '../contexts/GamificationContext';
 import { InstagramIcon, FacebookIcon, XIcon, SnapchatIcon, WhatsAppIcon } from '../components/SocialIcons';
 import { useTranslation } from '../i18n/useTranslation';
+import { DownloadReportButton } from '../components/DownloadReportButton';
+import { ExportMyDataButton } from '../components/ExportMyDataButton';
 
 const getInitials = initials;
 
@@ -165,6 +167,15 @@ export default function Profile() {
         </div>
       )}
 
+      {/* Report */}
+      <div style={S.card}>
+        <span style={S.cardTitle}>Relatorio para consulta</span>
+        <p style={{ fontSize: 13, color: '#6B7280', margin: '4px 0 12px' }}>
+          Gere um PDF com seu historico de ciclos, saude mental, medicacoes e sintomas para levar ao medico.
+        </p>
+        <DownloadReportButton patientName={currentUser.name} />
+      </div>
+
       {/* Info card */}
       <div style={S.card}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
@@ -279,6 +290,14 @@ export default function Profile() {
               {l.label}
             </button>
           ))}
+        </div>
+      </div>
+
+      {/* Privacy & Data */}
+      <div style={S.card}>
+        <span style={S.cardTitle}>Privacidade e dados</span>
+        <div style={{ marginTop: 12 }}>
+          <ExportMyDataButton />
         </div>
       </div>
 

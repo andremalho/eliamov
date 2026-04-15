@@ -57,6 +57,9 @@ import { AuditLogModule } from './modules/audit-log/audit-log.module';
 import { AuditLogInterceptor } from './modules/audit-log/audit-log.interceptor';
 import { HormonalInsightsModule } from './modules/hormonal-insights/hormonal-insights.module';
 import { MedicationsModule } from './modules/medications/medications.module';
+import { DailyLogModule } from './modules/daily-log/daily-log.module';
+import { CorrelationModule } from './modules/correlation/correlation.module';
+import { ReportModule } from './modules/report/report.module';
 
 @Module({
   imports: [
@@ -121,6 +124,9 @@ import { MedicationsModule } from './modules/medications/medications.module';
     AuditLogModule,
     HormonalInsightsModule,
     MedicationsModule,
+    DailyLogModule,
+    CorrelationModule,
+    ReportModule,
   ],
   controllers: [AppController],
   providers: [
