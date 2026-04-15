@@ -38,6 +38,13 @@ export class Challenge {
   @Column({ default: true })
   isActive: boolean;
 
+  @Column({
+    type: 'enum',
+    enum: ['individual', 'team'],
+    default: 'individual',
+  })
+  goalMode: 'individual' | 'team';
+
   @Column({ type: 'uuid', nullable: true })
   creatorId: string;
 

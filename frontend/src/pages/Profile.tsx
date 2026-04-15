@@ -9,6 +9,8 @@ import {
   Trash2, Copy, Check, ChevronRight,
 } from 'lucide-react';
 import Layout from '../components/Layout';
+import BadgeDisplay from '../components/BadgeDisplay';
+import { useGamification } from '../contexts/GamificationContext';
 import { InstagramIcon, FacebookIcon, XIcon, SnapchatIcon, WhatsAppIcon } from '../components/SocialIcons';
 import { useTranslation } from '../i18n/useTranslation';
 
@@ -112,6 +114,8 @@ export default function Profile() {
     } finally { setSubmitting(false); }
   };
 
+  const { stats } = useGamification();
+
   if (!currentUser) return <Layout title="Perfil"><p style={{ color: '#6B7280', textAlign: 'center', paddingTop: 40 }}>Carregando...</p></Layout>;
 
   const avatarUrl = currentUser.profile?.avatarUrl as string | undefined;
@@ -136,6 +140,33 @@ export default function Profile() {
         <div style={S.name}>{currentUser.name}</div>
         <div style={S.email as any}>{currentUser.email}</div>
       </div>
+
+      {/* Level & XP */}
+      {stats && (
+        <div style={{ ...S.card, background: 'linear-gradient(135deg, #F5F3FF, #EDE9FE)', border: '1px solid #C4B5FD' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+            <span style={{ fontSize: 16, fontWeight: 700, color: '#2D1B4E' }}>Nivel {stats.level}</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: '#7C3AED' }}>{stats.xp} XP</span>
+          </div>
+          <div style={{ background: '#E5E7EB', borderRadius: 6, height: 8, overflow: 'hidden', marginBottom: 6 }}>
+            <div style={{ width: `${(stats.xp % 500) / 5}%`, height: '100%', background: 'linear-gradient(90deg, #7C3AED, #9333EA)', borderRadius: 6, transition: 'width 0.5s' }} />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#6B7280' }}>
+            <span>{stats.xp % 500}/500 XP para nivel {stats.level + 1}</span>
+            <span>{stats.totalWorkouts} treinos · {stats.currentStreak} dias seguidos</span>
+          </div>
+        </div>
+      )}
+
+      {/* Badges */}
+      {stats && (
+        <div style={S.card}>
+          <span style={S.cardTitle}>Conquistas</span>
+          <div style={{ marginTop: 12 }}>
+            <BadgeDisplay earnedBadges={stats.badges} />
+          </div>
+        </div>
+      )}
 
       {/* Info card */}
       <div style={S.card}>

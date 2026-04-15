@@ -61,4 +61,9 @@ export class ChallengesController {
   ) {
     return this.service.leaderboard(id, pagination);
   }
+
+  @Get(':id/team-progress')
+  teamProgress(@Param('id') id: string) {
+    return this.service.getTeamProgress(id);
+  }
 }

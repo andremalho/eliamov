@@ -70,6 +70,26 @@ export class ChallengesService {
     });
   }
 
+  async getTeamProgress(challengeId: string) {
+    const challenge = await this.challengeRepo.findOneBy({ id: challengeId });
+    if (!challenge) throw new NotFoundException();
+    const result = await this.participantRepo
+      .createQueryBuilder('p')
+      .select('SUM(p.currentProgress)', 'totalProgress')
+      .addSelect('COUNT(*)', 'participantCount')
+      .where('p.challengeId = :challengeId', { challengeId })
+      .getRawOne();
+
+    return {
+      challengeId,
+      goalMode: challenge.goalMode,
+      goalValue: challenge.goalValue,
+      totalProgress: Number(result?.totalProgress ?? 0),
+      participantCount: Number(result?.participantCount ?? 0),
+      percentComplete: Math.min(100, Math.round((Number(result?.totalProgress ?? 0) / challenge.goalValue) * 100)),
+    };
+  }
+
   async create(tenantId: string, creatorId: string, dto: CreateChallengeDto) {
     return this.challengeRepo.save(
       this.challengeRepo.create({ ...dto, tenantId, creatorId } as any),

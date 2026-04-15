@@ -2,11 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserStats } from './entities/user-stats.entity';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class GamificationService {
   constructor(
     @InjectRepository(UserStats) private statsRepo: Repository<UserStats>,
+    @InjectRepository(User) private userRepo: Repository<User>,
   ) {}
 
   async getStats(userId: string): Promise<UserStats> {
@@ -95,10 +97,30 @@ export class GamificationService {
   }
 
   async getLeaderboard(tenantId: string) {
-    // This would need User join for tenantId filter
-    return this.statsRepo.find({
+    const stats = await this.statsRepo.find({
       order: { xp: 'DESC' },
       take: 20,
     });
+
+    const entries = [];
+    for (const s of stats) {
+      const user = await this.userRepo.findOne({
+        where: { id: s.userId },
+        select: ['id', 'name', 'profile'],
+      });
+      if (user) {
+        entries.push({
+          id: user.id,
+          name: user.name,
+          xp: s.xp,
+          level: s.level,
+          currentStreak: s.currentStreak,
+          totalWorkouts: s.totalWorkouts,
+          badges: s.badges,
+          profile: user.profile,
+        });
+      }
+    }
+    return entries;
   }
 }

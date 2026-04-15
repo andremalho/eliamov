@@ -30,6 +30,7 @@ import Communities from '../pages/Communities';
 import Activities from '../pages/Activities';
 import Feed from '../pages/Feed';
 import Challenges from '../pages/Challenges';
+import Leaderboard from '../pages/Leaderboard';
 import FemaleHome from '../pages/Home';
 import Companion from '../pages/Companion';
 import Evolution from '../pages/Evolution';
@@ -82,6 +83,7 @@ export default function AppRouter() {
       <Route path="/lab-exams" element={<FemaleRoute><LabExams /></FemaleRoute>} />
       <Route path="/appointments" element={<FemaleRoute><Appointments /></FemaleRoute>} />
       <Route path="/challenges" element={<FemaleRoute><Challenges /></FemaleRoute>} />
+      <Route path="/leaderboard" element={<FemaleRoute><Leaderboard /></FemaleRoute>} />
       <Route path="/chat" element={<FemaleRoute><Chat /></FemaleRoute>} />
       <Route path="/evolution" element={<FemaleRoute><Evolution /></FemaleRoute>} />
       <Route path="/weight-loss" element={<FemaleRoute><WeightLoss /></FemaleRoute>} />

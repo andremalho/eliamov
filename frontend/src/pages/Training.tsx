@@ -6,6 +6,7 @@ import {
   WorkoutExercise,
   workoutLogApi,
 } from '../services/training-engine.api';
+import { useGamification } from '../contexts/GamificationContext';
 import Layout from '../components/Layout';
 import {
   Dumbbell,
@@ -132,6 +133,7 @@ export default function Training() {
   const [sessionNotes, setSessionNotes] = useState('');
   const [saving, setSaving] = useState(false);
   const [showComplete, setShowComplete] = useState(false);
+  const { rewardXP } = useGamification();
 
   useEffect(() => {
     Promise.all([
@@ -146,6 +148,12 @@ export default function Training() {
       .catch(() => setError('Nao foi possivel carregar os treinos.'))
       .finally(() => setLoading(false));
   }, []);
+
+  /* derive current config */
+  const phaseKey = today?.phase ?? 'follicular';
+  const cfg = PHASE_CONFIG[phaseKey] ?? PHASE_CONFIG.follicular;
+  const PhaseIcon = cfg.icon;
+  const workout = activeWorkout ?? today?.workout ?? null;
 
   // Timer logic
   const startTimer = useCallback(() => {
@@ -237,6 +245,7 @@ export default function Training() {
       setShowComplete(true);
       setTimerActive(false);
       if (timerRef.current) clearInterval(timerRef.current);
+      rewardXP(50, 'workout');
     } catch {
       alert('Erro ao salvar treino.');
     } finally {
@@ -263,12 +272,6 @@ export default function Training() {
     setShowExercises(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
-
-  /* derive current config */
-  const phaseKey = today?.phase ?? 'follicular';
-  const cfg = PHASE_CONFIG[phaseKey] ?? PHASE_CONFIG.follicular;
-  const PhaseIcon = cfg.icon;
-  const workout = activeWorkout ?? today?.workout ?? null;
 
   /* ───── render ───── */
 

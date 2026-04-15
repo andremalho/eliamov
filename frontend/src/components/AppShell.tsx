@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { gamificationApi } from '../services/gamification.api';
+import { useGamification } from '../contexts/GamificationContext';
 import Logo from './Logo';
 import {
   Home, Droplets, Dumbbell, Apple, Heart, MessageCircle,
   Users, Zap, BookOpen, Brain, User, LogOut,
   Menu, X, Stethoscope, Trophy, TrendingUp, Scale, Flame, FlaskRound, Sun,
-  Sparkles, Bell,
+  Sparkles, Bell, Star, Medal,
 } from 'lucide-react';
 
 const NAV_GROUPS = [
@@ -29,6 +29,7 @@ const NAV_GROUPS = [
   { title: 'Programas', items: [
     { to: '/weight-loss', label: 'Emagrecimento', Icon: Scale },
     { to: '/challenges', label: 'Desafios', Icon: Trophy },
+    { to: '/leaderboard', label: 'Ranking', Icon: Medal },
     { to: '/communities', label: 'Comunidades', Icon: Users },
     { to: '/fertility', label: 'Fertilidade', Icon: Heart },
     { to: '/content', label: 'Conteudo', Icon: BookOpen },
@@ -53,13 +54,13 @@ interface Props { children: React.ReactNode; title?: string; subtitle?: string; 
 
 export default function AppShell({ children, title, subtitle, hideHeader }: Props) {
   const { currentUser } = useAuth();
+  const { stats } = useGamification();
   const [open, setOpen] = useState(false);
-  const [streak, setStreak] = useState(0);
+  const streak = stats?.currentStreak ?? 0;
+  const level = stats?.level ?? 1;
+  const xp = stats?.xp ?? 0;
+  const xpInLevel = xp % 500;
   const ini = (n: string) => { const p = n.trim().split(/\s+/); return p.length === 1 ? (p[0][0]?.toUpperCase() ?? '?') : (p[0][0] + p[p.length - 1][0]).toUpperCase(); };
-
-  useEffect(() => {
-    gamificationApi.stats().then((s) => setStreak(s.currentStreak)).catch(() => {});
-  }, []);
 
   return (
     <>
@@ -211,6 +212,9 @@ export default function AppShell({ children, title, subtitle, hideHeader }: Prop
                   <Flame size={13} /> {streak}
                 </div>
               )}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'rgba(255,255,255,0.15)', padding: '4px 10px', borderRadius: 999, fontSize: 11, fontWeight: 600, color: '#C4B5FD', backdropFilter: 'blur(4px)' }}>
+                <Star size={12} /> Lv {level}
+              </div>
             </div>
             <Logo size={20} variant="light" />
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

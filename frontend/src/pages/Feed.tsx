@@ -6,6 +6,7 @@ import { feedApi, FeedPost, PostType, ReactionType } from '../services/feed.api'
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
 import { Camera, Image, RefreshCw, MessageSquarePlus, User } from 'lucide-react';
+import { useGamification } from '../contexts/GamificationContext';
 
 const POST_TYPE_OPTIONS: { value: PostType; label: string }[] = [
   { value: 'free', label: 'Texto livre' },
@@ -103,6 +104,7 @@ const s = {
 
 export default function Feed() {
   const { currentUser } = useAuth();
+  const { rewardXP } = useGamification();
   const [posts, setPosts] = useState<FeedPost[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -193,6 +195,7 @@ export default function Feed() {
       setContent('');
       setMediaUrl('');
       setPostType('free');
+      rewardXP(20, 'post');
     } catch (err: any) {
       const msg = err?.response?.data?.message ?? 'Falha ao criar publicacao';
       setError(Array.isArray(msg) ? msg.join(', ') : msg);

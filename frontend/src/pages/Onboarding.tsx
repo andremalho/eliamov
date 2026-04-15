@@ -221,6 +221,7 @@ export default function Onboarding() {
 
   const isLast = step === STEPS.length - 1;
   const progress = ((step + 1) / STEPS.length) * 100;
+  const isSkippable = [2, 3, 4].includes(step); // gine, clinico, estilo
 
   return (
     <Layout
@@ -661,6 +662,11 @@ export default function Onboarding() {
           ) : (
             <button type="button" className="link-button" onClick={handleSkip}>
               Pular por agora
+            </button>
+          )}
+          {isSkippable && (
+            <button type="button" className="link-button" onClick={goNext} style={{ fontSize: 12, color: '#9CA3AF' }}>
+              Pular etapa →
             </button>
           )}
           {!isLast ? (
