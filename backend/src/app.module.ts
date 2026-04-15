@@ -55,6 +55,8 @@ import { FertilityModule } from './modules/fertility/fertility.module';
 import { RecipesModule } from './modules/recipes/recipes.module';
 import { AuditLogModule } from './modules/audit-log/audit-log.module';
 import { AuditLogInterceptor } from './modules/audit-log/audit-log.interceptor';
+import { HormonalInsightsModule } from './modules/hormonal-insights/hormonal-insights.module';
+import { MedicationsModule } from './modules/medications/medications.module';
 
 @Module({
   imports: [
@@ -117,6 +119,8 @@ import { AuditLogInterceptor } from './modules/audit-log/audit-log.interceptor';
     FertilityModule,
     RecipesModule,
     AuditLogModule,
+    HormonalInsightsModule,
+    MedicationsModule,
   ],
   controllers: [AppController],
   providers: [

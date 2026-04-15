@@ -3,6 +3,8 @@ import { cycleApi, CycleEntry, CurrentPhase } from '../services/cycle.api';
 import Layout from '../components/Layout';
 import { formatBR } from '../utils/format';
 import { Droplets, Sprout, Sun, Moon, ArrowRight, Plus, Trash2, ShieldCheck, Calendar } from 'lucide-react';
+import { HormonalInsightCard } from '../components/HormonalInsightCard';
+import { CycleOnboardingForm } from '../components/CycleOnboardingForm';
 
 const PHASES: Record<string, { label: string; color: string; bg: string; icon: any; desc: string; tips: string[] }> = {
   menstrual: { label: 'Menstrual', color: '#DB2777', bg: '#FDF2F8', icon: Droplets, desc: 'Fase de renovacao. Cuide-se com carinho.', tips: ['Yoga restaurativa', 'Caminhada leve', 'Alimentos ricos em ferro', 'Descanso adequado'] },
@@ -93,6 +95,9 @@ export default function Cycle() {
             </div>
           )}
 
+          {/* Hormonal insight card */}
+          <HormonalInsightCard />
+
           {/* No cycle data */}
           {!cp && (
             <div style={{ background: '#fff', borderRadius: 16, border: '1px solid #E5E7EB', padding: 20, textAlign: 'center', marginBottom: 18 }}>
@@ -108,35 +113,15 @@ export default function Cycle() {
             <span style={{ fontSize: 11, color: '#7C3AED', lineHeight: 1.5 }}>Dados de ciclo sao privados e nunca compartilhados com personal trainers ou gestores.</span>
           </div>
 
-          {/* Add cycle button / form */}
+          {/* Add cycle */}
           {!showForm ? (
             <button onClick={() => setShowForm(true)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, width: '100%', padding: 12, background: '#7C3AED', color: '#fff', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, cursor: 'pointer', marginBottom: 18 }}>
               <Plus size={16} /> Registrar novo ciclo
             </button>
           ) : (
-            <div style={{ background: '#fff', borderRadius: 14, border: '1px solid #E5E7EB', padding: 16, marginBottom: 18 }}>
-              <div style={{ fontSize: 15, fontWeight: 600, color: '#111827', marginBottom: 12 }}>Novo ciclo</div>
-              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <div>
-                  <label style={{ fontSize: 13, fontWeight: 500, color: '#374151', display: 'block', marginBottom: 4 }}>Data de inicio</label>
-                  <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} required style={{ width: '100%', padding: '10px 12px', border: '1.5px solid #E5E7EB', borderRadius: 10, fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                  <div>
-                    <label style={{ fontSize: 13, fontWeight: 500, color: '#374151', display: 'block', marginBottom: 4 }}>Ciclo (dias)</label>
-                    <input type="number" min={20} max={45} value={cycleLength} onChange={e => setCycleLength(Number(e.target.value))} style={{ width: '100%', padding: '10px 12px', border: '1.5px solid #E5E7EB', borderRadius: 10, fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
-                  </div>
-                  <div>
-                    <label style={{ fontSize: 13, fontWeight: 500, color: '#374151', display: 'block', marginBottom: 4 }}>Periodo (dias)</label>
-                    <input type="number" min={1} max={15} value={periodLength} onChange={e => setPeriodLength(Number(e.target.value))} style={{ width: '100%', padding: '10px 12px', border: '1.5px solid #E5E7EB', borderRadius: 10, fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
-                  </div>
-                </div>
-                {error && <div style={{ background: '#FEE2E2', color: '#991B1B', padding: '8px 12px', borderRadius: 8, fontSize: 13 }}>{error}</div>}
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <button type="button" onClick={() => setShowForm(false)} style={{ flex: 1, padding: 10, border: '1px solid #E5E7EB', borderRadius: 10, background: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 500 }}>Cancelar</button>
-                  <button type="submit" disabled={submitting} style={{ flex: 1, padding: 10, border: 'none', borderRadius: 10, background: '#7C3AED', color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600, opacity: submitting ? 0.6 : 1 }}>{submitting ? 'Salvando...' : 'Salvar'}</button>
-                </div>
-              </form>
+            <div style={{ marginBottom: 18 }}>
+              <CycleOnboardingForm onSuccess={() => { setShowForm(false); refresh(); }} />
+              <button onClick={() => setShowForm(false)} style={{ width: '100%', padding: 10, border: '1px solid #E5E7EB', borderRadius: 10, background: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 500, marginTop: 8 }}>Cancelar</button>
             </div>
           )}
 

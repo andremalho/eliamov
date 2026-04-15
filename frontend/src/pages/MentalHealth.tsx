@@ -1,301 +1,331 @@
 import React, { useEffect, useState } from 'react';
-import { mentalHealthApi, MHQuestion, MHAssessment, MeditationsResponse } from '../services/mental-health.api';
 import Layout from '../components/Layout';
-import { formatBR } from '../utils/format';
-import { Brain, ChevronRight } from 'lucide-react';
+import { MentalHealthQuestionnaire } from '../components/MentalHealthQuestionnaire';
+import { ALL_INSTRUMENTS, Instrument } from '../data/mentalHealthQuestions';
+import { formatDateTimeBR } from '../utils/format';
+import { Brain, ClipboardList, TrendingUp, Clock } from 'lucide-react';
+import { MentalHealthTimeline } from '../components/MentalHealthTimeline';
+import { NextAssessmentBadge } from '../components/NextAssessmentBadge';
+import api from '../services/api';
 
-const card: React.CSSProperties = {
-  background: '#fff', borderRadius: 14, border: '1px solid #E5E7EB', padding: 16, marginBottom: 14,
+type Tab = 'avaliacao' | 'padrao' | 'historico' | 'evolucao';
+
+const SEVERITY_COLORS: Record<string, string> = {
+  minimal: '#16A34A', mild: '#84CC16', low: '#16A34A', none: '#16A34A',
+  moderate: '#D97706', moderately_severe: '#EA580C',
+  severe: '#DC2626', high: '#DC2626',
 };
-const btnPrimary: React.CSSProperties = {
-  width: '100%', padding: 12, background: '#7C3AED', color: '#fff', border: 'none', borderRadius: 12,
-  fontSize: 14, fontWeight: 600, cursor: 'pointer',
+const SEVERITY_LABELS: Record<string, string> = {
+  minimal: 'Minimo', mild: 'Leve', low: 'Baixo', none: 'Nenhum',
+  moderate: 'Moderado', moderately_severe: 'Moderado-grave',
+  severe: 'Severo', high: 'Alto',
+};
+const PATTERN_LABELS: Record<string, string> = {
+  stable: 'Padrao estavel',
+  luteal_exacerbation: 'Piora na fase lutea',
+  pmdd_pattern: 'Padrao compativel com TDPM',
+  generalized_depression: 'Depressao persistente',
+  generalized_anxiety: 'Ansiedade persistente',
+  mixed: 'Padrao misto',
+  needs_clinical_review: 'Avaliacao clinica recomendada',
+};
+const PHASE_LABELS: Record<string, string> = {
+  menstrual: 'Menstrual', follicular: 'Folicular', ovulatory: 'Ovulatoria', luteal: 'Lutea', unknown: 'Desconhecida',
 };
 
-type TabType = 'phq9' | 'gad7';
-
-const TAB_LABELS: Record<TabType, string> = { phq9: 'Depressao (PHQ-9)', gad7: 'Ansiedade (GAD-7)' };
-const TAB_REFS: Record<TabType, string> = {
-  phq9: 'PHQ-9: Kroenke et al., 2001',
-  gad7: 'GAD-7: Spitzer et al., 2006',
-};
-
-const OPTION_LABELS = ['Nenhuma vez', 'Varios dias', 'Mais da metade dos dias', 'Quase todos os dias'];
-
-function severityColor(severity: string): string {
-  const s = severity.toLowerCase();
-  if (s.includes('minimal') || s.includes('none') || s.includes('minimo') || s.includes('minima') || s.includes('leve')) return '#16A34A';
-  if (s.includes('moderate') || s.includes('moderado') || s.includes('moderada')) return '#D97706';
-  return '#DC2626';
-}
-
-function severityLabel(severity: string): string {
-  const map: Record<string, string> = {
-    none: 'Minimo', minimal: 'Minimo', mild: 'Leve', moderate: 'Moderado',
-    moderately_severe: 'Moderadamente severo', severe: 'Severo',
-  };
-  return map[severity.toLowerCase()] ?? severity;
-}
+const card: React.CSSProperties = { background: '#fff', borderRadius: 16, border: '1px solid #E5E7EB', padding: 20, marginBottom: 16 };
+const tabBtn = (active: boolean): React.CSSProperties => ({
+  flex: 1, padding: '10px 4px', borderRadius: 999, border: 'none', fontSize: 13, fontWeight: 600,
+  cursor: 'pointer', background: active ? '#7C3AED' : '#F3F4F6', color: active ? '#fff' : '#6B7280',
+  fontFamily: "'DM Sans', sans-serif", transition: 'all 0.15s',
+});
 
 export default function MentalHealth() {
-  const [tab, setTab] = useState<TabType>('phq9');
-  const [questions, setQuestions] = useState<MHQuestion[]>([]);
-  const [answers, setAnswers] = useState<number[]>([]);
-  const [showQuestionnaire, setShowQuestionnaire] = useState(false);
-  const [result, setResult] = useState<MHAssessment | null>(null);
+  const [tab, setTab] = useState<Tab>('avaliacao');
+  const [activeInstrument, setActiveInstrument] = useState<Instrument | null>(null);
+  const [result, setResult] = useState<any>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [loading, setLoading] = useState(true);
-
-  const [latest, setLatest] = useState<{ phq9: MHAssessment | null; gad7: MHAssessment | null }>({ phq9: null, gad7: null });
-  const [history, setHistory] = useState<MHAssessment[]>([]);
-  const [meditations, setMeditations] = useState<MeditationsResponse | null>(null);
-
-  const loadData = async () => {
-    try {
-      const [lat, hist, med] = await Promise.all([
-        mentalHealthApi.latest().catch(() => ({ phq9: null, gad7: null })),
-        mentalHealthApi.history(tab).catch(() => []),
-        mentalHealthApi.meditations().catch(() => null),
-      ]);
-      setLatest(lat);
-      setHistory(hist);
-      setMeditations(med);
-    } catch { /* ignore */ }
-  };
+  const [pattern, setPattern] = useState<any>(null);
+  const [history, setHistory] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [patternLoading, setPatternLoading] = useState(false);
+  const [timelineType, setTimelineType] = useState<'phq9' | 'gad7' | 'pss10'>('phq9');
 
   useEffect(() => {
-    setLoading(true);
-    loadData().finally(() => setLoading(false));
+    if (tab === 'avaliacao' || tab === 'padrao') {
+      setPatternLoading(true);
+      Promise.all([
+        api.get('/mental-health/pattern/latest').catch(() => ({ data: null })),
+        api.get('/mental-health/history?type=phq9').catch(() => ({ data: [] })),
+      ]).then(([p, h]) => { setPattern(p.data); setHistory(h.data ?? []); }).finally(() => setPatternLoading(false));
+    }
+    if (tab === 'historico') {
+      setLoading(true);
+      api.get('/mental-health/history').then(r => setHistory(r.data ?? [])).catch(() => {}).finally(() => setLoading(false));
+    }
   }, [tab]);
 
-  const startAssessment = async () => {
-    try {
-      const qs = await mentalHealthApi.questions(tab);
-      setQuestions(qs);
-      setAnswers(new Array(qs.length).fill(-1));
-      setResult(null);
-      setShowQuestionnaire(true);
-    } catch { /* ignore */ }
-  };
-
-  const handleAnswer = (qIdx: number, value: number) => {
-    const next = [...answers];
-    next[qIdx] = value;
-    setAnswers(next);
-  };
-
-  const handleSubmit = async () => {
-    if (answers.some((a) => a < 0)) return;
+  const handleComplete = async (instrument: Instrument, answers: Record<string, number>) => {
     setSubmitting(true);
     try {
-      const res = await mentalHealthApi.submit(tab, answers);
-      setResult(res);
-      setShowQuestionnaire(false);
-      await loadData();
-    } catch { /* ignore */ } finally {
-      setSubmitting(false);
-    }
+      const res = await api.post('/mental-health/assessment', { assessmentType: instrument.key, answers });
+      setResult(res.data);
+      setActiveInstrument(null);
+    } catch { alert('Erro ao enviar avaliacao.'); }
+    finally { setSubmitting(false); }
   };
 
-  const allAnswered = answers.length > 0 && answers.every((a) => a >= 0);
+  const handleRecomputePattern = async () => {
+    setPatternLoading(true);
+    try {
+      const res = await api.post('/mental-health/pattern/compute');
+      setPattern(res.data);
+    } catch { alert('Erro ao recalcular padrao.'); }
+    finally { setPatternLoading(false); }
+  };
 
   return (
     <Layout>
-      {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
         <Brain size={26} color="#7C3AED" />
-        <h1 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 26, fontWeight: 600, color: '#2D1B4E', margin: 0 }}>
-          Saude mental
-        </h1>
+        <h1 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 26, fontWeight: 600, color: '#2D1B4E', margin: 0 }}>Saude Mental</h1>
       </div>
-      <p style={{ fontSize: 14, color: '#6B7280', margin: '0 0 20px' }}>Avalie e acompanhe sua saude emocional</p>
+      <p style={{ fontSize: 14, color: '#6B7280', margin: '0 0 16px' }}>Avalie, acompanhe e entenda seus padroes emocionais</p>
 
-      {/* Section A: Assessment */}
-      <div style={card}>
-        {/* Tab pills */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-          {(['phq9', 'gad7'] as TabType[]).map((t) => (
-            <button
-              key={t}
-              onClick={() => { setTab(t); setShowQuestionnaire(false); setResult(null); }}
-              style={{
-                flex: 1, padding: '8px 4px', borderRadius: 999, border: 'none', fontSize: 13, fontWeight: 600,
-                cursor: 'pointer', transition: 'all 0.15s',
-                background: tab === t ? '#7C3AED' : '#F3F4F6',
-                color: tab === t ? '#fff' : '#6B7280',
-              }}
-            >
-              {TAB_LABELS[t]}
-            </button>
+      {/* Tab pills */}
+      <div style={{ display: 'flex', gap: 6, marginBottom: 20 }}>
+        <button style={tabBtn(tab === 'avaliacao')} onClick={() => { setTab('avaliacao'); setActiveInstrument(null); setResult(null); }}>Avaliacao</button>
+        <button style={tabBtn(tab === 'padrao')} onClick={() => setTab('padrao')}>Meu Padrao</button>
+        <button style={tabBtn(tab === 'historico')} onClick={() => setTab('historico')}>Historico</button>
+        <button style={tabBtn(tab === 'evolucao')} onClick={() => setTab('evolucao')}>Evolucao</button>
+      </div>
+
+      {/* ── Tab 1: Avaliacao ── */}
+      {tab === 'avaliacao' && !activeInstrument && !result && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <NextAssessmentBadge
+            suggestedDays={pattern?.suggestedNextAssessmentDays ?? null}
+            lastAssessmentDate={history.length > 0 ? history[0]?.createdAt : null}
+          />
+          {ALL_INSTRUMENTS.map(inst => (
+            <div key={inst.key} style={card}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div>
+                  <h3 style={{ fontSize: 15, fontWeight: 600, color: '#1F2937', margin: '0 0 4px' }}>{inst.title}</h3>
+                  <p style={{ fontSize: 13, color: '#6B7280', margin: '0 0 8px' }}>{inst.description}</p>
+                  <span style={{ fontSize: 12, color: '#9CA3AF' }}>{inst.questions.length} perguntas</span>
+                </div>
+                <button onClick={() => setActiveInstrument(inst)} style={{
+                  padding: '8px 16px', borderRadius: 10, border: 'none', background: '#7C3AED', color: '#fff',
+                  fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", flexShrink: 0,
+                }}>Iniciar</button>
+              </div>
+            </div>
           ))}
         </div>
+      )}
 
-        {/* Start button or questionnaire */}
-        {!showQuestionnaire && !result && (
-          <button onClick={startAssessment} style={btnPrimary}>Iniciar avaliacao</button>
+      {tab === 'avaliacao' && activeInstrument && (
+        <MentalHealthQuestionnaire instrument={activeInstrument} onComplete={(answers) => handleComplete(activeInstrument, answers)} />
+      )}
+
+      {tab === 'avaliacao' && result && (
+        <>
+        {result.criticalAlertTriggered && (
+          <div style={{
+            ...card, background: '#FAF5FF', borderColor: '#C4B5FD',
+            display: 'flex', alignItems: 'flex-start', gap: 12, padding: 18,
+          }}>
+            <span style={{ fontSize: 24, flexShrink: 0 }}>💜</span>
+            <div>
+              <p style={{ fontSize: 14, color: '#2D1B4E', lineHeight: 1.6, margin: '0 0 12px', fontWeight: 500 }}>
+                Notamos algo importante na sua avaliacao. Se estiver passando por um momento dificil,
+                o CVV atende 24h pelo numero 188 (ligacao gratuita) ou em cvv.org.br
+              </p>
+              <a href="tel:188" style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                padding: '8px 18px', borderRadius: 10, background: '#2D1B4E',
+                color: '#fff', fontSize: 13, fontWeight: 600, textDecoration: 'none',
+                fontFamily: "'DM Sans', sans-serif",
+              }}>
+                Ligar agora — 188
+              </a>
+            </div>
+          </div>
         )}
+        <div style={{ ...card, background: '#F0FDF4', borderColor: '#BBF7D0', textAlign: 'center' }}>
+          <h3 style={{ fontSize: 18, fontWeight: 600, color: '#166534', marginBottom: 8 }}>Avaliacao concluida!</h3>
+          <div style={{ fontSize: 36, fontWeight: 700, color: '#1F2937', marginBottom: 4 }}>{result.totalScore}</div>
+          <span style={{ padding: '4px 14px', borderRadius: 999, fontSize: 13, fontWeight: 600, color: '#fff', background: SEVERITY_COLORS[result.severityLevel] || '#6B7280' }}>
+            {SEVERITY_LABELS[result.severityLevel] || result.severityLevel}
+          </span>
+          {result.cyclePhaseAtAssessment && result.cyclePhaseAtAssessment !== 'unknown' && (
+            <p style={{ fontSize: 12, color: '#6B7280', marginTop: 8 }}>Fase do ciclo: {PHASE_LABELS[result.cyclePhaseAtAssessment]} (dia {result.cycleDay})</p>
+          )}
+          <button onClick={() => setResult(null)} style={{ marginTop: 16, padding: '10px 24px', borderRadius: 10, border: 'none', background: '#7C3AED', color: '#fff', fontWeight: 600, fontSize: 14, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Nova avaliacao</button>
+        </div>
+        </>
+      )}
 
-        {/* Questionnaire */}
-        {showQuestionnaire && (
+      {/* ── Tab 2: Padrao ── */}
+      {tab === 'padrao' && (
+        patternLoading ? <p style={{ color: '#6B7280', textAlign: 'center', padding: 20 }}>Carregando...</p> : (
           <div>
-            <p style={{ fontSize: 13, color: '#6B7280', marginBottom: 16 }}>
-              Nas ultimas 2 semanas, com que frequencia voce foi incomodado(a) pelos seguintes problemas?
-            </p>
-            {questions.map((q, qi) => (
-              <div key={qi} style={{ marginBottom: 18 }}>
-                <p style={{ fontSize: 14, fontWeight: 500, color: '#374151', marginBottom: 8 }}>
-                  {qi + 1}. {q.text}
-                </p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  {OPTION_LABELS.map((label, val) => (
-                    <label
-                      key={val}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderRadius: 10,
-                        border: `1.5px solid ${answers[qi] === val ? '#7C3AED' : '#E5E7EB'}`,
-                        background: answers[qi] === val ? '#EDE9FE' : '#fff', cursor: 'pointer', fontSize: 13,
-                      }}
-                    >
-                      <input
-                        type="radio" name={`q-${qi}`} checked={answers[qi] === val}
-                        onChange={() => handleAnswer(qi, val)}
-                        style={{ accentColor: '#7C3AED' }}
-                      />
-                      <span style={{ color: '#374151' }}>{val} - {label}</span>
-                    </label>
+            {!pattern ? (
+              <div style={{ ...card, textAlign: 'center' }}>
+                <p style={{ color: '#6B7280', marginBottom: 12 }}>Nenhum padrao calculado ainda. Realize pelo menos 3 avaliacoes e clique abaixo.</p>
+                <button onClick={handleRecomputePattern} style={{ padding: '10px 24px', borderRadius: 10, border: 'none', background: '#7C3AED', color: '#fff', fontWeight: 600, fontSize: 14, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Calcular padrao</button>
+              </div>
+            ) : (
+              <>
+                <div style={card}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                    <h3 style={{ fontSize: 16, fontWeight: 600, color: '#1F2937', margin: 0 }}>Padrao identificado</h3>
+                    <button onClick={handleRecomputePattern} style={{ fontSize: 12, color: '#7C3AED', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Recalcular</button>
+                  </div>
+                  <div style={{ padding: '10px 14px', borderRadius: 10, background: '#F5F3FF', marginBottom: 12, fontSize: 14, fontWeight: 600, color: '#5B21B6' }}>
+                    {PATTERN_LABELS[pattern.overallPattern] || pattern.overallPattern}
+                  </div>
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
+                    {pattern.pmddSuspected && <span style={{ padding: '3px 10px', borderRadius: 999, fontSize: 11, fontWeight: 600, background: '#FEE2E2', color: '#DC2626' }}>TDPM suspeito</span>}
+                    {pattern.generalDepressionSuspected && <span style={{ padding: '3px 10px', borderRadius: 999, fontSize: 11, fontWeight: 600, background: '#FEF3C7', color: '#D97706' }}>Depressao persistente</span>}
+                    {pattern.generalAnxietySuspected && <span style={{ padding: '3px 10px', borderRadius: 999, fontSize: 11, fontWeight: 600, background: '#DBEAFE', color: '#2563EB' }}>Ansiedade persistente</span>}
+                  </div>
+                </div>
+
+                {/* Clinician alert */}
+                {pattern.clinicianAlertRequired && (
+                  <div style={{ ...card, background: '#FEF2F2', borderColor: '#FECACA' }}>
+                    <p style={{ fontSize: 14, color: '#991B1B', fontWeight: 500, margin: 0, lineHeight: 1.6 }}>
+                      Seu medico foi notificado sobre uma mudanca no seu padrao. Considere agendar uma consulta em breve.
+                    </p>
+                  </div>
+                )}
+
+                {/* Trend cards */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
+                  {[
+                    { label: 'Humor (PHQ-9)', trend: pattern.phq9Trend },
+                    { label: 'Ansiedade (GAD-7)', trend: pattern.gad7Trend },
+                  ].map((item, i) => {
+                    const trendConfig: Record<string, { icon: string; color: string; label: string }> = {
+                      improving: { icon: '↓', color: '#16A34A', label: 'Melhorando' },
+                      stable: { icon: '→', color: '#6B7280', label: 'Estavel' },
+                      worsening: { icon: '↑', color: '#DC2626', label: 'Piorando' },
+                      insufficient_data: { icon: '—', color: '#9CA3AF', label: 'Dados insuficientes' },
+                    };
+                    const tc = trendConfig[item.trend] || trendConfig.insufficient_data;
+                    return (
+                      <div key={i} style={{ ...card, textAlign: 'center', marginBottom: 0 }}>
+                        <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 4px' }}>{item.label}</p>
+                        <span style={{ fontSize: 24, color: tc.color }}>{tc.icon}</span>
+                        <p style={{ fontSize: 12, fontWeight: 600, color: tc.color, margin: '4px 0 0' }}>{tc.label}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Adherence */}
+                {pattern.adherenceScore != null && (
+                  <div style={card}>
+                    <h3 style={{ fontSize: 14, fontWeight: 600, color: '#374151', marginBottom: 8 }}>Aderencia</h3>
+                    <div style={{ height: 10, background: '#E5E7EB', borderRadius: 5, overflow: 'hidden', marginBottom: 6 }}>
+                      <div style={{ height: '100%', width: `${pattern.adherenceScore}%`, background: pattern.adherenceScore >= 66 ? '#16A34A' : pattern.adherenceScore >= 33 ? '#D97706' : '#DC2626', borderRadius: 5, transition: 'width 0.5s' }} />
+                    </div>
+                    <p style={{ fontSize: 12, color: '#6B7280', margin: 0 }}>Voce completou {pattern.adherenceScore}% das avaliacoes recomendadas nos ultimos 3 meses.</p>
+                  </div>
+                )}
+
+                {/* Phase comparison bars */}
+                <div style={card}>
+                  <h3 style={{ fontSize: 14, fontWeight: 600, color: '#374151', marginBottom: 12 }}>Comparativo por fase do ciclo</h3>
+                  {[
+                    { label: 'PHQ-9 Lutea', val: pattern.lutealPhq9Avg, max: 27, color: '#DC2626' },
+                    { label: 'PHQ-9 Folicular', val: pattern.follicularPhq9Avg, max: 27, color: '#16A34A' },
+                    { label: 'GAD-7 Lutea', val: pattern.lutealGad7Avg, max: 21, color: '#DC2626' },
+                    { label: 'GAD-7 Folicular', val: pattern.follicularGad7Avg, max: 21, color: '#16A34A' },
+                  ].map((bar, i) => (
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                      <span style={{ fontSize: 12, color: '#6B7280', minWidth: 110 }}>{bar.label}</span>
+                      <div style={{ flex: 1, height: 14, background: '#F3F4F6', borderRadius: 7, overflow: 'hidden' }}>
+                        <div style={{ height: '100%', width: `${bar.val != null ? (bar.val / bar.max) * 100 : 0}%`, background: bar.color, borderRadius: 7, transition: 'width 0.5s' }} />
+                      </div>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: '#374151', minWidth: 30 }}>{bar.val ?? '—'}</span>
+                    </div>
                   ))}
                 </div>
-              </div>
-            ))}
-            <button
-              onClick={handleSubmit}
-              disabled={!allAnswered || submitting}
-              style={{ ...btnPrimary, opacity: !allAnswered || submitting ? 0.5 : 1 }}
-            >
-              {submitting ? 'Enviando...' : 'Enviar avaliacao'}
-            </button>
-          </div>
-        )}
 
-        {/* Result card */}
-        {result && (
-          <div style={{ background: '#F9FAFB', borderRadius: 12, padding: 16, marginTop: 12 }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-              <span style={{ fontSize: 15, fontWeight: 600, color: '#374151' }}>Resultado</span>
-              <span style={{
-                padding: '4px 12px', borderRadius: 999, fontSize: 12, fontWeight: 600,
-                background: severityColor(result.severity) + '18', color: severityColor(result.severity),
-              }}>
-                {severityLabel(result.severity)}
-              </span>
-            </div>
-            <div style={{ fontSize: 32, fontWeight: 700, color: '#2D1B4E', marginBottom: 4 }}>
-              {result.totalScore}
-              <span style={{ fontSize: 14, fontWeight: 400, color: '#9CA3AF' }}>
-                {' '}/ {tab === 'phq9' ? 27 : 21}
-              </span>
-            </div>
-            <p style={{ fontSize: 13, color: '#6B7280', margin: '8px 0 0' }}>
-              {tab === 'phq9'
-                ? 'Escore total do PHQ-9. Quanto maior, mais significativos os sintomas depressivos.'
-                : 'Escore total do GAD-7. Quanto maior, mais significativos os sintomas de ansiedade.'
-              }
-            </p>
-            <p style={{ fontSize: 11, color: '#9CA3AF', marginTop: 12, fontStyle: 'italic' }}>
-              Ref.: {TAB_REFS[tab]}
-            </p>
-            <button
-              onClick={() => { setResult(null); }}
-              style={{ ...btnPrimary, marginTop: 12, background: '#EDE9FE', color: '#7C3AED' }}
-            >
-              Nova avaliacao
-            </button>
+                <div style={{ ...card, background: '#F5F3FF' }}>
+                  <p style={{ fontSize: 13, color: '#374151', lineHeight: 1.6, margin: 0 }}>{pattern.patientSummary}</p>
+                </div>
+              </>
+            )}
           </div>
-        )}
-      </div>
+        )
+      )}
 
-      {/* Section B: History + Meditations */}
-      {loading ? (
-        <div style={{ textAlign: 'center', padding: 32, color: '#9CA3AF' }}>Carregando...</div>
-      ) : (
-        <>
-          {/* Latest scores */}
-          <div style={card}>
-            <p style={{ fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 12 }}>Ultimas pontuacoes</p>
-            <div style={{ display: 'flex', gap: 12 }}>
-              {(['phq9', 'gad7'] as TabType[]).map((t) => {
-                const a = t === 'phq9' ? latest.phq9 : latest.gad7;
+      {/* ── Tab 3: Historico ── */}
+      {tab === 'historico' && (
+        loading ? <p style={{ color: '#6B7280', textAlign: 'center', padding: 20 }}>Carregando...</p> : (
+          history.length === 0 ? (
+            <div style={{ ...card, textAlign: 'center' }}>
+              <p style={{ color: '#6B7280' }}>Nenhuma avaliacao registrada.</p>
+            </div>
+          ) : (
+            <div>
+              {history.map((h: any) => {
+                const sevColor = SEVERITY_COLORS[h.severityLevel] || '#6B7280';
                 return (
-                  <div key={t} style={{ flex: 1, background: '#F9FAFB', borderRadius: 12, padding: 14, textAlign: 'center' }}>
-                    <p style={{ fontSize: 11, color: '#9CA3AF', margin: 0, textTransform: 'uppercase', fontWeight: 600, letterSpacing: 0.5 }}>
-                      {t === 'phq9' ? 'PHQ-9' : 'GAD-7'}
-                    </p>
-                    {a ? (
-                      <>
-                        <p style={{ fontSize: 28, fontWeight: 700, color: '#2D1B4E', margin: '4px 0' }}>{a.totalScore}</p>
-                        <span style={{
-                          padding: '2px 10px', borderRadius: 999, fontSize: 11, fontWeight: 600,
-                          background: severityColor(a.severity) + '18', color: severityColor(a.severity),
-                        }}>
-                          {severityLabel(a.severity)}
+                  <div key={h.id} style={{ ...card, padding: 14 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <span style={{ fontSize: 13, fontWeight: 600, color: '#1F2937' }}>{(h.assessmentType || '').toUpperCase()}</span>
+                        <span style={{ fontSize: 12, color: '#9CA3AF', marginLeft: 8 }}>{formatDateTimeBR(h.createdAt)}</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span style={{ fontSize: 18, fontWeight: 700, color: '#1F2937' }}>{h.totalScore}</span>
+                        <span style={{ padding: '2px 10px', borderRadius: 999, fontSize: 11, fontWeight: 600, color: '#fff', background: sevColor }}>
+                          {SEVERITY_LABELS[h.severityLevel] || h.severityLevel}
                         </span>
-                      </>
-                    ) : (
-                      <p style={{ fontSize: 13, color: '#9CA3AF', margin: '8px 0 0' }}>Sem dados</p>
+                      </div>
+                    </div>
+                    {h.cyclePhaseAtAssessment && h.cyclePhaseAtAssessment !== 'unknown' && (
+                      <p style={{ fontSize: 11, color: '#9CA3AF', marginTop: 4 }}>Fase: {PHASE_LABELS[h.cyclePhaseAtAssessment]} (dia {h.cycleDay})</p>
                     )}
                   </div>
                 );
               })}
             </div>
-          </div>
-
-          {/* History list */}
-          {history.length > 0 && (
-            <div style={card}>
-              <p style={{ fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 12 }}>Historico recente</p>
-              {history.slice(0, 5).map((h) => (
-                <div key={h.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #F3F4F6' }}>
-                  <div>
-                    <p style={{ fontSize: 13, fontWeight: 500, color: '#374151', margin: 0 }}>
-                      {h.type === 'phq9' ? 'PHQ-9' : 'GAD-7'} - {formatBR(h.date)}
-                    </p>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ fontSize: 15, fontWeight: 700, color: '#2D1B4E' }}>{h.totalScore}</span>
-                    <span style={{
-                      padding: '2px 8px', borderRadius: 999, fontSize: 10, fontWeight: 600,
-                      background: severityColor(h.severity) + '18', color: severityColor(h.severity),
-                    }}>
-                      {severityLabel(h.severity)}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Meditation suggestions */}
-          {meditations && meditations.suggestions.length > 0 && (
-            <div style={card}>
-              <p style={{ fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 12 }}>Sugestoes de meditacao</p>
-              {meditations.suggestions.map((m, i) => (
-                <div key={i} style={{ background: '#F5F3FF', borderRadius: 12, padding: 14, marginBottom: i < meditations.suggestions.length - 1 ? 10 : 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <p style={{ fontSize: 14, fontWeight: 600, color: '#5B21B6', margin: 0 }}>{m.title}</p>
-                    {m.duration && <span style={{ fontSize: 11, color: '#7C3AED' }}>{m.duration}</span>}
-                  </div>
-                  <p style={{ fontSize: 13, color: '#6B7280', margin: '6px 0 0' }}>{m.description}</p>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Privacy note */}
-          <p style={{ fontSize: 11, color: '#9CA3AF', textAlign: 'center', marginTop: 20, fontStyle: 'italic' }}>
-            Estes dados sao confidenciais e protegidos
-          </p>
-        </>
+          )
+        )
       )}
+
+      {/* ── Tab 4: Evolucao ── */}
+      {tab === 'evolucao' && (
+        <div>
+          <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
+            {([['phq9', 'Humor'], ['gad7', 'Ansiedade'], ['pss10', 'Estresse']] as const).map(([key, label]) => (
+              <button key={key} onClick={() => setTimelineType(key)} style={{
+                flex: 1, padding: '8px 4px', borderRadius: 999, border: 'none', fontSize: 12, fontWeight: 600,
+                cursor: 'pointer', background: timelineType === key ? '#EDE9FE' : '#F3F4F6',
+                color: timelineType === key ? '#7C3AED' : '#6B7280', fontFamily: "'DM Sans', sans-serif",
+              }}>{label}</button>
+            ))}
+          </div>
+          <div style={card}>
+            <MentalHealthTimeline type={timelineType} />
+          </div>
+          <p style={{ fontSize: 12, color: '#6B7280', textAlign: 'center', marginTop: 8 }}>
+            {timelineType === 'phq9' && 'Pontuacoes mais baixas indicam menos sintomas depressivos.'}
+            {timelineType === 'gad7' && 'Pontuacoes mais baixas indicam menos sintomas de ansiedade.'}
+            {timelineType === 'pss10' && 'Pontuacoes mais baixas indicam menor estresse percebido.'}
+          </p>
+        </div>
+      )}
+
+      <p style={{ fontSize: 11, color: '#9CA3AF', textAlign: 'center', marginTop: 20, fontStyle: 'italic' }}>
+        Estes dados sao confidenciais e protegidos. Em caso de crise: CVV 188 (24h).
+      </p>
     </Layout>
   );
 }
