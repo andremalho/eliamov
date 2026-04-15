@@ -5,7 +5,7 @@ import { Article } from './entities/article.entity';
 import { Video } from './entities/video.entity';
 import { ContentCategory } from './entities/content-category.entity';
 import { UserSavedContent } from './entities/user-saved-content.entity';
-import { CycleEntry } from '../cycle/entities/cycle.entity';
+import { CycleService } from '../cycle/cycle.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { CreateVideoDto } from './dto/create-video.dto';
 import { SaveContentDto } from './dto/save-content.dto';
@@ -18,7 +18,7 @@ export class ContentService {
     @InjectRepository(Video) private videoRepo: Repository<Video>,
     @InjectRepository(ContentCategory) private categoryRepo: Repository<ContentCategory>,
     @InjectRepository(UserSavedContent) private savedRepo: Repository<UserSavedContent>,
-    @InjectRepository(CycleEntry) private cycleRepo: Repository<CycleEntry>,
+    private readonly cycleService: CycleService,
   ) {}
 
   // --- Articles ---
@@ -35,8 +35,7 @@ export class ContentService {
     // Filter by phase
     let phase = query.phase;
     if (!phase) {
-      // Auto-detect from user's cycle
-      phase = await this.getUserPhase(userId);
+      phase = await this.cycleService.getUserPhaseString(userId);
     }
     if (phase && phase !== 'all') {
       qb.andWhere('(a.cyclePhase = :phase OR a.cyclePhase = :all)', { phase, all: 'all' });
@@ -82,7 +81,7 @@ export class ContentService {
       .orderBy('v.publishedAt', 'DESC');
 
     let phase = query.phase;
-    if (!phase) phase = await this.getUserPhase(userId);
+    if (!phase) phase = await this.cycleService.getUserPhaseString(userId);
     if (phase && phase !== 'all') {
       qb.andWhere('(v.cyclePhase = :phase OR v.cyclePhase = :all)', { phase, all: 'all' });
     }
@@ -138,22 +137,4 @@ export class ContentService {
     return result;
   }
 
-  // --- Helper ---
-  private async getUserPhase(userId: string): Promise<string | null> {
-    const entry = await this.cycleRepo.findOne({ where: { userId }, order: { startDate: 'DESC' } });
-    if (!entry) return null;
-    const cycleLength = entry.cycleLength ?? 28;
-    const periodLength = entry.periodLength ?? 5;
-    const start = new Date(entry.startDate);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    start.setHours(0, 0, 0, 0);
-    const diff = Math.floor((today.getTime() - start.getTime()) / 86400000);
-    const dayIndex = diff % cycleLength;
-    if (dayIndex < periodLength) return 'menstrual';
-    const ovDay = cycleLength - 14;
-    if (dayIndex < ovDay - 1) return 'follicular';
-    if (dayIndex <= ovDay + 1) return 'ovulatory';
-    return 'luteal';
-  }
 }

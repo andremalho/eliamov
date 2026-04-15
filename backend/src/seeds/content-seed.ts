@@ -1,4 +1,6 @@
-export const SEED_ARTICLES = [
+import { CyclePhaseFilter } from '../shared/types';
+
+export const SEED_ARTICLES: { title: string; summary: string; body: string; categorySlug: string; cyclePhase: CyclePhaseFilter }[] = [
   {
     title: 'Como o ciclo menstrual afeta seu treino',
     summary: 'Entenda as 4 fases do ciclo e como adaptar seu treino para cada uma delas.',

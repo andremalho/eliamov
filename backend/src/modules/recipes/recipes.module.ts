@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Recipe } from './entities/recipe.entity';
-import { CycleEntry } from '../cycle/entities/cycle.entity';
+import { CycleModule } from '../cycle/cycle.module';
 import { RecipesService } from './recipes.service';
 import { RecipesController } from './recipes.controller';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Recipe, CycleEntry])],
+  imports: [TypeOrmModule.forFeature([Recipe]), CycleModule],
   controllers: [RecipesController],
   providers: [RecipesService],
   exports: [RecipesService],

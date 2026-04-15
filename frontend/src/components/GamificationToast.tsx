@@ -1,16 +1,7 @@
 import React from 'react';
 import { useGamification } from '../contexts/GamificationContext';
+import { BADGE_LABELS } from '../config/badges';
 import { Zap, Award, TrendingUp } from 'lucide-react';
-
-const BADGE_LABELS: Record<string, string> = {
-  first_workout: 'Primeiro treino',
-  '10_workouts': '10 treinos',
-  '50_workouts': '50 treinos',
-  '7_day_streak': '7 dias seguidos',
-  '30_day_streak': '30 dias seguidos',
-  level_5: 'Nivel 5',
-  level_10: 'Nivel 10',
-};
 
 export default function GamificationToast() {
   const { xpEvents, dismissEvent } = useGamification();

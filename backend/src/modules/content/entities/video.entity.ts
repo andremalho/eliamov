@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { ContentCategory } from './content-category.entity';
-import { CyclePhaseFilter } from './article.entity';
+import { CyclePhaseFilter } from '../../../shared/types';
 
 @Entity('videos')
 export class Video {

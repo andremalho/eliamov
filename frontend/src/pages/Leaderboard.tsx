@@ -4,17 +4,13 @@ import BadgeDisplay from '../components/BadgeDisplay';
 import { gamificationApi, LeaderboardEntry } from '../services/gamification.api';
 import { useGamification } from '../contexts/GamificationContext';
 import { Trophy, Flame, Star, Medal, Crown, Dumbbell } from 'lucide-react';
+import { initials } from '../utils/format';
 
 const RANK_STYLES = [
   { bg: '#FEF3C7', border: '#F59E0B', color: '#92400E', icon: Crown },
   { bg: '#F1F5F9', border: '#94A3B8', color: '#475569', icon: Medal },
   { bg: '#FFF7ED', border: '#F97316', color: '#9A3412', icon: Medal },
 ];
-
-function ini(n: string) {
-  const p = n.trim().split(/\s+/);
-  return p.length === 1 ? (p[0][0]?.toUpperCase() ?? '?') : (p[0][0] + p[p.length - 1][0]).toUpperCase();
-}
 
 export default function Leaderboard() {
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
@@ -99,7 +95,7 @@ export default function Leaderboard() {
                     }}>
                       {entry.profile?.avatarUrl
                         ? <img src={entry.profile.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        : ini(entry.name)}
+                        : initials(entry.name)}
                     </div>
 
                     {/* Info */}

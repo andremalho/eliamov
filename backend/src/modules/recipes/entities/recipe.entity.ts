@@ -1,7 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { ContentCategory } from '../../content/entities/content-category.entity';
-
-export type CyclePhaseFilter = 'follicular' | 'ovulatory' | 'luteal' | 'menstrual' | 'all';
+import { CyclePhaseFilter } from '../../../shared/types';
 
 export interface RecipeIngredient {
   name: string;

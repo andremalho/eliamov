@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useGamification } from '../contexts/GamificationContext';
+import { initials } from '../utils/format';
 import Logo from './Logo';
 import {
   Home, Droplets, Dumbbell, Apple, Heart, MessageCircle,
@@ -59,8 +60,6 @@ export default function AppShell({ children, title, subtitle, hideHeader }: Prop
   const streak = stats?.currentStreak ?? 0;
   const level = stats?.level ?? 1;
   const xp = stats?.xp ?? 0;
-  const xpInLevel = xp % 500;
-  const ini = (n: string) => { const p = n.trim().split(/\s+/); return p.length === 1 ? (p[0][0]?.toUpperCase() ?? '?') : (p[0][0] + p[p.length - 1][0]).toUpperCase(); };
 
   return (
     <>
@@ -174,7 +173,7 @@ export default function AppShell({ children, title, subtitle, hideHeader }: Prop
             <div className="sh-dp">
               <div style={{ display:'flex', alignItems:'center', gap:12 }}>
                 <div style={{ width:40, height:40, borderRadius:'50%', background:'linear-gradient(135deg, #7C3AED, #9333EA)', display:'flex', alignItems:'center', justifyContent:'center', color:'#fff', fontWeight:700, fontSize:14, boxShadow:'0 2px 8px rgba(124,58,237,0.25)' }}>
-                  {ini(currentUser.name)}
+                  {initials(currentUser.name)}
                 </div>
                 <div>
                   <div style={{ fontSize:14, fontWeight:600, color:'#111827' }}>{currentUser.name}</div>
@@ -220,7 +219,7 @@ export default function AppShell({ children, title, subtitle, hideHeader }: Prop
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <Link to="/profile" style={{ textDecoration:'none' }}>
                 <div style={{ width:34, height:34, borderRadius:'50%', background:'rgba(255,255,255,0.15)', border:'2px solid rgba(255,255,255,0.3)', display:'flex', alignItems:'center', justifyContent:'center', color:'#fff', fontWeight:700, fontSize:12, transition:'border-color 0.15s' }}>
-                  {ini(currentUser?.name ?? '?')}
+                  {initials(currentUser?.name ?? '?')}
                 </div>
               </Link>
             </div>

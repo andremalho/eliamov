@@ -30,13 +30,13 @@ export class TrainingService {
   }
 
   createForUser(userId: string, dto: CreateTrainingDto) {
-    return this.repo.save(this.repo.create({ ...dto, userId } as any));
+    return this.repo.save(this.repo.create({ ...dto, userId } as unknown as Partial<TrainingPlan>));
   }
 
   async updateForUser(userId: string, id: string, dto: Partial<TrainingPlan>) {
     const record = await this.repo.findOne({ where: { id, userId } });
     if (!record) throw new NotFoundException();
-    return this.repo.update(id, dto as any);
+    return this.repo.update(id, dto);
   }
 
   async removeForUser(userId: string, id: string) {
@@ -114,7 +114,7 @@ export class TrainingService {
   }
 
   createCustomWorkout(userId: string, dto: CreateCustomWorkoutDto) {
-    return this.customRepo.save(this.customRepo.create({ ...dto, createdBy: userId } as any));
+    return this.customRepo.save(this.customRepo.create({ ...dto, createdBy: userId } as Partial<CustomWorkout>));
   }
 
   async updateCustomWorkout(id: string, dto: Partial<CreateCustomWorkoutDto>) {
@@ -140,7 +140,7 @@ export class TrainingService {
 
   // --- Workout Logs ---
   createWorkoutLog(userId: string, dto: CreateWorkoutLogDto) {
-    return this.logRepo.save(this.logRepo.create({ ...dto, userId } as any));
+    return this.logRepo.save(this.logRepo.create({ ...dto, userId } as Partial<WorkoutLog>));
   }
 
   findWorkoutLogs(userId: string, page = 1, limit = 20) {

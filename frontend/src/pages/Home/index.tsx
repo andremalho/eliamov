@@ -21,8 +21,9 @@ const PHASE_INFO: Record<string, { label: string; energy: string; emoji: string 
   menstrual: { label: 'menstrual', energy: 'autocuidado', emoji: '🩸' },
 };
 
+import { initials } from '../../utils/format';
+
 function greet() { const h = new Date().getHours(); return h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite'; }
-function ini(n: string) { const p = n.trim().split(/\s+/); return p.length === 1 ? (p[0][0]?.toUpperCase() ?? '?') : (p[0][0] + p[p.length - 1][0]).toUpperCase(); }
 function ago(iso: string) { const d = Date.now() - new Date(iso).getTime(); const m = Math.floor(d / 60000); if (m < 1) return 'agora'; if (m < 60) return `${m}min`; const h = Math.floor(m / 60); if (h < 24) return `${h}h`; return `${Math.floor(h / 24)}d`; }
 
 export default function Home() {
@@ -360,7 +361,7 @@ export default function Home() {
                           color: '#fff', fontWeight: 700, fontSize: 13, flexShrink: 0,
                           boxShadow: '0 2px 8px rgba(124,58,237,0.2)',
                         }}>
-                          {ini(post.user?.name ?? '?')}
+                          {initials(post.user?.name ?? '?')}
                         </div>
                         <div>
                           <div style={{ fontSize: 13.5, fontWeight: 600, color: '#111827' }}>{post.user?.name ?? 'Aluna'}</div>

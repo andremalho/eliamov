@@ -86,6 +86,11 @@ export class CycleService {
     };
   }
 
+  async getUserPhaseString(userId: string): Promise<string | null> {
+    const result = await this.getCurrentPhase(userId);
+    return result.phase;
+  }
+
   private computePhase(dayIndex: number, cycleLength: number, periodLength: number): Phase {
     if (dayIndex < periodLength) return 'menstrual';
     const ovulationDay = cycleLength - 14;

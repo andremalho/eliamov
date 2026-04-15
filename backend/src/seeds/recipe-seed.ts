@@ -1,4 +1,6 @@
-export const SEED_RECIPES = [
+import { CyclePhaseFilter } from '../shared/types';
+
+export const SEED_RECIPES: { title: string; summary: string; instructions: string; ingredients: { name: string; quantity: string; unit: string }[]; macros: { calories: number; protein: number; carbs: number; fat: number; fiber: number }; prepTimeMinutes: number; cookTimeMinutes: number; servings: number; dietaryRestrictions: string[]; cyclePhase: CyclePhaseFilter; categorySlug: string }[] = [
   // MENSTRUAL (2 receitas)
   {
     title: 'Bowl de aveia com banana e cacau',

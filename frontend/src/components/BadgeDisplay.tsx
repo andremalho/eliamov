@@ -1,16 +1,5 @@
 import React from 'react';
-import { Dumbbell, Flame, Trophy, Star, Zap, Award, Crown, Target } from 'lucide-react';
-
-const BADGES = [
-  { key: 'first_workout', label: 'Primeiro treino', Icon: Dumbbell, color: '#7C3AED' },
-  { key: '10_workouts', label: '10 treinos', Icon: Target, color: '#3B82F6' },
-  { key: '50_workouts', label: '50 treinos', Icon: Trophy, color: '#F59E0B' },
-  { key: '7_day_streak', label: '7 dias seguidos', Icon: Flame, color: '#EF4444' },
-  { key: '30_day_streak', label: '30 dias seguidos', Icon: Zap, color: '#F97316' },
-  { key: 'level_5', label: 'Nivel 5', Icon: Star, color: '#22C55E' },
-  { key: 'level_10', label: 'Nivel 10', Icon: Crown, color: '#D97706' },
-  { key: 'first_post', label: 'Primeiro post', Icon: Award, color: '#EC4899' },
-];
+import { BADGE_CONFIG } from '../config/badges';
 
 interface Props {
   earnedBadges: string[];
@@ -21,10 +10,10 @@ export default function BadgeDisplay({ earnedBadges, compact }: Props) {
   return (
     <div style={{
       display: 'grid',
-      gridTemplateColumns: compact ? 'repeat(4, 1fr)' : 'repeat(4, 1fr)',
+      gridTemplateColumns: 'repeat(4, 1fr)',
       gap: compact ? 8 : 12,
     }}>
-      {BADGES.map(({ key, label, Icon, color }) => {
+      {BADGE_CONFIG.map(({ key, label, Icon, color }) => {
         const earned = earnedBadges.includes(key);
         return (
           <div key={key} style={{

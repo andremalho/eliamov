@@ -7,6 +7,7 @@ import { Challenge } from '../challenges/entities/challenge.entity';
 import { ChallengeParticipant } from '../challenges/entities/challenge-participant.entity';
 import { Article } from '../content/entities/article.entity';
 import { ContentCategory } from '../content/entities/content-category.entity';
+import { IsNull } from 'typeorm';
 import { SEED_ARTICLES, SEED_CATEGORIES } from '../../seeds/content-seed';
 import { SEED_RECIPES } from '../../seeds/recipe-seed';
 import { Recipe } from '../recipes/entities/recipe.entity';
@@ -155,7 +156,7 @@ export class AcademyService {
 
   async exportContentCsv(tenantId: string): Promise<string> {
     const articles = await this.articleRepo.find({
-      where: [{ academyId: tenantId }, { academyId: undefined as any }],
+      where: [{ academyId: tenantId }, { academyId: IsNull() }],
       relations: ['category'],
       order: { createdAt: 'DESC' },
     });
@@ -202,7 +203,7 @@ export class AcademyService {
             title: article.title,
             summary: article.summary,
             body: article.body,
-            cyclePhase: article.cyclePhase as any,
+            cyclePhase: article.cyclePhase,
             categoryId,
             authorId: tenantId,
             academyId: tenantId,
@@ -232,7 +233,7 @@ export class AcademyService {
             cookTimeMinutes: recipe.cookTimeMinutes,
             servings: recipe.servings,
             dietaryRestrictions: recipe.dietaryRestrictions,
-            cyclePhase: recipe.cyclePhase as any,
+            cyclePhase: recipe.cyclePhase,
             categoryId,
             authorId: tenantId,
             academyId: tenantId,

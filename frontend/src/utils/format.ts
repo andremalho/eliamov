@@ -16,6 +16,13 @@ export const formatDateTimeBR = (iso: string | null | undefined) => {
   return `${dd}/${mm}/${yyyy} ${hh}:${mi}`;
 };
 
+export function initials(name: string): string {
+  const parts = name.trim().split(/\s+/);
+  return parts.length === 1
+    ? (parts[0][0]?.toUpperCase() ?? '?')
+    : (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
 export const nowLocalInput = () => {
   const d = new Date();
   d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
