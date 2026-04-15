@@ -389,8 +389,8 @@ Adapte o plano à fase do ciclo, priorizando nutrientes relevantes para a fase a
     const systemPrompt = `Voce e Elia, a assistente de saude feminina do eliaMov. Responda em portugues, de forma acolhedora, objetiva e baseada em evidencias. Voce tem acesso ao perfil da usuaria:
 - Nome: ${user?.name ?? 'Usuaria'}
 - Fase do ciclo: ${currentPhase?.phase ?? 'nao informado'} (dia ${currentPhase?.dayOfCycle ?? '?'})
-- Objetivo: ${(user as any)?.fitnessGoal ?? 'nao informado'}
-- Nivel: ${(user as any)?.fitnessLevel ?? 'nao informado'}
+- Objetivo: ${user?.fitnessGoal ?? 'nao informado'}
+- Nivel: ${user?.fitnessLevel ?? 'nao informado'}
 - Humor recente: ${(moodSummary as any)?.avgMood ?? 'nao registrado'}/5
 
 Regras:

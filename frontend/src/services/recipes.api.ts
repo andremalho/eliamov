@@ -14,7 +14,7 @@ export interface RecipeMacros {
   fiber?: number;
 }
 
-export type CyclePhaseFilter = 'follicular' | 'ovulatory' | 'luteal' | 'menstrual' | 'all';
+import { CyclePhaseFilter } from '../types/cycle';
 
 export interface Recipe {
   id: string;

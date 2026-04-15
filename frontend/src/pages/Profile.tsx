@@ -3,7 +3,7 @@ import { useAuth, User } from '../contexts/AuthContext';
 import { usersApi, UpdateProfileInput } from '../services/users.api';
 import { calendarApi, CalendarConnection } from '../services/calendar.api';
 import api from '../services/api';
-import { formatBR } from '../utils/format';
+import { formatBR, initials } from '../utils/format';
 import {
   Camera, Upload, Edit3, Save, LogOut, Calendar, ExternalLink,
   Trash2, Copy, Check, ChevronRight,
@@ -14,10 +14,7 @@ import { useGamification } from '../contexts/GamificationContext';
 import { InstagramIcon, FacebookIcon, XIcon, SnapchatIcon, WhatsAppIcon } from '../components/SocialIcons';
 import { useTranslation } from '../i18n/useTranslation';
 
-function getInitials(n: string): string {
-  const p = n.trim().split(/\s+/);
-  return p.length === 1 ? (p[0][0]?.toUpperCase() ?? '?') : (p[0][0] + p[p.length - 1][0]).toUpperCase();
-}
+const getInitials = initials;
 
 const LEVELS = [
   { value: 'sedentary', label: 'Sedentario' },

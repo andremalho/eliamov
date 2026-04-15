@@ -8,7 +8,7 @@ import {
   Home, Droplets, Dumbbell, Apple, Heart, MessageCircle,
   Users, Zap, BookOpen, Brain, User, LogOut,
   Menu, X, Stethoscope, Trophy, TrendingUp, Scale, Flame, FlaskRound, Sun,
-  Sparkles, Bell, Star, Medal,
+  Sparkles, Star, Medal,
 } from 'lucide-react';
 
 const NAV_GROUPS = [

@@ -1,6 +1,7 @@
 import api from './api';
 
-export type CyclePhaseFilter = 'follicular' | 'ovulatory' | 'luteal' | 'menstrual' | 'all';
+import { CyclePhaseFilter } from '../types/cycle';
+export type { CyclePhaseFilter };
 
 export interface ContentCategory {
   id: string; name: string; slug: string;

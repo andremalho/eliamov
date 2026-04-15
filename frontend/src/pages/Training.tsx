@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   trainingEngineApi,
   TodayWorkout,
@@ -154,13 +154,11 @@ export default function Training() {
   const PhaseIcon = cfg.icon;
   const workout = activeWorkout ?? today?.workout ?? null;
 
-  // Timer logic
-  const startTimer = useCallback(() => {
+  const startTimer = () => {
     setTimerActive(true);
     setTimerPaused(false);
     setElapsedSeconds(0);
     setShowExercises(true);
-    // Init exercise logs
     if (workout) {
       const logs: typeof exerciseLogs = {};
       workout.exercises.forEach((ex, i) => {
@@ -169,7 +167,7 @@ export default function Training() {
       });
       setExerciseLogs(logs);
     }
-  }, [workout]);
+  };
 
   useEffect(() => {
     if (timerActive && !timerPaused) {
@@ -224,7 +222,15 @@ export default function Training() {
     });
   };
 
-  const finishWorkout = async () => {
+  const stopWorkout = () => {
+    setTimerActive(false);
+    setTimerPaused(false);
+    if (timerRef.current) clearInterval(timerRef.current);
+    if (restRef.current) clearInterval(restRef.current);
+    setShowComplete(true);
+  };
+
+  const saveWorkout = async (rpe: number | null) => {
     if (!workout) return;
     setSaving(true);
     try {
@@ -236,13 +242,10 @@ export default function Training() {
         workoutName: workout.name,
         phase: phaseKey,
         durationSeconds: elapsedSeconds,
-        rpe: sessionRpe,
+        rpe,
         exercises,
         notes: sessionNotes || undefined,
       });
-      setShowComplete(true);
-      setTimerActive(false);
-      if (timerRef.current) clearInterval(timerRef.current);
       rewardXP(50, 'workout');
     } catch {
       alert('Erro ao salvar treino.');
@@ -371,7 +374,7 @@ export default function Training() {
                       style={{ background: '#374151', border: 'none', borderRadius: 8, padding: '8px 12px', cursor: 'pointer', color: '#fff', display: 'flex', alignItems: 'center', gap: 4, fontSize: 13 }}>
                       {timerPaused ? <><Play size={14} /> Retomar</> : <><Pause size={14} /> Pausar</>}
                     </button>
-                    <button onClick={finishWorkout} disabled={saving}
+                    <button onClick={stopWorkout} disabled={saving}
                       style={{ background: '#22C55E', border: 'none', borderRadius: 8, padding: '8px 12px', cursor: 'pointer', color: '#fff', display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 600 }}>
                       <CheckCircle size={14} /> {saving ? 'Salvando...' : 'Finalizar'}
                     </button>
@@ -611,14 +614,24 @@ export default function Training() {
                 </div>
               </div>
 
-              <button onClick={resetWorkout} style={{
-                padding: '10px 24px', borderRadius: 10, border: 'none',
-                background: '#7C3AED', color: '#fff', fontWeight: 600,
-                fontSize: 14, cursor: 'pointer', display: 'inline-flex',
-                alignItems: 'center', gap: 6, fontFamily: "'DM Sans', sans-serif",
-              }}>
-                <RotateCcw size={14} /> Novo treino
-              </button>
+              <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
+                <button onClick={() => saveWorkout(sessionRpe).then(resetWorkout)} disabled={saving} style={{
+                  padding: '10px 24px', borderRadius: 10, border: 'none',
+                  background: '#22C55E', color: '#fff', fontWeight: 600,
+                  fontSize: 14, cursor: 'pointer', display: 'inline-flex',
+                  alignItems: 'center', gap: 6, fontFamily: "'DM Sans', sans-serif",
+                }}>
+                  <CheckCircle size={14} /> {saving ? 'Salvando...' : 'Salvar treino'}
+                </button>
+                <button onClick={resetWorkout} style={{
+                  padding: '10px 24px', borderRadius: 10, border: 'none',
+                  background: '#F3F4F6', color: '#6b7280', fontWeight: 600,
+                  fontSize: 14, cursor: 'pointer', display: 'inline-flex',
+                  alignItems: 'center', gap: 6, fontFamily: "'DM Sans', sans-serif",
+                }}>
+                  <RotateCcw size={14} /> Descartar
+                </button>
+              </div>
             </div>
           )}
 

@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 import { Activity } from '../activities/entities/activity.entity';
 import { Challenge } from '../challenges/entities/challenge.entity';
 import { ChallengeParticipant } from '../challenges/entities/challenge-participant.entity';
 import { Article } from '../content/entities/article.entity';
 import { ContentCategory } from '../content/entities/content-category.entity';
-import { IsNull } from 'typeorm';
 import { SEED_ARTICLES, SEED_CATEGORIES } from '../../seeds/content-seed';
 import { SEED_RECIPES } from '../../seeds/recipe-seed';
 import { Recipe } from '../recipes/entities/recipe.entity';

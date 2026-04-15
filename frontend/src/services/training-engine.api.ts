@@ -59,8 +59,17 @@ export interface ProgressStats {
   recentLogs: WorkoutLogEntry[];
 }
 
+export interface CreateWorkoutLogInput {
+  workoutName: string;
+  phase: string;
+  durationSeconds: number;
+  rpe?: number | null;
+  exercises: { name: string; sets: { reps?: number; weight?: number; duration?: number; completed: boolean }[] }[];
+  notes?: string;
+}
+
 export const workoutLogApi = {
-  create: (data: any) => api.post<WorkoutLogEntry>('/training/logs', data).then((r) => r.data),
+  create: (data: CreateWorkoutLogInput) => api.post<WorkoutLogEntry>('/training/logs', data).then((r) => r.data),
   list: (page = 1) => api.get(`/training/logs?page=${page}`).then((r) => r.data),
   progress: () => api.get<ProgressStats>('/training/progress').then((r) => r.data),
 };

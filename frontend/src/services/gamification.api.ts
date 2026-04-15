@@ -22,9 +22,16 @@ export interface LeaderboardEntry {
   profile?: { avatarUrl?: string } | null;
 }
 
+export interface AddXPResponse {
+  stats: UserStats;
+  leveledUp: boolean;
+  newBadges: string[];
+  xpGained: number;
+}
+
 export const gamificationApi = {
   stats: () => api.get<UserStats>('/gamification/stats').then((r) => r.data),
   addXP: (amount: number, action: string) =>
-    api.post('/gamification/xp', { amount, action }).then((r) => r.data),
+    api.post<AddXPResponse>('/gamification/xp', { amount, action }).then((r) => r.data),
   leaderboard: () => api.get<LeaderboardEntry[]>('/gamification/leaderboard').then((r) => r.data),
 };

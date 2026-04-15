@@ -1,4 +1,6 @@
 import api from './api';
+import type { WorkoutExercise, WorkoutTemplate } from './training-engine.api';
+export type { WorkoutExercise, WorkoutTemplate };
 
 export interface TrainingPlan {
   id: string;
@@ -11,15 +13,6 @@ export interface TrainingPlan {
   wearableReadiness: number | null;
   planJson: any;
   createdAt: string;
-}
-
-export interface WorkoutExercise {
-  name: string;
-  sets?: number;
-  reps?: string;
-  duration?: string;
-  rest?: string;
-  notes?: string;
 }
 
 export interface CustomWorkout {
@@ -36,18 +29,6 @@ export interface CustomWorkout {
   academyId: string | null;
   createdBy: string;
   createdAt: string;
-}
-
-export interface WorkoutTemplate {
-  name: string;
-  phase: string;
-  type: string;
-  duration: number;
-  intensity: string;
-  rpe: string;
-  exercises: WorkoutExercise[];
-  description: string;
-  reference: string;
 }
 
 export interface FullLibrary {
