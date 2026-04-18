@@ -6,9 +6,7 @@ interface Props {
 }
 
 export function NextAssessmentBadge({ suggestedDays, lastAssessmentDate }: Props) {
-  if (suggestedDays === null && !lastAssessmentDate) {
-    return null;
-  }
+  if (suggestedDays === null && !lastAssessmentDate) return null;
 
   let daysLeft: number | null = null;
   if (suggestedDays !== null && suggestedDays > 0 && lastAssessmentDate) {
@@ -21,25 +19,53 @@ export function NextAssessmentBadge({ suggestedDays, lastAssessmentDate }: Props
     daysLeft = Math.ceil((target.getTime() - today.getTime()) / 86400000);
   }
 
-  let bg: string, color: string, text: string;
+  let accent: string;
+  let tone: string;
+  let text: string;
 
   if (suggestedDays === 0 || !lastAssessmentDate) {
-    bg = '#F5F3FF'; color = '#7C3AED'; text = 'Faca sua primeira avaliacao';
+    accent = '#D97757'; tone = 'rgba(217,119,87,0.08)'; text = 'Faça sua primeira avaliação';
   } else if (daysLeft !== null && daysLeft < 0) {
-    bg = '#FEF2F2'; color = '#DC2626'; text = 'Avaliacao recomendada hoje';
+    accent = '#8B3A2F'; tone = 'rgba(139,58,47,0.06)'; text = 'Avaliação recomendada hoje';
   } else if (daysLeft !== null && daysLeft <= 7) {
-    bg = '#FFFBEB'; color = '#D97706'; text = 'Avaliacao recomendada em breve';
+    accent = '#C9A977'; tone = 'rgba(201,169,119,0.1)'; text = 'Avaliação recomendada em breve';
   } else {
-    bg = '#F0FDF4'; color = '#16A34A'; text = `Proxima avaliacao em ${daysLeft ?? suggestedDays} dias`;
+    accent = '#9CA89A'; tone = 'rgba(156,168,154,0.1)'; text = `Próxima avaliação em ${daysLeft ?? suggestedDays} dias`;
   }
 
   return (
-    <div style={{
-      background: bg, borderRadius: 12, padding: '10px 16px',
-      marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8,
-    }}>
-      <div style={{ width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0 }} />
-      <span style={{ fontSize: 13, fontWeight: 600, color }}>{text}</span>
+    <div
+      style={{
+        background: tone,
+        borderLeft: `2px solid ${accent}`,
+        padding: '12px 18px',
+        marginBottom: 16,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12,
+        fontFamily: "'Figtree', sans-serif",
+      }}
+    >
+      <span
+        aria-hidden
+        style={{
+          width: 6,
+          height: 6,
+          borderRadius: '50%',
+          background: accent,
+          flexShrink: 0,
+        }}
+      />
+      <span
+        style={{
+          fontSize: 13,
+          fontWeight: 500,
+          color: '#14161F',
+          letterSpacing: '0.005em',
+        }}
+      >
+        {text}
+      </span>
     </div>
   );
 }

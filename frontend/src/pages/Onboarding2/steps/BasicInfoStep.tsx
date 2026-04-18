@@ -41,10 +41,10 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({ data, onChange, onContinu
       exit={{ opacity: 0, x: -30 }}
       transition={{ duration: 0.3 }}
     >
-      <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, color: '#2D1B4E', marginBottom: 4 }}>
-        Suas informacoes
+      <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 28, color: '#14161F', marginBottom: 4 }}>
+        Suas informações
       </h2>
-      <p style={{ color: '#6B7280', fontSize: 14, marginBottom: 24 }}>Conte-nos um pouco sobre voce.</p>
+      <p style={{ color: '#6B7280', fontSize: 14, marginBottom: 24 }}>Conte-nos um pouco sobre você.</p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <div>
@@ -88,7 +88,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({ data, onChange, onContinu
             padding: '14px 24px',
             border: 'none',
             borderRadius: 999,
-            background: canContinue ? '#7C3AED' : '#D1D5DB',
+            background: canContinue ? '#14161F' : '#D1D5DB',
             color: '#fff',
             fontSize: 16,
             fontWeight: 600,

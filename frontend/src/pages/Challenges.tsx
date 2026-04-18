@@ -15,7 +15,7 @@ export default function Challenges() {
       const data = await challengesApi.list();
       setChallenges(data);
     } catch {
-      setError('Nao foi possivel carregar os desafios.');
+      setError('Não foi possivel carregar os desafios.');
     } finally {
       setLoading(false);
     }

@@ -125,10 +125,10 @@ const STEPS = [
   { id: 'identidade', label: 'Identidade' },
   { id: 'corpo', label: 'Corpo' },
   { id: 'gine', label: 'Ginecológico' },
-  { id: 'clinico', label: 'Clínico' },
+  { id: 'clínico', label: 'Clínico' },
   { id: 'estilo', label: 'Estilo de vida' },
   { id: 'objetivos', label: 'Objetivos' },
-  { id: 'motivacao', label: 'Motivação' },
+  { id: 'motivação', label: 'Motivação' },
   { id: 'jornada', label: 'Jornada' },
 ];
 
@@ -221,7 +221,7 @@ export default function Onboarding() {
 
   const isLast = step === STEPS.length - 1;
   const progress = ((step + 1) / STEPS.length) * 100;
-  const isSkippable = [2, 3, 4].includes(step); // gine, clinico, estilo
+  const isSkippable = [2, 3, 4].includes(step); // gine, clínico, estilo
 
   return (
     <Layout

@@ -7,14 +7,14 @@ import { Sun, ChevronRight, AlertTriangle } from 'lucide-react';
 const STAGES = [
   { value: 'perimenopause', label: 'Perimenopausa' },
   { value: 'menopause', label: 'Menopausa' },
-  { value: 'postmenopause', label: 'Pos-menopausa' },
+  { value: 'postmenopause', label: 'Pós-menopausa' },
 ];
 
 const STAGE_LABELS: Record<string, string> = {
-  perimenopause: 'Perimenopausa', menopause: 'Menopausa', postmenopause: 'Pos-menopausa',
+  perimenopause: 'Perimenopausa', menopause: 'Menopausa', postmenopause: 'Pós-menopausa',
 };
 const STAGE_COLORS: Record<string, string> = {
-  perimenopause: '#D97706', menopause: '#7C3AED', postmenopause: '#059669',
+  perimenopause: '#D97706', menopause: '#14161F', postmenopause: '#059669',
 };
 
 const SYMPTOM_OPTIONS = [
@@ -29,7 +29,7 @@ const card: React.CSSProperties = {
 };
 const labelStyle: React.CSSProperties = { fontSize: 13, fontWeight: 500, color: '#374151', display: 'block', marginBottom: 4 };
 const inputStyle: React.CSSProperties = { width: '100%', padding: '10px 12px', border: '1.5px solid #E5E7EB', borderRadius: 10, fontSize: 14, outline: 'none', boxSizing: 'border-box' };
-const btnPrimary: React.CSSProperties = { width: '100%', padding: 12, background: '#7C3AED', color: '#fff', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, cursor: 'pointer' };
+const btnPrimary: React.CSSProperties = { width: '100%', padding: 12, background: '#14161F', color: '#fff', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, cursor: 'pointer' };
 
 function mrsColor(score: number): string {
   if (score <= 11) return '#16A34A';
@@ -149,11 +149,11 @@ export default function Menopause() {
   const avgSleep = avg(last7.map((l: any) => l.sleepQuality ?? 0));
   const avgMood = avg(last7.map((l: any) => l.mood ?? 0));
 
-  const stageColor = STAGE_COLORS[profile?.stage ?? ''] ?? '#7C3AED';
+  const stageColor = STAGE_COLORS[profile?.stage ?? ''] ?? '#14161F';
 
   if (loading) {
     return (
-      <Layout title="Saude na menopausa" subtitle="Carregando...">
+      <Layout title="Saúde na menopausa" subtitle="Carregando...">
         <p style={{ color: '#6B7280', textAlign: 'center', padding: 20 }}>Carregando...</p>
       </Layout>
     );
@@ -162,10 +162,10 @@ export default function Menopause() {
   // View 1: No profile
   if (!profile) {
     return (
-      <Layout title="Saude na menopausa" subtitle="Acompanhamento personalizado para cada fase.">
+      <Layout title="Saúde na menopausa" subtitle="Acompanhamento personalizado para cada fase.">
         <div style={{ textAlign: 'center', marginBottom: 20 }}>
           <Sun size={36} color="#D97706" style={{ marginBottom: 8 }} />
-          <p style={{ fontSize: 14, color: '#6B7280', margin: 0 }}>Crie seu perfil para receber orientacoes adaptadas ao seu estagio.</p>
+          <p style={{ fontSize: 14, color: '#6B7280', margin: 0 }}>Crie seu perfil para receber orientações adaptadas ao seu estagio.</p>
         </div>
 
         <div style={card}>
@@ -182,13 +182,13 @@ export default function Menopause() {
               <input type="number" min={30} max={65} value={ageAtOnset} onChange={e => setAgeAtOnset(e.target.value)} placeholder="Ex: 48" style={inputStyle} />
             </div>
             <div>
-              <label style={labelStyle}>Terapia de reposicao hormonal (TRH)</label>
+              <label style={labelStyle}>Terapia de reposição hormonal (TRH)</label>
               <button type="button" onClick={() => setOnHRT(!onHRT)}
-                style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', border: `1.5px solid ${onHRT ? '#7C3AED' : '#E5E7EB'}`, borderRadius: 10, background: onHRT ? '#EDE9FE' : '#fff', cursor: 'pointer', fontSize: 14, color: onHRT ? '#7C3AED' : '#6B7280', fontWeight: 500, width: '100%' }}>
-                <div style={{ width: 36, height: 20, borderRadius: 999, background: onHRT ? '#7C3AED' : '#D1D5DB', position: 'relative', transition: 'background 0.2s' }}>
+                style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', border: `1.5px solid ${onHRT ? '#14161F' : '#E5E7EB'}`, borderRadius: 10, background: onHRT ? '#FBEAE1' : '#fff', cursor: 'pointer', fontSize: 14, color: onHRT ? '#14161F' : '#6B7280', fontWeight: 500, width: '100%' }}>
+                <div style={{ width: 36, height: 20, borderRadius: 999, background: onHRT ? '#14161F' : '#D1D5DB', position: 'relative', transition: 'background 0.2s' }}>
                   <div style={{ width: 16, height: 16, borderRadius: '50%', background: '#fff', position: 'absolute', top: 2, left: onHRT ? 18 : 2, transition: 'left 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }} />
                 </div>
-                {onHRT ? 'Sim, faco TRH' : 'Nao faco TRH'}
+                {onHRT ? 'Sim, faco TRH' : 'Não faco TRH'}
               </button>
             </div>
             <div>
@@ -196,7 +196,7 @@ export default function Menopause() {
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                 {SYMPTOM_OPTIONS.map(s => (
                   <button key={s} type="button" onClick={() => toggleSetupSymptom(s)}
-                    style={{ fontSize: 12, padding: '5px 12px', borderRadius: 999, border: `1.5px solid ${setupSymptoms.includes(s) ? '#7C3AED' : '#E5E7EB'}`, background: setupSymptoms.includes(s) ? '#EDE9FE' : '#fff', color: setupSymptoms.includes(s) ? '#7C3AED' : '#6B7280', fontWeight: 500, cursor: 'pointer' }}>
+                    style={{ fontSize: 12, padding: '5px 12px', borderRadius: 999, border: `1.5px solid ${setupSymptoms.includes(s) ? '#14161F' : '#E5E7EB'}`, background: setupSymptoms.includes(s) ? '#FBEAE1' : '#fff', color: setupSymptoms.includes(s) ? '#14161F' : '#6B7280', fontWeight: 500, cursor: 'pointer' }}>
                     {s}
                   </button>
                 ))}
@@ -216,12 +216,12 @@ export default function Menopause() {
   const scoreVal = mrsScore ?? profile.mrsScore ?? 0;
 
   return (
-    <Layout title="Saude na menopausa" subtitle="Acompanhamento diario dos seus sintomas.">
+    <Layout title="Saúde na menopausa" subtitle="Acompanhamento diario dos seus sintomas.">
       {/* Profile card with MRS gauge */}
       <div style={{ background: `linear-gradient(135deg, ${stageColor}18, ${stageColor}08)`, border: `1.5px solid ${stageColor}30`, borderRadius: 18, padding: 20, marginBottom: 14 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
           <div>
-            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 22, fontWeight: 600, color: '#2D1B4E' }}>Seu perfil</div>
+            <div style={{ fontFamily: "'Fraunces', serif", fontSize: 22, fontWeight: 600, color: '#14161F' }}>Seu perfil</div>
             <span style={{ display: 'inline-block', fontSize: 11, fontWeight: 600, padding: '2px 10px', borderRadius: 999, background: `${stageColor}20`, color: stageColor }}>
               {STAGE_LABELS[profile.stage] ?? profile.stage}
             </span>
@@ -274,7 +274,7 @@ export default function Menopause() {
                 <div style={{ display: 'flex', gap: 4 }}>
                   {[1,2,3,4,5].map(v => (
                     <button key={v} type="button" onClick={() => setIntensity(v)}
-                      style={{ flex: 1, padding: '8px 0', border: `1.5px solid ${intensity === v ? '#7C3AED' : '#E5E7EB'}`, borderRadius: 8, background: intensity === v ? '#EDE9FE' : '#fff', color: intensity === v ? '#7C3AED' : '#6B7280', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                      style={{ flex: 1, padding: '8px 0', border: `1.5px solid ${intensity === v ? '#14161F' : '#E5E7EB'}`, borderRadius: 8, background: intensity === v ? '#FBEAE1' : '#fff', color: intensity === v ? '#14161F' : '#6B7280', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                       {v}
                     </button>
                   ))}
@@ -287,7 +287,7 @@ export default function Menopause() {
                 <div style={{ display: 'flex', gap: 4 }}>
                   {[1,2,3,4,5].map(v => (
                     <button key={v} type="button" onClick={() => setSleepQuality(v)}
-                      style={{ flex: 1, padding: '8px 0', border: `1.5px solid ${sleepQuality === v ? '#7C3AED' : '#E5E7EB'}`, borderRadius: 8, background: sleepQuality === v ? '#EDE9FE' : '#fff', color: sleepQuality === v ? '#7C3AED' : '#6B7280', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                      style={{ flex: 1, padding: '8px 0', border: `1.5px solid ${sleepQuality === v ? '#14161F' : '#E5E7EB'}`, borderRadius: 8, background: sleepQuality === v ? '#FBEAE1' : '#fff', color: sleepQuality === v ? '#14161F' : '#6B7280', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                       {v}
                     </button>
                   ))}
@@ -298,7 +298,7 @@ export default function Menopause() {
                 <div style={{ display: 'flex', gap: 4 }}>
                   {[1,2,3,4,5].map(v => (
                     <button key={v} type="button" onClick={() => setLogMood(v)}
-                      style={{ flex: 1, padding: '8px 0', border: `1.5px solid ${logMood === v ? '#7C3AED' : '#E5E7EB'}`, borderRadius: 8, background: logMood === v ? '#EDE9FE' : '#fff', color: logMood === v ? '#7C3AED' : '#6B7280', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                      style={{ flex: 1, padding: '8px 0', border: `1.5px solid ${logMood === v ? '#14161F' : '#E5E7EB'}`, borderRadius: 8, background: logMood === v ? '#FBEAE1' : '#fff', color: logMood === v ? '#14161F' : '#6B7280', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                       {v}
                     </button>
                   ))}
@@ -311,7 +311,7 @@ export default function Menopause() {
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                 {SYMPTOM_OPTIONS.map(s => (
                   <button key={s} type="button" onClick={() => toggleLogSymptom(s)}
-                    style={{ fontSize: 12, padding: '5px 12px', borderRadius: 999, border: `1.5px solid ${logSymptoms.includes(s) ? '#7C3AED' : '#E5E7EB'}`, background: logSymptoms.includes(s) ? '#EDE9FE' : '#fff', color: logSymptoms.includes(s) ? '#7C3AED' : '#6B7280', fontWeight: 500, cursor: 'pointer' }}>
+                    style={{ fontSize: 12, padding: '5px 12px', borderRadius: 999, border: `1.5px solid ${logSymptoms.includes(s) ? '#14161F' : '#E5E7EB'}`, background: logSymptoms.includes(s) ? '#FBEAE1' : '#fff', color: logSymptoms.includes(s) ? '#14161F' : '#6B7280', fontWeight: 500, cursor: 'pointer' }}>
                     {s}
                   </button>
                 ))}
@@ -319,12 +319,12 @@ export default function Menopause() {
             </div>
             <div>
               <label style={labelStyle}>Notas</label>
-              <textarea value={logNotes} onChange={e => setLogNotes(e.target.value)} rows={3} placeholder="Observacoes do dia..." style={{ ...inputStyle, resize: 'vertical' }} />
+              <textarea value={logNotes} onChange={e => setLogNotes(e.target.value)} rows={3} placeholder="Observações do dia..." style={{ ...inputStyle, resize: 'vertical' }} />
             </div>
             {error && <div style={{ background: '#FEE2E2', color: '#991B1B', padding: '8px 12px', borderRadius: 8, fontSize: 13 }}>{error}</div>}
             <div style={{ display: 'flex', gap: 8 }}>
               <button type="button" onClick={() => setShowLogForm(false)} style={{ flex: 1, padding: 10, border: '1px solid #E5E7EB', borderRadius: 10, background: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 500 }}>Cancelar</button>
-              <button type="submit" disabled={submitting} style={{ flex: 1, padding: 10, border: 'none', borderRadius: 10, background: '#7C3AED', color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600, opacity: submitting ? 0.6 : 1 }}>{submitting ? 'Salvando...' : 'Salvar'}</button>
+              <button type="submit" disabled={submitting} style={{ flex: 1, padding: 10, border: 'none', borderRadius: 10, background: '#14161F', color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600, opacity: submitting ? 0.6 : 1 }}>{submitting ? 'Salvando...' : 'Salvar'}</button>
             </div>
           </form>
         </div>
@@ -333,13 +333,13 @@ export default function Menopause() {
       {/* Recommendations */}
       {recs && (
         <div style={card}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 8 }}>Recomendacoes para {STAGE_LABELS[profile.stage] ?? profile.stage}</div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 8 }}>Recomendações para {STAGE_LABELS[profile.stage] ?? profile.stage}</div>
           {recs.exercise && (
             <div style={{ marginBottom: 10 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#7C3AED', marginBottom: 4 }}>Exercicios</div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#14161F', marginBottom: 4 }}>Exercicios</div>
               {(Array.isArray(recs.exercise) ? recs.exercise : [recs.exercise]).map((r: string, i: number) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 6, marginBottom: 3 }}>
-                  <ChevronRight size={12} color="#7C3AED" style={{ flexShrink: 0, marginTop: 3 }} />
+                  <ChevronRight size={12} color="#14161F" style={{ flexShrink: 0, marginTop: 3 }} />
                   <span style={{ fontSize: 13, color: '#374151' }}>{r}</span>
                 </div>
               ))}
@@ -347,7 +347,7 @@ export default function Menopause() {
           )}
           {recs.nutrition && (
             <div style={{ marginBottom: 10 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#D97706', marginBottom: 4 }}>Nutricao</div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#D97706', marginBottom: 4 }}>Nutrição</div>
               {(Array.isArray(recs.nutrition) ? recs.nutrition : [recs.nutrition]).map((r: string, i: number) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 6, marginBottom: 3 }}>
                   <ChevronRight size={12} color="#D97706" style={{ flexShrink: 0, marginTop: 3 }} />
@@ -373,15 +373,15 @@ export default function Menopause() {
       {/* 7-day trend */}
       {last7.length > 0 && (
         <div style={card}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 8 }}>Tendencia - ultimos 7 dias</div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 8 }}>Tendência - últimos 7 dias</div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
             <div style={{ background: '#FEF3C7', borderRadius: 10, padding: 10, textAlign: 'center' }}>
               <div style={{ fontSize: 10, color: '#92400E' }}>Fogachos/dia</div>
               <div style={{ fontSize: 18, fontWeight: 700, color: '#92400E' }}>{avgFlashes.toFixed(1)}</div>
             </div>
-            <div style={{ background: '#EDE9FE', borderRadius: 10, padding: 10, textAlign: 'center' }}>
-              <div style={{ fontSize: 10, color: '#6D28D9' }}>Sono</div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: '#6D28D9' }}>{avgSleep.toFixed(1)}<span style={{ fontSize: 11, fontWeight: 400 }}>/5</span></div>
+            <div style={{ background: '#FBEAE1', borderRadius: 10, padding: 10, textAlign: 'center' }}>
+              <div style={{ fontSize: 10, color: '#14161F' }}>Sono</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: '#14161F' }}>{avgSleep.toFixed(1)}<span style={{ fontSize: 11, fontWeight: 400 }}>/5</span></div>
             </div>
             <div style={{ background: '#D1FAE5', borderRadius: 10, padding: 10, textAlign: 'center' }}>
               <div style={{ fontSize: 10, color: '#065F46' }}>Humor</div>
@@ -394,7 +394,7 @@ export default function Menopause() {
       {/* Log history */}
       {dailyLogs.length > 0 && (
         <div>
-          <div style={{ fontSize: 15, fontWeight: 600, color: '#111827', marginBottom: 10 }}>Historico (ultimos 14 dias)</div>
+          <div style={{ fontSize: 15, fontWeight: 600, color: '#111827', marginBottom: 10 }}>Histórico (últimos 14 dias)</div>
           {dailyLogs.map((log: any, i: number) => (
             <div key={i} style={{ ...card, marginBottom: 8 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
@@ -422,7 +422,7 @@ export default function Menopause() {
       {/* Reference */}
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 10, padding: '10px 12px', marginTop: 6 }}>
         <AlertTriangle size={14} color="#059669" style={{ flexShrink: 0, marginTop: 1 }} />
-        <span style={{ fontSize: 12, color: '#065F46', lineHeight: 1.5 }}>Referencia: International Menopause Society. Consulte seu medico para orientacao individualizada.</span>
+        <span style={{ fontSize: 12, color: '#065F46', lineHeight: 1.5 }}>Referência: International Menopause Society. Consulte seu médico para orientação individualizada.</span>
       </div>
     </Layout>
   );

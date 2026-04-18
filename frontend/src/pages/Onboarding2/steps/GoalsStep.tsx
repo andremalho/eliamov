@@ -5,10 +5,10 @@ import { Flame, Zap, Heart, Activity, Leaf, Flower2, Check } from 'lucide-react'
 const GOALS = [
   { value: 'weight_loss', label: 'Emagrecer', Icon: Flame, color: '#F97316' },
   { value: 'strength', label: 'Ganhar forca', Icon: Zap, color: '#EAB308' },
-  { value: 'health', label: 'Melhorar saude', Icon: Heart, color: '#EC4899' },
+  { value: 'health', label: 'Melhorar saúde', Icon: Heart, color: '#B85A3D' },
   { value: 'conditioning', label: 'Condicionamento', Icon: Activity, color: '#3B82F6' },
   { value: 'stress', label: 'Reduzir estresse', Icon: Leaf, color: '#22C55E' },
-  { value: 'pregnancy', label: 'Preparar gestacao', Icon: Flower2, color: '#A855F7' },
+  { value: 'pregnancy', label: 'Preparar gestação', Icon: Flower2, color: '#A855F7' },
 ];
 
 interface GoalsStepProps {
@@ -42,8 +42,8 @@ const styles = `
     transform: scale(1.03);
   }
   .ob-goal-card.selected {
-    border-color: #7C3AED;
-    background: rgba(124, 58, 237, 0.05);
+    border-color: #14161F;
+    background: rgba(217,119,87, 0.05);
   }
   .ob-goal-check {
     position: absolute;
@@ -52,7 +52,7 @@ const styles = `
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    background: #7C3AED;
+    background: #14161F;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -95,7 +95,7 @@ const GoalsStep: React.FC<GoalsStepProps> = ({ selected, onChange, onContinue })
         exit={{ opacity: 0, x: -30 }}
         transition={{ duration: 0.3 }}
       >
-        <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, color: '#2D1B4E', marginBottom: 4 }}>
+        <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 28, color: '#14161F', marginBottom: 4 }}>
           Seus objetivos
         </h2>
         <p style={{ color: '#6B7280', fontSize: 14 }}>
@@ -136,7 +136,7 @@ const GoalsStep: React.FC<GoalsStepProps> = ({ selected, onChange, onContinue })
               padding: '14px 24px',
               border: 'none',
               borderRadius: 999,
-              background: canContinue ? '#7C3AED' : '#D1D5DB',
+              background: canContinue ? '#14161F' : '#D1D5DB',
               color: '#fff',
               fontSize: 16,
               fontWeight: 600,

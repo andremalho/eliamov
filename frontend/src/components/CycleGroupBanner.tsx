@@ -5,15 +5,16 @@ import { cycleGroupApi, CycleGroupPeersResponse } from '../services/cycle-group.
 const phaseLabels: Record<string, string> = {
   menstrual: 'menstrual',
   follicular: 'folicular',
-  ovulatory: 'ovulatoria',
-  luteal: 'lutea',
+  ovulatory: 'ovulatória',
+  luteal: 'lútea',
 };
 
+// Tons Lunar Bloom — semântica de fase preservada
 const phaseColors: Record<string, string> = {
-  menstrual: '#dc2626',
-  follicular: '#16a34a',
-  ovulatory: '#f59e0b',
-  luteal: '#7c3aed',
+  menstrual: '#B85A3D',   // terracotta deep
+  follicular: '#9CA89A',  // sage
+  ovulatory: '#C9A977',   // brass
+  luteal: '#D97757',      // terracotta
 };
 
 export default function CycleGroupBanner() {
@@ -28,7 +29,7 @@ export default function CycleGroupBanner() {
 
   const { phase, peers, count } = data;
   const phaseLabel = phaseLabels[phase] ?? phase;
-  const phaseColor = phaseColors[phase] ?? '#6d4ac4';
+  const phaseColor = phaseColors[phase] ?? '#D97757';
 
   const handleTrainTogether = async () => {
     try {
@@ -52,8 +53,8 @@ export default function CycleGroupBanner() {
     >
       <div className="cycle-group-content">
         <div className="cycle-group-text">
-          <strong>Hoje com voce: {count + 1} mulheres na fase {phaseLabel}</strong>
-          <span className="muted small">Treinem juntas para melhores resultados!</span>
+          <strong>Hoje com você: {count + 1} mulheres na fase {phaseLabel}</strong>
+          <span className="muted small">Treinem juntas para melhores resultados.</span>
         </div>
         <div className="cycle-group-avatars">
           {peers.slice(0, 5).map(peer => (

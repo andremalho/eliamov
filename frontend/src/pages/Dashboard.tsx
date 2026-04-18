@@ -20,8 +20,8 @@ interface FeatureTile {
 }
 
 const features: FeatureTile[] = [
-  { to: '/cycle', title: 'Ciclo', icon: 'cycle', accent: '#ec4899' },
-  { to: '/mood', title: 'Bem-estar', icon: 'flower', accent: '#a855f7' },
+  { to: '/cycle', title: 'Ciclo', icon: 'cycle', accent: '#D97757' },
+  { to: '/mood', title: 'Bem-estar', icon: 'flower', accent: '#B85A3D' },
   { to: '/glucometer', title: 'Glicemia', icon: 'droplet', accent: '#f59e0b' },
   { to: '/blood-pressure', title: 'Pressão', icon: 'activity', accent: '#ef4444' },
   { to: '/training', title: 'Treino', icon: 'dumbbell', accent: '#14b8a6' },

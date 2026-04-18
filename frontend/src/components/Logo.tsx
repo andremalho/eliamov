@@ -5,62 +5,98 @@ interface LogoProps {
   size?: number;
   variant?: 'dark' | 'light' | 'header';
   showSlogan?: boolean;
+  product?: 'mov' | 'health';
 }
 
-export default function Logo({ size = 28, variant = 'dark', showSlogan = false }: LogoProps) {
+/**
+ * elia·mov / elia·health brand lockup.
+ * "elia" in Fraunces serif, terracotta middle-dot, sub-product in Figtree tracked.
+ */
+export default function Logo({
+  size = 28,
+  variant = 'dark',
+  showSlogan = false,
+  product = 'mov',
+}: LogoProps) {
   const theme = useTheme();
 
-  const colors = {
-    dark: { main: theme.colors.textDark, dot: theme.colors.accent },
-    light: { main: '#F9FAFB', dot: theme.colors.accentLight },
-    header: { main: '#F9FAFB', dot: theme.colors.accent },
-  };
+  const palette = {
+    dark: { fg: theme.colors.textDark, dot: theme.colors.accent, sub: 'rgba(20,22,31,0.55)' },
+    light: { fg: '#FAF6EF', dot: theme.colors.accentLight, sub: 'rgba(250,246,239,0.65)' },
+    header: { fg: theme.colors.textDark, dot: theme.colors.accent, sub: 'rgba(20,22,31,0.55)' },
+  }[variant];
 
-  const { main, dot } = colors[variant];
-  const dotSize = Math.round(size * 0.18);
-  const dotTop = Math.round(size * -0.02);
+  const subSize = Math.round(size * 0.42);
+  const dotSize = Math.round(size * 0.14);
+  const subLabel = product === 'health' ? 'health' : 'mov';
 
   return (
-    <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: showSlogan ? 'center' : 'flex-start' }}>
-      <span style={{
-        fontFamily: "'Inter', sans-serif",
-        fontWeight: 800,
-        fontSize: size,
-        letterSpacing: -0.5,
-        color: main,
+    <div
+      style={{
+        display: 'inline-flex',
+        flexDirection: 'column',
+        alignItems: showSlogan ? 'center' : 'flex-start',
         lineHeight: 1,
-        position: 'relative',
-      }}>
-        el
-        {/* "i" with colored dot */}
-        <span style={{ position: 'relative', display: 'inline-block' }}>
-          <span style={{ color: main }}>i</span>
-          <span style={{
-            position: 'absolute',
-            top: dotTop,
-            left: '50%',
-            transform: 'translateX(-50%)',
+      }}
+    >
+      <span
+        style={{
+          display: 'inline-flex',
+          alignItems: 'baseline',
+          gap: 0,
+          color: palette.fg,
+        }}
+      >
+        <span
+          style={{
+            fontFamily: "'Fraunces', serif",
+            fontWeight: 450,
+            fontVariationSettings: "'opsz' 96, 'SOFT' 40",
+            fontSize: size,
+            letterSpacing: '-0.035em',
+            lineHeight: 1,
+          }}
+        >
+          elia
+        </span>
+        <span
+          aria-hidden
+          style={{
+            display: 'inline-block',
             width: dotSize,
             height: dotSize,
+            margin: `0 ${Math.round(size * 0.22)}px`,
             borderRadius: '50%',
-            background: dot,
-          }} />
+            background: palette.dot,
+            transform: `translateY(-${Math.round(size * 0.12)}px)`,
+            flexShrink: 0,
+          }}
+        />
+        <span
+          style={{
+            fontFamily: "'Figtree', sans-serif",
+            fontWeight: 500,
+            fontSize: subSize,
+            letterSpacing: '0.14em',
+            textTransform: 'lowercase',
+            color: palette.fg,
+            lineHeight: 1,
+          }}
+        >
+          {subLabel}
         </span>
-        aM
-        <span style={{ position: 'relative', display: 'inline-block' }}>
-          <span style={{ color: main }}>o</span>
-        </span>
-        v
       </span>
       {showSlogan && (
-        <span style={{
-          fontFamily: "'DM Sans', sans-serif",
-          fontSize: Math.max(10, Math.round(size * 0.38)),
-          fontWeight: 400,
-          color: variant === 'dark' ? '#6B7280' : 'rgba(255,255,255,0.7)',
-          marginTop: Math.round(size * 0.12),
-          letterSpacing: 0.3,
-        }}>
+        <span
+          style={{
+            fontFamily: "'Figtree', sans-serif",
+            fontSize: Math.max(10, Math.round(size * 0.32)),
+            fontWeight: 400,
+            color: palette.sub,
+            marginTop: Math.round(size * 0.22),
+            letterSpacing: '0.04em',
+          }}
+        >
           {theme.slogan}
         </span>
       )}

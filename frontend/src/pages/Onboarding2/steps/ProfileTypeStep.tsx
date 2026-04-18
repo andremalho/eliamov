@@ -3,9 +3,9 @@ import { motion } from 'framer-motion';
 import { User, ClipboardList, Heart, Building2 } from 'lucide-react';
 
 const PROFILES = [
-  { value: 'female_user', label: 'Sou aluna', desc: 'Treino, ciclo e saude feminina', Icon: User },
+  { value: 'female_user', label: 'Sou aluna', desc: 'Treino, ciclo e saúde feminina', Icon: User },
   { value: 'personal_trainer', label: 'Sou personal trainer', desc: 'Acompanhe suas alunas', Icon: ClipboardList },
-  { value: 'family_companion', label: 'Sou familiar/parceiro', desc: 'Acompanhe quem voce ama', Icon: Heart },
+  { value: 'family_companion', label: 'Sou familiar/parceiro', desc: 'Acompanhe quem você ama', Icon: Heart },
   { value: 'academy_admin', label: 'Sou gestor de academia', desc: 'Gerencie sua academia', Icon: Building2 },
 ];
 
@@ -37,15 +37,15 @@ const styles = `
     transform: scale(1.02);
   }
   .ob-profile-card.selected {
-    border-color: #7C3AED;
-    background: rgba(124, 58, 237, 0.05);
+    border-color: #14161F;
+    background: rgba(217,119,87, 0.05);
     transform: scale(1.02);
   }
   .ob-profile-icon {
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: #7C3AED;
+    background: #14161F;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -67,7 +67,7 @@ const styles = `
     padding: 14px 24px;
     border: none;
     border-radius: 999px;
-    background: #7C3AED;
+    background: #14161F;
     color: #fff;
     font-size: 16px;
     font-weight: 600;
@@ -75,7 +75,7 @@ const styles = `
     transition: background 0.2s;
   }
   .ob-btn:hover {
-    background: #6D28D9;
+    background: #14161F;
   }
   .ob-btn:disabled {
     opacity: 0.5;
@@ -94,10 +94,10 @@ const ProfileTypeStep: React.FC<ProfileTypeStepProps> = ({ selected, onSelect, o
         exit={{ opacity: 0, x: -30 }}
         transition={{ duration: 0.3 }}
       >
-        <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, color: '#2D1B4E', marginBottom: 4 }}>
-          Quem e voce?
+        <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 28, color: '#14161F', marginBottom: 4 }}>
+          Quem e você?
         </h2>
-        <p style={{ color: '#6B7280', fontSize: 14, marginBottom: 8 }}>Selecione seu perfil para personalizarmos sua experiencia.</p>
+        <p style={{ color: '#6B7280', fontSize: 14, marginBottom: 8 }}>Selecione seu perfil para personalizarmos sua experiência.</p>
 
         <div className="ob-profile-cards">
           {PROFILES.map(({ value, label, desc, Icon }) => (

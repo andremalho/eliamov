@@ -33,7 +33,7 @@ export default function Leaderboard() {
           {/* My stats card */}
           {stats && (
             <div style={{
-              background: 'linear-gradient(135deg, #7C3AED, #9333EA)',
+              background: 'linear-gradient(135deg, #14161F, #9333EA)',
               borderRadius: 16, padding: 20, marginBottom: 20, color: '#fff',
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
@@ -88,7 +88,7 @@ export default function Leaderboard() {
                     {/* Avatar */}
                     <div style={{
                       width: 38, height: 38, borderRadius: '50%',
-                      background: 'linear-gradient(135deg, #7C3AED, #9333EA)',
+                      background: 'linear-gradient(135deg, #14161F, #9333EA)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       color: '#fff', fontWeight: 700, fontSize: 13, flexShrink: 0,
                       overflow: 'hidden',
@@ -110,7 +110,7 @@ export default function Leaderboard() {
 
                     {/* XP */}
                     <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                      <div style={{ fontSize: 16, fontWeight: 700, color: '#7C3AED' }}>{entry.xp}</div>
+                      <div style={{ fontSize: 16, fontWeight: 700, color: '#14161F' }}>{entry.xp}</div>
                       <div style={{ fontSize: 10, color: '#9CA3AF' }}>XP</div>
                     </div>
                   </div>

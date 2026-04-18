@@ -27,9 +27,9 @@ export default function FemaleZoneModal({ open, onClose }: FemaleZoneModalProps)
         </div>
         <h2 className="fz-modal-title">Area exclusiva</h2>
         <p className="fz-modal-text">
-          Esta area e exclusiva para usuarias do eliaMov.
-          Perfis de personal trainer e administradores nao tem acesso
-          a dados de saude feminina, ciclo menstrual ou comunidades privadas.
+          Esta area e exclusiva para usuárias do eliaMov.
+          Perfis de personal trainer e administradores não tem acesso
+          a dados de saúde feminina, ciclo menstrual ou comunidades privadas.
         </p>
         <button className="fz-modal-btn" onClick={handleBack}>
           Voltar ao meu painel

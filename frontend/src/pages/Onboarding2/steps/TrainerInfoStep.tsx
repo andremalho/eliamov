@@ -39,11 +39,11 @@ const TrainerInfoStep: React.FC<TrainerInfoStepProps> = ({ data, onChange, onCon
       exit={{ opacity: 0, x: -30 }}
       transition={{ duration: 0.3 }}
     >
-      <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, color: '#2D1B4E', marginBottom: 4 }}>
+      <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 28, color: '#14161F', marginBottom: 4 }}>
         Dados profissionais
       </h2>
       <p style={{ color: '#6B7280', fontSize: 14, marginBottom: 24 }}>
-        Complete suas informacoes para comecar a atender.
+        Complete suas informações para começar a atender.
       </p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -97,7 +97,7 @@ const TrainerInfoStep: React.FC<TrainerInfoStepProps> = ({ data, onChange, onCon
             padding: '14px 24px',
             border: 'none',
             borderRadius: 999,
-            background: '#7C3AED',
+            background: '#14161F',
             color: '#fff',
             fontSize: 16,
             fontWeight: 600,

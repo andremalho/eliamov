@@ -9,13 +9,13 @@ import {
 } from '../services/weight-loss.api';
 import { ChevronDown, ChevronUp, Plus } from 'lucide-react';
 
-const V = '#7C3AED';
-const DARK = '#2D1B4E';
+const V = '#14161F';
+const DARK = '#14161F';
 
 const COMORBIDITY_LABELS: Record<string, string> = {
   none: 'Nenhuma',
   dm2: 'Diabetes tipo 2',
-  hypertension: 'Hipertensao',
+  hypertension: 'Hipertensão',
   metabolic_syndrome: 'Sindrome metabolica',
   pcos: 'SOP / PCOS',
 };
@@ -87,7 +87,7 @@ export default function WeightLoss() {
       if (err?.response?.status === 404) {
         setAssessment(null);
       } else {
-        setError('Nao foi possivel carregar dados.');
+        setError('Não foi possivel carregar dados.');
       }
     }
   };
@@ -119,7 +119,7 @@ export default function WeightLoss() {
         setProgress(p);
       } catch {}
     } catch (err: any) {
-      const msg = err?.response?.data?.message ?? 'Falha ao criar avaliacao';
+      const msg = err?.response?.data?.message ?? 'Falha ao criar avaliação';
       setError(Array.isArray(msg) ? msg.join(', ') : msg);
     } finally {
       setSubmitting(false);
@@ -189,7 +189,7 @@ export default function WeightLoss() {
   const maxWeek = displayCurve.length > 0 ? Math.max(...displayCurve.map(d => d.week)) : 12;
 
   return (
-    <Layout title="Programa de Emagrecimento" subtitle="Avaliacao clinica baseada em evidencias">
+    <Layout title="Programa de Emagrecimento" subtitle="Avaliação clínica baseada em evidências">
       <style>{`
         .wl-card { background:#fff; border:1px solid #E5E7EB; border-radius:14px; padding:16px; margin-bottom:16px; }
         .wl-section { margin-bottom:28px; }
@@ -208,7 +208,7 @@ export default function WeightLoss() {
         .wl-btn-primary { background:${V}; color:#fff; }
         .wl-btn-primary:disabled { opacity:0.5; cursor:not-allowed; }
         .wl-error { background:#FEF2F2; color:#DC2626; padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:16px; }
-        .wl-bmi-preview { background:#EDE9FE; color:${V}; padding:8px 14px; border-radius:10px; font-size:14px; font-weight:600; display:inline-block; margin-bottom:12px; }
+        .wl-bmi-preview { background:#FBEAE1; color:${V}; padding:8px 14px; border-radius:10px; font-size:14px; font-weight:600; display:inline-block; margin-bottom:12px; }
         .wl-macro-bar { height:10px; border-radius:5px; margin-bottom:4px; }
         .wl-macro-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
         .wl-macro-label { font-size:13px; color:#374151; min-width:110px; font-weight:500; }
@@ -310,7 +310,7 @@ export default function WeightLoss() {
                 <select className="wl-select" value={comorbidity} onChange={e => setComorbidity(e.target.value as CreateAssessmentInput['comorbidity'])}>
                   <option value="none">Nenhuma</option>
                   <option value="dm2">Diabetes tipo 2</option>
-                  <option value="hypertension">Hipertensao</option>
+                  <option value="hypertension">Hipertensão</option>
                   <option value="metabolic_syndrome">Sindrome metabolica</option>
                   <option value="pcos">SOP / PCOS</option>
                 </select>
@@ -524,10 +524,10 @@ export default function WeightLoss() {
             )}
           </div>
 
-          {/* E) Historico de check-ins */}
+          {/* E) Histórico de check-ins */}
           {checkins.length > 0 && (
             <div className="wl-section">
-              <div className="wl-section-title">Historico de check-ins</div>
+              <div className="wl-section-title">Histórico de check-ins</div>
               <div className="wl-card">
                 {[...checkins].reverse().map(ci => (
                   <div className="wl-checkin-item" key={ci.id}>
@@ -588,11 +588,11 @@ export default function WeightLoss() {
                     </select>
                   </div>
                   <div className="wl-field">
-                    <label className="wl-label">Refeicoes por dia</label>
+                    <label className="wl-label">Refeições por dia</label>
                     <select className="wl-select" value={mpMealsPerDay} onChange={e => setMpMealsPerDay(Number(e.target.value))}>
-                      <option value={3}>3 refeicoes</option>
-                      <option value={4}>4 refeicoes</option>
-                      <option value={5}>5 refeicoes</option>
+                      <option value={3}>3 refeições</option>
+                      <option value={4}>4 refeições</option>
+                      <option value={5}>5 refeições</option>
                     </select>
                   </div>
                 </div>
@@ -607,7 +607,7 @@ export default function WeightLoss() {
                   </div>
                 </div>
                 <div style={{ marginBottom: 10 }}>
-                  <label className="wl-label">Alergias / restricoes</label>
+                  <label className="wl-label">Alergias / restrições</label>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                     {['Lactose', 'Gluten', 'Ovo', 'Amendoim', 'Frutos do mar', 'Soja'].map(a => {
                       const key = a.toLowerCase();
@@ -621,7 +621,7 @@ export default function WeightLoss() {
                             padding: '6px 14px',
                             borderRadius: 20,
                             border: `1.5px solid ${active ? V : '#E5E7EB'}`,
-                            background: active ? '#EDE9FE' : '#fff',
+                            background: active ? '#FBEAE1' : '#fff',
                             color: active ? V : '#374151',
                             fontSize: 13,
                             fontWeight: active ? 600 : 400,
@@ -687,7 +687,7 @@ export default function WeightLoss() {
 
                 {/* Weekly variation */}
                 <div className="wl-card" style={{ marginBottom: 16 }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: DARK, marginBottom: 10 }}>Variacao semanal</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: DARK, marginBottom: 10 }}>Variação semanal</div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 8 }}>
                     {mealPlan.weeklyVariation.map((wv, i) => (
                       <div key={i} style={{ background: '#F9FAFB', borderRadius: 10, padding: '10px 14px' }}>
@@ -706,7 +706,7 @@ export default function WeightLoss() {
                       <span key={i} style={{
                         padding: '5px 12px',
                         borderRadius: 20,
-                        background: '#EDE9FE',
+                        background: '#FBEAE1',
                         color: V,
                         fontSize: 13,
                         fontWeight: 500,
@@ -753,9 +753,9 @@ export default function WeightLoss() {
             </div>
           )}
 
-          {/* I) Referencias cientificas */}
+          {/* I) Referencias científicas */}
           <div style={{ marginTop: 20 }}>
-            <div style={{ fontSize: 15, fontWeight: 600, color: '#111827', marginBottom: 12 }}>Fundamentacao cientifica</div>
+            <div style={{ fontSize: 15, fontWeight: 600, color: '#111827', marginBottom: 12 }}>Fundamentação científica</div>
             <p style={{ fontSize: 12, color: '#6B7280', marginBottom: 12 }}>
               Este programa utiliza metodos validados por pesquisas publicadas em periodicos indexados.
             </p>

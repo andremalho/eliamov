@@ -5,19 +5,19 @@ import { formatBR } from '../utils/format';
 import { Heart, AlertTriangle, ChevronRight } from 'lucide-react';
 
 const BABY_SIZES: Record<number, string> = {
-  4: 'semente de papoula', 5: 'grao de pimenta', 6: 'lentilha', 7: 'mirtilo',
+  4: 'semente de papoula', 5: 'grão de pimenta', 6: 'lentilha', 7: 'mirtilo',
   8: 'framboesa', 9: 'uva', 10: 'kumquat', 11: 'figo', 12: 'limao',
   13: 'ervilha-torta', 14: 'pessego', 15: 'maca', 16: 'abacate',
   17: 'pera', 18: 'batata-doce', 19: 'manga', 20: 'banana',
   21: 'cenoura', 22: 'mamao', 23: 'toranja', 24: 'milho',
   25: 'nabo', 26: 'cebola', 27: 'couve-flor', 28: 'berinjela',
   29: 'abobora', 30: 'repolho', 31: 'coco', 32: 'jicama',
-  33: 'abacaxi', 34: 'melao', 35: 'melao honeydew', 36: 'alface romana',
+  33: 'abacaxi', 34: 'melão', 35: 'melão honeydew', 36: 'alface romana',
   37: 'acelga', 38: 'alho-poro', 39: 'mini melancia', 40: 'melancia',
 };
 
 const TRIMESTER_LABELS: Record<number, string> = { 1: '1o Trimestre', 2: '2o Trimestre', 3: '3o Trimestre' };
-const TRIMESTER_COLORS: Record<number, string> = { 1: '#8B5CF6', 2: '#D97706', 3: '#059669' };
+const TRIMESTER_COLORS: Record<number, string> = { 1: '#D97757', 2: '#D97706', 3: '#059669' };
 
 const MOOD_LABELS = ['', 'Muito baixo', 'Baixo', 'Normal', 'Bom', 'Otimo'];
 const SYMPTOM_OPTIONS = [
@@ -30,7 +30,7 @@ const card: React.CSSProperties = {
 };
 const labelStyle: React.CSSProperties = { fontSize: 13, fontWeight: 500, color: '#374151', display: 'block', marginBottom: 4 };
 const inputStyle: React.CSSProperties = { width: '100%', padding: '10px 12px', border: '1.5px solid #E5E7EB', borderRadius: 10, fontSize: 14, outline: 'none', boxSizing: 'border-box' };
-const btnPrimary: React.CSSProperties = { width: '100%', padding: 12, background: '#7C3AED', color: '#fff', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, cursor: 'pointer' };
+const btnPrimary: React.CSSProperties = { width: '100%', padding: 12, background: '#14161F', color: '#fff', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, cursor: 'pointer' };
 
 export default function Pregnancy() {
   const [pregnancy, setPregnancy] = useState<PregnancyData | null>(null);
@@ -115,7 +115,7 @@ export default function Pregnancy() {
   };
 
   const trimester = weekInfo?.trimester ?? (pregnancy ? Math.min(3, Math.ceil((pregnancy.currentWeek || 1) / 13)) : 1);
-  const trimColor = TRIMESTER_COLORS[trimester] ?? '#7C3AED';
+  const trimColor = TRIMESTER_COLORS[trimester] ?? '#14161F';
   const progressPct = pregnancy ? Math.min(100, ((pregnancy.currentWeek || 0) / 40) * 100) : 0;
   const babySize = weekInfo?.babySize || BABY_SIZES[pregnancy?.currentWeek ?? 0] || '';
 
@@ -130,21 +130,21 @@ export default function Pregnancy() {
   // View 1: No active pregnancy
   if (!pregnancy) {
     return (
-      <Layout title="Modo gravidez" subtitle="Acompanhamento personalizado da sua gestacao.">
+      <Layout title="Modo gravidez" subtitle="Acompanhamento personalizado da sua gestação.">
         <div style={{ textAlign: 'center', marginBottom: 20 }}>
-          <Heart size={36} color="#7C3AED" style={{ marginBottom: 8 }} />
-          <p style={{ fontSize: 14, color: '#6B7280', margin: 0 }}>Inicie o acompanhamento da sua gravidez para receber orientacoes personalizadas.</p>
+          <Heart size={36} color="#14161F" style={{ marginBottom: 8 }} />
+          <p style={{ fontSize: 14, color: '#6B7280', margin: 0 }}>Inicie o acompanhamento da sua gravidez para receber orientações personalizadas.</p>
         </div>
 
         <div style={card}>
           <div style={{ fontSize: 15, fontWeight: 600, color: '#111827', marginBottom: 12 }}>Iniciar acompanhamento</div>
           <form onSubmit={handleSetup} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div>
-              <label style={labelStyle}>Data da ultima menstruacao (DUM)</label>
+              <label style={labelStyle}>Data da última menstruação (DUM)</label>
               <input type="date" value={lastMenstrualDate} onChange={e => setLastMenstrualDate(e.target.value)} required style={inputStyle} />
             </div>
             <div>
-              <label style={labelStyle}>Peso pre-gestacional (kg)</label>
+              <label style={labelStyle}>Peso pré-gestacional (kg)</label>
               <input type="number" step="0.1" min={30} max={200} value={prePregnancyWeight} onChange={e => setPrePregnancyWeight(e.target.value)} placeholder="Ex: 65.0" style={inputStyle} />
             </div>
             {error && <div style={{ background: '#FEE2E2', color: '#991B1B', padding: '8px 12px', borderRadius: 8, fontSize: 13 }}>{error}</div>}
@@ -152,7 +152,7 @@ export default function Pregnancy() {
               {submitting ? 'Salvando...' : 'Iniciar acompanhamento'}
             </button>
           </form>
-          <p style={{ fontSize: 11, color: '#9CA3AF', marginTop: 10, textAlign: 'center' }}>Referencia: ACOG (American College of Obstetricians and Gynecologists)</p>
+          <p style={{ fontSize: 11, color: '#9CA3AF', marginTop: 10, textAlign: 'center' }}>Referência: ACOG (American College of Obstetricians and Gynecologists)</p>
         </div>
       </Layout>
     );
@@ -160,15 +160,15 @@ export default function Pregnancy() {
 
   // View 2: Active pregnancy dashboard
   return (
-    <Layout title="Modo gravidez" subtitle="Acompanhamento semanal da sua gestacao.">
+    <Layout title="Modo gravidez" subtitle="Acompanhamento semanal da sua gestação.">
       {/* Hero card */}
       <div style={{ background: `linear-gradient(135deg, ${trimColor}18, ${trimColor}08)`, border: `1.5px solid ${trimColor}30`, borderRadius: 18, padding: 20, marginBottom: 14 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <div style={{ width: 56, height: 56, borderRadius: '50%', background: trimColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ color: '#fff', fontFamily: "'Cormorant Garamond',serif", fontSize: 26, fontWeight: 700 }}>{pregnancy.currentWeek}</span>
+            <span style={{ color: '#fff', fontFamily: "'Fraunces', serif", fontSize: 26, fontWeight: 700 }}>{pregnancy.currentWeek}</span>
           </div>
           <div>
-            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 22, fontWeight: 600, color: '#2D1B4E' }}>Semana {pregnancy.currentWeek}</div>
+            <div style={{ fontFamily: "'Fraunces', serif", fontSize: 22, fontWeight: 600, color: '#14161F' }}>Semana {pregnancy.currentWeek}</div>
             <span style={{ display: 'inline-block', fontSize: 11, fontWeight: 600, padding: '2px 10px', borderRadius: 999, background: `${trimColor}20`, color: trimColor }}>
               {TRIMESTER_LABELS[trimester]}
             </span>
@@ -210,7 +210,7 @@ export default function Pregnancy() {
           <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 8 }}>Exercicios recomendados</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
             {weekInfo.exerciseRecs.map((rec, i) => (
-              <span key={i} style={{ fontSize: 12, padding: '4px 10px', borderRadius: 999, background: '#EDE9FE', color: '#7C3AED', fontWeight: 500 }}>{rec}</span>
+              <span key={i} style={{ fontSize: 12, padding: '4px 10px', borderRadius: 999, background: '#FBEAE1', color: '#14161F', fontWeight: 500 }}>{rec}</span>
             ))}
           </div>
         </div>
@@ -219,10 +219,10 @@ export default function Pregnancy() {
       {/* Nutrition tips */}
       {weekInfo?.nutritionTips && weekInfo.nutritionTips.length > 0 && (
         <div style={card}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 8 }}>Dicas de nutricao</div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 8 }}>Dicas de nutrição</div>
           {weekInfo.nutritionTips.map((tip, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 6, marginBottom: 4 }}>
-              <ChevronRight size={12} color="#7C3AED" style={{ flexShrink: 0, marginTop: 3 }} />
+              <ChevronRight size={12} color="#14161F" style={{ flexShrink: 0, marginTop: 3 }} />
               <span style={{ fontSize: 13, color: '#374151' }}>{tip}</span>
             </div>
           ))}
@@ -234,7 +234,7 @@ export default function Pregnancy() {
         <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 8 }}>Acompanhamento de peso</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
           <div style={{ background: '#F9FAFB', borderRadius: 10, padding: 10, textAlign: 'center' }}>
-            <div style={{ fontSize: 11, color: '#6B7280' }}>Pre-gestacional</div>
+            <div style={{ fontSize: 11, color: '#6B7280' }}>Pré-gestacional</div>
             <div style={{ fontSize: 18, fontWeight: 700, color: '#111827' }}>{pregnancy.prePregnancyWeight ?? '--'} <span style={{ fontSize: 12, fontWeight: 400 }}>kg</span></div>
           </div>
           <div style={{ background: '#F9FAFB', borderRadius: 10, padding: 10, textAlign: 'center' }}>
@@ -268,7 +268,7 @@ export default function Pregnancy() {
                 <div style={{ display: 'flex', gap: 4 }}>
                   {[1,2,3,4,5].map(v => (
                     <button key={v} type="button" onClick={() => setLogMood(v)}
-                      style={{ flex: 1, padding: '8px 0', border: `1.5px solid ${logMood === v ? '#7C3AED' : '#E5E7EB'}`, borderRadius: 8, background: logMood === v ? '#EDE9FE' : '#fff', color: logMood === v ? '#7C3AED' : '#6B7280', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                      style={{ flex: 1, padding: '8px 0', border: `1.5px solid ${logMood === v ? '#14161F' : '#E5E7EB'}`, borderRadius: 8, background: logMood === v ? '#FBEAE1' : '#fff', color: logMood === v ? '#14161F' : '#6B7280', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                       {v}
                     </button>
                   ))}
@@ -280,7 +280,7 @@ export default function Pregnancy() {
                 <div style={{ display: 'flex', gap: 4 }}>
                   {[1,2,3,4,5].map(v => (
                     <button key={v} type="button" onClick={() => setLogEnergy(v)}
-                      style={{ flex: 1, padding: '8px 0', border: `1.5px solid ${logEnergy === v ? '#7C3AED' : '#E5E7EB'}`, borderRadius: 8, background: logEnergy === v ? '#EDE9FE' : '#fff', color: logEnergy === v ? '#7C3AED' : '#6B7280', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                      style={{ flex: 1, padding: '8px 0', border: `1.5px solid ${logEnergy === v ? '#14161F' : '#E5E7EB'}`, borderRadius: 8, background: logEnergy === v ? '#FBEAE1' : '#fff', color: logEnergy === v ? '#14161F' : '#6B7280', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                       {v}
                     </button>
                   ))}
@@ -292,7 +292,7 @@ export default function Pregnancy() {
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                 {SYMPTOM_OPTIONS.map(s => (
                   <button key={s} type="button" onClick={() => toggleSymptom(s)}
-                    style={{ fontSize: 12, padding: '5px 12px', borderRadius: 999, border: `1.5px solid ${logSymptoms.includes(s) ? '#7C3AED' : '#E5E7EB'}`, background: logSymptoms.includes(s) ? '#EDE9FE' : '#fff', color: logSymptoms.includes(s) ? '#7C3AED' : '#6B7280', fontWeight: 500, cursor: 'pointer' }}>
+                    style={{ fontSize: 12, padding: '5px 12px', borderRadius: 999, border: `1.5px solid ${logSymptoms.includes(s) ? '#14161F' : '#E5E7EB'}`, background: logSymptoms.includes(s) ? '#FBEAE1' : '#fff', color: logSymptoms.includes(s) ? '#14161F' : '#6B7280', fontWeight: 500, cursor: 'pointer' }}>
                     {s}
                   </button>
                 ))}
@@ -300,12 +300,12 @@ export default function Pregnancy() {
             </div>
             <div>
               <label style={labelStyle}>Notas</label>
-              <textarea value={logNotes} onChange={e => setLogNotes(e.target.value)} rows={3} placeholder="Como voce esta se sentindo?" style={{ ...inputStyle, resize: 'vertical' }} />
+              <textarea value={logNotes} onChange={e => setLogNotes(e.target.value)} rows={3} placeholder="Como você esta se sentindo?" style={{ ...inputStyle, resize: 'vertical' }} />
             </div>
             {error && <div style={{ background: '#FEE2E2', color: '#991B1B', padding: '8px 12px', borderRadius: 8, fontSize: 13 }}>{error}</div>}
             <div style={{ display: 'flex', gap: 8 }}>
               <button type="button" onClick={() => setShowLogForm(false)} style={{ flex: 1, padding: 10, border: '1px solid #E5E7EB', borderRadius: 10, background: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 500 }}>Cancelar</button>
-              <button type="submit" disabled={submitting} style={{ flex: 1, padding: 10, border: 'none', borderRadius: 10, background: '#7C3AED', color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600, opacity: submitting ? 0.6 : 1 }}>{submitting ? 'Salvando...' : 'Salvar'}</button>
+              <button type="submit" disabled={submitting} style={{ flex: 1, padding: 10, border: 'none', borderRadius: 10, background: '#14161F', color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600, opacity: submitting ? 0.6 : 1 }}>{submitting ? 'Salvando...' : 'Salvar'}</button>
             </div>
           </form>
         </div>
@@ -314,7 +314,7 @@ export default function Pregnancy() {
       {/* Log history */}
       {logs.length > 0 && (
         <div>
-          <div style={{ fontSize: 15, fontWeight: 600, color: '#111827', marginBottom: 10 }}>Historico semanal</div>
+          <div style={{ fontSize: 15, fontWeight: 600, color: '#111827', marginBottom: 10 }}>Histórico semanal</div>
           {logs.map((log: any, i: number) => (
             <div key={i} style={{ ...card, marginBottom: 8 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
@@ -342,7 +342,7 @@ export default function Pregnancy() {
       {/* Alert */}
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, background: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: 10, padding: '10px 12px', marginTop: 6 }}>
         <AlertTriangle size={14} color="#D97706" style={{ flexShrink: 0, marginTop: 1 }} />
-        <span style={{ fontSize: 12, color: '#92400E', lineHeight: 1.5 }}>Consulte seu obstetra regularmente. Este aplicativo nao substitui orientacao medica profissional.</span>
+        <span style={{ fontSize: 12, color: '#92400E', lineHeight: 1.5 }}>Consulte seu obstetra regularmente. Este aplicativo não substitui orientação médica profissional.</span>
       </div>
     </Layout>
   );

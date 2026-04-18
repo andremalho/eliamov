@@ -10,7 +10,7 @@ import {
 } from '../services/community-chat.api';
 
 const TYPE_LABELS: Record<string, string> = {
-  public: 'Publico',
+  public: 'Público',
   private: 'Privado',
   cycle_auto: 'Ciclo',
 };
@@ -41,7 +41,7 @@ export default function Communities() {
     communityChatApi
       .list()
       .then(setCommunities)
-      .catch(() => setError('Nao foi possivel carregar os grupos.'))
+      .catch(() => setError('Não foi possivel carregar os grupos.'))
       .finally(() => setLoading(false));
   }, []);
 

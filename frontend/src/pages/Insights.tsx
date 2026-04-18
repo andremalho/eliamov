@@ -9,7 +9,7 @@ const s = {
     display: 'flex',
     flexDirection: 'column' as const,
     gap: 20,
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
   },
   header: {
     textAlign: 'center' as const,
@@ -19,7 +19,7 @@ const s = {
     width: 56,
     height: 56,
     borderRadius: '50%',
-    background: 'linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)',
+    background: 'linear-gradient(135deg, #FBEAE1 0%, #EEE7DB 100%)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -42,12 +42,12 @@ const s = {
     border: 'none',
     borderRadius: 12,
     background: loading
-      ? 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)'
-      : 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)',
+      ? 'linear-gradient(135deg, #D97757 0%, #14161F 100%)'
+      : 'linear-gradient(135deg, #14161F 0%, #14161F 100%)',
     color: '#fff',
     fontSize: 14,
     fontWeight: 600,
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
     cursor: loading ? 'not-allowed' : 'pointer',
     opacity: loading ? 0.8 : 1,
     transition: 'all 0.2s ease',
@@ -60,7 +60,7 @@ const s = {
   resultCard: {
     background: '#fff',
     border: '1px solid #E5E7EB',
-    borderLeft: '3px solid #7C3AED',
+    borderLeft: '3px solid #14161F',
     borderRadius: 14,
     padding: 18,
     marginTop: 0,
@@ -94,8 +94,8 @@ const s = {
     fontWeight: 600,
     padding: '3px 8px',
     borderRadius: 20,
-    background: isAi ? '#EDE9FE' : '#FEF3C7',
-    color: isAi ? '#7C3AED' : '#D97706',
+    background: isAi ? '#FBEAE1' : '#FEF3C7',
+    color: isAi ? '#14161F' : '#D97706',
   }),
   error: {
     background: '#FEF2F2',
@@ -113,7 +113,7 @@ const s = {
     width: 64,
     height: 64,
     borderRadius: '50%',
-    background: '#F5F3FF',
+    background: '#FDFAF3',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -141,7 +141,7 @@ const s = {
   },
 };
 
-const BrainIcon = ({ size = 24, color = '#7C3AED' }: { size?: number; color?: string }) => (
+const BrainIcon = ({ size = 24, color = '#14161F' }: { size?: number; color?: string }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
     <path d="M12 2a5 5 0 0 1 5 5c0 .8-.2 1.5-.5 2.2A5 5 0 0 1 19 14a5 5 0 0 1-3 4.6V22h-4v-3.4A5 5 0 0 1 9 14a5 5 0 0 1 2.5-4.3A5 5 0 0 1 7 7a5 5 0 0 1 5-5z" />
     <path d="M12 2v20" />
@@ -183,10 +183,10 @@ export default function Insights() {
         {/* Header */}
         <div style={s.header}>
           <div style={s.iconCircle}>
-            <BrainIcon size={28} color="#7C3AED" />
+            <BrainIcon size={28} color="#14161F" />
           </div>
           <h1 style={s.title}>Insights IA</h1>
-          <p style={s.subtitle}>Analise personalizada baseada nos seus dados</p>
+          <p style={s.subtitle}>Análise personalizada baseada nos seus dados</p>
         </div>
 
         {/* Generate Button */}
@@ -217,8 +217,8 @@ export default function Insights() {
             <div style={s.resultHeader}>
               <div>
                 <h3 style={s.resultTitle}>
-                  <BrainIcon size={16} color="#7C3AED" />
-                  Sua analise
+                  <BrainIcon size={16} color="#14161F" />
+                  Sua análise
                 </h3>
                 <span style={s.timestamp}>
                   {formatDateTimeBR(data.generatedAt)}
@@ -236,11 +236,11 @@ export default function Insights() {
         {!data && !loading && !error && (
           <div style={s.emptyState}>
             <div style={s.emptyIcon}>
-              <BrainIcon size={32} color="#C4B5FD" />
+              <BrainIcon size={32} color="#E89A80" />
             </div>
             <p style={s.emptyTitle}>Nenhum insight gerado ainda</p>
             <p style={s.emptyText}>
-              Toque no botao acima para gerar sua analise personalizada
+              Toque no botao acima para gerar sua análise personalizada
             </p>
           </div>
         )}

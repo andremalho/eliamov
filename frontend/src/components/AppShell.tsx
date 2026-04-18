@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useGamification } from '../contexts/GamificationContext';
@@ -18,14 +18,14 @@ const NAV_GROUPS = [
     { to: '/feed', label: 'Feed', Icon: MessageCircle },
     { to: '/insights', label: 'Insights IA', Icon: Sparkles },
   ]},
-  { title: 'Saude', items: [
+  { title: 'Saúde', items: [
     { to: '/cycle', label: 'Ciclo menstrual', Icon: Droplets },
     { to: '/mood', label: 'Humor', Icon: Heart },
-    { to: '/nutrition', label: 'Nutricao', Icon: Apple },
-    { to: '/evolution', label: 'Evolucao', Icon: TrendingUp },
+    { to: '/nutrition', label: 'Nutrição', Icon: Apple },
+    { to: '/evolution', label: 'Evolução', Icon: TrendingUp },
     { to: '/pregnancy', label: 'Gravidez', Icon: Heart },
     { to: '/menopause', label: 'Menopausa', Icon: Sun },
-    { to: '/mental-health', label: 'Saude mental', Icon: Brain },
+    { to: '/mental-health', label: 'Saúde mental', Icon: Brain },
   ]},
   { title: 'Programas', items: [
     { to: '/weight-loss', label: 'Emagrecimento', Icon: Scale },
@@ -33,7 +33,7 @@ const NAV_GROUPS = [
     { to: '/leaderboard', label: 'Ranking', Icon: Medal },
     { to: '/communities', label: 'Comunidades', Icon: Users },
     { to: '/fertility', label: 'Fertilidade', Icon: Heart },
-    { to: '/content', label: 'Conteudo', Icon: BookOpen },
+    { to: '/content', label: 'Conteúdo', Icon: BookOpen },
   ]},
   { title: 'Mais', items: [
     { to: '/activities', label: 'Atividades', Icon: Zap },
@@ -52,6 +52,9 @@ const TABS = [
   { to: '/profile', label: 'Perfil', Icon: User },
 ];
 
+const GRAIN =
+  "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='200' height='200' filter='url(%23n)' opacity='0.9'/></svg>";
+
 interface Props { children: React.ReactNode; title?: string; subtitle?: string; hideHeader?: boolean; }
 
 export default function AppShell({ children, title, subtitle, hideHeader }: Props) {
@@ -60,104 +63,239 @@ export default function AppShell({ children, title, subtitle, hideHeader }: Prop
   const [open, setOpen] = useState(false);
   const streak = stats?.currentStreak ?? 0;
   const level = stats?.level ?? 1;
-  const xp = stats?.xp ?? 0;
 
   return (
     <>
       <style>{`
-        .sh { min-height:100vh; background:#F8F7FC; font-family:'DM Sans',sans-serif; }
+        .sh { min-height: 100vh; background: var(--cream, #F5EFE6); font-family: var(--font-ui, 'Figtree', sans-serif); color: var(--ink, #14161F); }
 
         /* ─── Top bar ─── */
         .sh-bar {
-          display:flex; align-items:center; justify-content:space-between;
-          padding:12px 20px;
-          background:linear-gradient(135deg, #2D1B4E 0%, #4C1D95 100%);
-          position:sticky; top:0; z-index:30;
+          position: sticky; top: 0; z-index: 30;
+          display: flex; align-items: center; justify-content: space-between;
+          padding: 14px clamp(16px, 4vw, 28px);
+          background: #14161F;
+          color: #F5EFE6;
+          border-bottom: 1px solid rgba(245,239,230,0.08);
+          overflow: hidden;
         }
-        .sh-menu { background:none; border:none; cursor:pointer; padding:6px; color:rgba(255,255,255,0.85); display:flex; align-items:center; border-radius:10px; transition:background 0.15s; }
-        .sh-menu:hover { background:rgba(255,255,255,0.1); }
+        .sh-bar::before {
+          content: ''; position: absolute; inset: 0;
+          pointer-events: none; opacity: 0.05; mix-blend-mode: overlay;
+          background-image: url("${GRAIN}");
+        }
+        .sh-bar::after {
+          content: ''; position: absolute;
+          top: -60%; right: -20%; width: 60%; height: 200%;
+          background: radial-gradient(closest-side, rgba(217,119,87,0.18), transparent 70%);
+          filter: blur(50px); pointer-events: none;
+        }
+        .sh-bar > * { position: relative; }
+        .sh-menu {
+          background: none; border: 1px solid transparent; cursor: pointer;
+          padding: 6px; color: rgba(245,239,230,0.85);
+          display: flex; align-items: center;
+          transition: border-color 0.25s, background 0.25s;
+        }
+        .sh-menu:hover { border-color: rgba(245,239,230,0.18); background: rgba(245,239,230,0.04); }
+
+        .sh-chip {
+          display: inline-flex; align-items: center; gap: 6px;
+          padding: 5px 12px;
+          border: 1px solid rgba(245,239,230,0.18);
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 10px; font-weight: 500;
+          letter-spacing: 0.14em; text-transform: uppercase;
+          color: rgba(245,239,230,0.88);
+        }
+        .sh-chip-dot { width: 5px; height: 5px; border-radius: 50%; }
+
+        .sh-avatar-link { text-decoration: none; line-height: 0; }
+        .sh-avatar {
+          width: 34px; height: 34px; border-radius: 50%;
+          background: transparent; border: 1px solid rgba(245,239,230,0.28);
+          display: flex; align-items: center; justify-content: center;
+          color: #F5EFE6; font-weight: 600; font-size: 12px;
+          letter-spacing: 0.04em;
+          transition: border-color 0.25s;
+        }
+        .sh-avatar:hover { border-color: #D97757; }
 
         /* ─── Content ─── */
-        .sh-body { max-width:800px; margin:0 auto; padding:20px 16px 100px; }
-        .sh-title { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:600; color:#2D1B4E; margin:0 0 4px; }
-        .sh-sub { font-size:14px; color:#6B7280; margin:0 0 20px; }
+        .sh-body { max-width: 900px; margin: 0 auto; padding: 28px clamp(16px, 3vw, 24px) 120px; }
+        .sh-title {
+          font-family: 'Fraunces', serif;
+          font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+          font-weight: 400;
+          letter-spacing: -0.025em;
+          color: var(--ink, #14161F);
+          margin: 0 0 8px;
+          line-height: 1.08;
+        }
+        .sh-sub {
+          font-family: 'Figtree', sans-serif;
+          font-size: 14px;
+          color: rgba(20,22,31,0.62);
+          margin: 0 0 28px;
+          line-height: 1.5;
+        }
 
         /* ─── Bottom tab bar ─── */
         .sh-tabs {
-          display:flex; align-items:flex-end; justify-content:space-around;
-          position:fixed; bottom:0; left:0; right:0;
-          background:#fff;
-          border-top:1px solid #EDE9FE;
-          padding:0 0 env(safe-area-inset-bottom,4px);
-          z-index:30;
-          box-shadow:0 -2px 20px rgba(45,27,78,0.06);
+          position: fixed; bottom: 0; left: 0; right: 0;
+          display: flex; align-items: flex-end; justify-content: space-around;
+          background: #FDFAF3;
+          border-top: 1px solid rgba(20,22,31,0.08);
+          padding: 0 0 env(safe-area-inset-bottom, 4px);
+          z-index: 30;
         }
         .sh-tab {
-          flex:1; display:flex; flex-direction:column; align-items:center; gap:2px;
-          text-decoration:none; padding:8px 0 6px;
-          color:#9CA3AF; font-size:10px; font-weight:500;
-          transition:color 0.15s;
+          flex: 1;
+          display: flex; flex-direction: column; align-items: center; gap: 3px;
+          text-decoration: none;
+          padding: 10px 0 8px;
+          color: rgba(20,22,31,0.48);
+          font-family: 'Figtree', sans-serif;
+          font-size: 10px; font-weight: 500;
+          letter-spacing: 0.02em;
+          transition: color 0.25s;
+          position: relative;
         }
-        .sh-tab.active { color:#7C3AED; }
-        .sh-tab .sh-tab-icon { transition:transform 0.15s; }
-        .sh-tab.active .sh-tab-icon { transform:scale(1.1); }
+        .sh-tab.active { color: #14161F; font-weight: 600; }
+        .sh-tab.active::before {
+          content: ''; position: absolute; top: 0; left: 50%;
+          transform: translateX(-50%);
+          width: 20px; height: 2px;
+          background: #D97757;
+        }
 
         /* ─── Center tab (Insights) ─── */
         .sh-tab-center {
-          flex:1; display:flex; flex-direction:column; align-items:center;
-          text-decoration:none; color:#9CA3AF; font-size:10px; font-weight:600;
-          padding:0 0 6px; margin-top:-18px;
-          transition:color 0.15s;
+          flex: 1;
+          display: flex; flex-direction: column; align-items: center;
+          text-decoration: none;
+          color: rgba(20,22,31,0.48);
+          font-family: 'Figtree', sans-serif;
+          font-size: 10px; font-weight: 600;
+          letter-spacing: 0.02em;
+          padding: 0 0 8px; margin-top: -18px;
+          transition: color 0.25s;
         }
-        .sh-tab-center.active { color:#7C3AED; }
+        .sh-tab-center.active { color: #14161F; }
         .sh-tab-center-btn {
-          width:52px; height:52px; border-radius:50%;
-          background:linear-gradient(135deg, #7C3AED 0%, #9333EA 100%);
-          display:flex; align-items:center; justify-content:center;
-          box-shadow:0 4px 20px rgba(124,58,237,0.35);
-          margin-bottom:2px;
-          transition:transform 0.2s, box-shadow 0.2s;
+          width: 52px; height: 52px; border-radius: 50%;
+          background: #14161F;
+          color: #F5EFE6;
+          display: flex; align-items: center; justify-content: center;
+          border: 1px solid #D97757;
+          margin-bottom: 4px;
+          transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), background 0.3s;
         }
-        .sh-tab-center:hover .sh-tab-center-btn { transform:scale(1.08); box-shadow:0 6px 24px rgba(124,58,237,0.45); }
-        .sh-tab-center.active .sh-tab-center-btn {
-          background:linear-gradient(135deg, #6D28D9 0%, #7C3AED 100%);
-          box-shadow:0 4px 24px rgba(124,58,237,0.5);
-        }
+        .sh-tab-center:hover .sh-tab-center-btn { transform: translateY(-4px); background: #D97757; border-color: #D97757; color: #14161F; }
+        .sh-tab-center.active .sh-tab-center-btn { background: #D97757; border-color: #D97757; color: #14161F; }
 
         /* ─── Drawer ─── */
-        .sh-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); z-index:45; opacity:0; pointer-events:none; transition:opacity 0.3s; }
-        .sh-overlay.open { opacity:1; pointer-events:auto; }
+        .sh-overlay {
+          position: fixed; inset: 0;
+          background: rgba(20,22,31,0.58);
+          backdrop-filter: blur(6px);
+          z-index: 45;
+          opacity: 0; pointer-events: none;
+          transition: opacity 0.35s cubic-bezier(0.16,1,0.3,1);
+        }
+        .sh-overlay.open { opacity: 1; pointer-events: auto; }
         .sh-drawer {
-          position:fixed; top:0; left:0; width:300px; height:100vh;
-          background:#fff; z-index:50;
-          transform:translateX(-100%); transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);
-          display:flex; flex-direction:column;
-          box-shadow:8px 0 40px rgba(0,0,0,0.12);
+          position: fixed; top: 0; left: 0;
+          width: 320px; max-width: 92vw; height: 100vh;
+          background: #FDFAF3;
+          z-index: 50;
+          transform: translateX(-100%);
+          transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+          display: flex; flex-direction: column;
+          border-right: 1px solid rgba(20,22,31,0.08);
         }
-        .sh-drawer.open { transform:translateX(0); }
+        .sh-drawer.open { transform: translateX(0); }
         .sh-dh {
-          display:flex; justify-content:space-between; align-items:center;
-          padding:20px 20px 16px;
-          background:linear-gradient(135deg, #2D1B4E 0%, #4C1D95 100%);
+          position: relative;
+          display: flex; justify-content: space-between; align-items: center;
+          padding: 24px 24px 20px;
+          background: #14161F;
+          color: #F5EFE6;
+          overflow: hidden;
         }
+        .sh-dh::before {
+          content: ''; position: absolute; inset: 0;
+          opacity: 0.05; mix-blend-mode: overlay;
+          background-image: url("${GRAIN}");
+          pointer-events: none;
+        }
+        .sh-dh::after {
+          content: ''; position: absolute;
+          top: -40%; right: -20%; width: 60%; height: 140%;
+          background: radial-gradient(closest-side, rgba(217,119,87,0.22), transparent 70%);
+          filter: blur(40px); pointer-events: none;
+        }
+        .sh-dh > * { position: relative; }
         .sh-dp {
-          padding:16px 20px;
-          border-bottom:1px solid #F3F4F6;
-          background:#FAFAFE;
+          padding: 18px 24px;
+          border-bottom: 1px solid rgba(20,22,31,0.08);
+          background: #F5EFE6;
         }
-        .sh-dn { flex:1; overflow-y:auto; padding:8px 12px; }
-        .sh-gt { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1.2px; color:#C4B5FD; padding:18px 10px 6px; }
+        .sh-profile-avatar {
+          width: 40px; height: 40px; border-radius: 50%;
+          background: #14161F; color: #F5EFE6;
+          border: 1px solid #D97757;
+          display: flex; align-items: center; justify-content: center;
+          font-weight: 600; font-size: 14px;
+          letter-spacing: 0.02em;
+        }
+        .sh-dn { flex: 1; overflow-y: auto; padding: 10px 14px; }
+        .sh-gt {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 10px; font-weight: 500;
+          text-transform: uppercase; letter-spacing: 0.28em;
+          color: rgba(20,22,31,0.48);
+          padding: 20px 12px 10px;
+          display: flex; align-items: center; gap: 10px;
+        }
+        .sh-gt::before {
+          content: ''; width: 5px; height: 5px; border-radius: 50%;
+          background: #D97757;
+        }
         .sh-nl {
-          display:flex; align-items:center; gap:12px;
-          padding:10px 12px; border-radius:10px;
-          text-decoration:none; font-size:13.5px; font-weight:500;
-          color:#4B5563; transition:all 0.15s;
+          display: flex; align-items: center; gap: 14px;
+          padding: 11px 14px;
+          text-decoration: none;
+          font-family: 'Figtree', sans-serif;
+          font-size: 13.5px; font-weight: 500;
+          color: rgba(20,22,31,0.78);
+          border: 1px solid transparent;
+          transition: all 0.25s cubic-bezier(0.16,1,0.3,1);
         }
-        .sh-nl:hover { background:#F5F3FF; color:#2D1B4E; }
-        .sh-nl.active { background:#EDE9FE; color:#7C3AED; font-weight:600; }
-        .sh-df { padding:16px; border-top:1px solid #F3F4F6; }
+        .sh-nl:hover { border-color: rgba(20,22,31,0.08); background: rgba(217,119,87,0.05); color: #14161F; }
+        .sh-nl.active {
+          background: #14161F; color: #F5EFE6; font-weight: 500;
+          border-color: #14161F;
+        }
+        .sh-nl.active svg { color: #D97757; }
+        .sh-df { padding: 18px 20px; border-top: 1px solid rgba(20,22,31,0.08); }
+        .sh-logout {
+          display: flex; align-items: center; gap: 12px;
+          padding: 11px 14px;
+          background: none; border: 1px solid transparent;
+          cursor: pointer;
+          font-family: 'Figtree', sans-serif;
+          font-size: 13.5px; font-weight: 500;
+          color: #8B3A2F;
+          width: 100%;
+          transition: border-color 0.25s, background 0.25s;
+        }
+        .sh-logout:hover { border-color: rgba(139,58,47,0.18); background: rgba(139,58,47,0.05); }
 
-        @media(min-width:768px) { .sh-body { padding:28px 32px 100px; } }
+        @media (min-width: 768px) { .sh-body { padding: 40px 36px 120px; } }
+        @media (prefers-reduced-motion: reduce) {
+          .sh-drawer, .sh-overlay, .sh-tab, .sh-tab-center-btn { transition: none !important; }
+        }
       `}</style>
 
       <div className="sh">
@@ -167,36 +305,86 @@ export default function AppShell({ children, title, subtitle, hideHeader }: Prop
         {/* Drawer */}
         <nav className={`sh-drawer ${open ? 'open' : ''}`}>
           <div className="sh-dh">
-            <Logo size={22} variant="light" />
-            <button onClick={() => setOpen(false)} style={{ background:'none', border:'none', cursor:'pointer', color:'rgba(255,255,255,0.7)', padding:4 }}><X size={20} /></button>
+            <Logo size={24} variant="light" />
+            <button
+              onClick={() => setOpen(false)}
+              aria-label="Fechar menu"
+              style={{
+                background: 'none',
+                border: '1px solid transparent',
+                cursor: 'pointer',
+                color: 'rgba(245,239,230,0.8)',
+                padding: 6,
+                transition: 'border-color 0.25s',
+              }}
+              onMouseEnter={(e) => (e.currentTarget as HTMLElement).style.borderColor = 'rgba(245,239,230,0.2)'}
+              onMouseLeave={(e) => (e.currentTarget as HTMLElement).style.borderColor = 'transparent'}
+            >
+              <X size={18} />
+            </button>
           </div>
+
           {currentUser && (
             <div className="sh-dp">
-              <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-                <div style={{ width:40, height:40, borderRadius:'50%', background:'linear-gradient(135deg, #7C3AED, #9333EA)', display:'flex', alignItems:'center', justifyContent:'center', color:'#fff', fontWeight:700, fontSize:14, boxShadow:'0 2px 8px rgba(124,58,237,0.25)' }}>
-                  {initials(currentUser.name)}
-                </div>
-                <div>
-                  <div style={{ fontSize:14, fontWeight:600, color:'#111827' }}>{currentUser.name}</div>
-                  <div style={{ fontSize:11, color:'#6B7280', marginTop:1 }}>{currentUser.email}</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                <div className="sh-profile-avatar">{initials(currentUser.name)}</div>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div
+                    style={{
+                      fontFamily: "'Fraunces', serif",
+                      fontSize: 16,
+                      fontWeight: 450,
+                      letterSpacing: '-0.015em',
+                      color: '#14161F',
+                      lineHeight: 1.2,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {currentUser.name}
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: "'Figtree', sans-serif",
+                      fontSize: 11.5,
+                      color: 'rgba(20,22,31,0.55)',
+                      marginTop: 2,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {currentUser.email}
+                  </div>
                 </div>
               </div>
             </div>
           )}
+
           <div className="sh-dn">
             {NAV_GROUPS.map(g => (
-              <div key={g.title}>
+              <div key={g.title || 'main'}>
                 {g.title && <div className="sh-gt">{g.title}</div>}
                 {g.items.map(it => (
-                  <NavLink key={it.to} to={it.to} onClick={() => setOpen(false)} className={({ isActive }) => `sh-nl ${isActive ? 'active' : ''}`}>
+                  <NavLink
+                    key={it.to}
+                    to={it.to}
+                    onClick={() => setOpen(false)}
+                    className={({ isActive }) => `sh-nl ${isActive ? 'active' : ''}`}
+                  >
                     <it.Icon size={17} /> {it.label}
                   </NavLink>
                 ))}
               </div>
             ))}
           </div>
+
           <div className="sh-df">
-            <button onClick={() => { localStorage.removeItem('eliamov_token'); window.location.href = '/login'; }} style={{ display:'flex', alignItems:'center', gap:10, padding:'10px 12px', borderRadius:10, background:'none', border:'none', cursor:'pointer', fontSize:13.5, fontWeight:500, color:'#DC2626', width:'100%', transition:'background 0.15s' }}>
+            <button
+              className="sh-logout"
+              onClick={() => { localStorage.removeItem('eliamov_token'); window.location.href = '/login'; }}
+            >
               <LogOut size={17} /> Sair da conta
             </button>
           </div>
@@ -205,23 +393,27 @@ export default function AppShell({ children, title, subtitle, hideHeader }: Prop
         {/* Top bar */}
         {!hideHeader && (
           <div className="sh-bar">
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <button className="sh-menu" onClick={() => setOpen(true)}><Menu size={22} /></button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <button className="sh-menu" onClick={() => setOpen(true)} aria-label="Abrir menu">
+                <Menu size={20} />
+              </button>
               {streak > 0 && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'rgba(255,255,255,0.15)', padding: '4px 10px', borderRadius: 999, fontSize: 11, fontWeight: 700, color: '#FCD34D', backdropFilter: 'blur(4px)' }}>
-                  <Flame size={13} /> {streak}
-                </div>
+                <span className="sh-chip" title={`${streak} dia${streak > 1 ? 's' : ''} seguidos`}>
+                  <Flame size={11} />
+                  {streak}
+                </span>
               )}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'rgba(255,255,255,0.15)', padding: '4px 10px', borderRadius: 999, fontSize: 11, fontWeight: 600, color: '#C4B5FD', backdropFilter: 'blur(4px)' }}>
-                <Star size={12} /> Lv {level}
-              </div>
+              <span className="sh-chip" title={`Nível ${level}`}>
+                <span className="sh-chip-dot" style={{ background: '#C9A977' }} />
+                LV {level}
+              </span>
             </div>
-            <Logo size={20} variant="light" />
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Link to="/profile" style={{ textDecoration:'none' }}>
-                <div style={{ width:34, height:34, borderRadius:'50%', background:'rgba(255,255,255,0.15)', border:'2px solid rgba(255,255,255,0.3)', display:'flex', alignItems:'center', justifyContent:'center', color:'#fff', fontWeight:700, fontSize:12, transition:'border-color 0.15s' }}>
-                  {initials(currentUser?.name ?? '?')}
-                </div>
+
+            <Logo size={22} variant="light" />
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <Link to="/profile" className="sh-avatar-link" aria-label="Meu perfil">
+                <div className="sh-avatar">{initials(currentUser?.name ?? '?')}</div>
               </Link>
             </div>
           </div>
@@ -234,19 +426,19 @@ export default function AppShell({ children, title, subtitle, hideHeader }: Prop
           {children}
         </div>
 
-        {/* Tab bar with center Insights button */}
+        {/* Tab bar */}
         <div className="sh-tabs">
           {TABS.map(({ to, label, Icon, center }) => (
             center ? (
               <NavLink key={to} to={to} className={({ isActive }) => `sh-tab-center ${isActive ? 'active' : ''}`}>
                 <div className="sh-tab-center-btn">
-                  <Icon size={24} color="#fff" />
+                  <Icon size={22} />
                 </div>
                 <span>{label}</span>
               </NavLink>
             ) : (
               <NavLink key={to} to={to} className={({ isActive }) => `sh-tab ${isActive ? 'active' : ''}`}>
-                <span className="sh-tab-icon"><Icon size={21} /></span>
+                <Icon size={20} />
                 <span>{label}</span>
               </NavLink>
             )

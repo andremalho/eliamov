@@ -7,10 +7,10 @@ import { HormonalInsightCard } from '../components/HormonalInsightCard';
 import { CycleOnboardingForm } from '../components/CycleOnboardingForm';
 
 const PHASES: Record<string, { label: string; color: string; bg: string; icon: any; desc: string; tips: string[] }> = {
-  menstrual: { label: 'Menstrual', color: '#DB2777', bg: '#FDF2F8', icon: Droplets, desc: 'Fase de renovacao. Cuide-se com carinho.', tips: ['Yoga restaurativa', 'Caminhada leve', 'Alimentos ricos em ferro', 'Descanso adequado'] },
+  menstrual: { label: 'Menstrual', color: '#DB2777', bg: '#FDF2F8', icon: Droplets, desc: 'Fase de renovação. Cuide-se com carinho.', tips: ['Yoga restaurativa', 'Caminhada leve', 'Alimentos ricos em ferro', 'Descanso adequado'] },
   follicular: { label: 'Folicular', color: '#16A34A', bg: '#F0FDF4', icon: Sprout, desc: 'Energia crescente. Otimo para desafios!', tips: ['Treino de forca progressiva', 'HIIT', 'Aumente a carga', 'Proteina de qualidade'] },
-  ovulatory: { label: 'Ovulatoria', color: '#D97706', bg: '#FFFBEB', icon: Sun, desc: 'Pico de energia e disposicao.', tips: ['Performance maxima', 'Tente PRs', 'Aquecimento prolongado (risco ligamentar)', 'Socialize'] },
-  luteal: { label: 'Lutea', color: '#7C3AED', bg: '#EDE9FE', icon: Moon, desc: 'Fase de recolhimento. Respeite seu ritmo.', tips: ['Pilates', 'Treino moderado', 'Alimentos anti-inflamatorios', 'Reducao de cortisol'] },
+  ovulatory: { label: 'Ovulatória', color: '#D97706', bg: '#FFFBEB', icon: Sun, desc: 'Pico de energia e disposição.', tips: ['Performance máxima', 'Tente PRs', 'Aquecimento prolongado (risco ligamentar)', 'Socialize'] },
+  luteal: { label: 'Lútea', color: '#14161F', bg: '#FBEAE1', icon: Moon, desc: 'Fase de recolhimento. Respeite seu ritmo.', tips: ['Pilates', 'Treino moderado', 'Alimentos anti-inflamatorios', 'Redução de cortisol'] },
 };
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -33,7 +33,7 @@ export default function Cycle() {
   };
 
   useEffect(() => {
-    refresh().catch(() => setError('Nao foi possivel carregar.')).finally(() => setLoading(false));
+    refresh().catch(() => setError('Não foi possivel carregar.')).finally(() => setLoading(false));
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -72,7 +72,7 @@ export default function Cycle() {
                   <PhaseIcon size={22} color="#fff" />
                 </div>
                 <div>
-                  <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 22, fontWeight: 600, color: '#2D1B4E' }}>Fase {phase.label}</div>
+                  <div style={{ fontFamily: "'Fraunces', serif", fontSize: 22, fontWeight: 600, color: '#14161F' }}>Fase {phase.label}</div>
                   <div style={{ fontSize: 13, color: '#6B7280' }}>Dia {current?.dayOfCycle ?? '--'} do ciclo</div>
                 </div>
               </div>
@@ -89,7 +89,7 @@ export default function Cycle() {
               {current?.nextStart && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#6B7280' }}>
                   <Calendar size={14} />
-                  Proxima menstruacao: <strong style={{ color: '#111827' }}>{formatBR(current.nextStart)}</strong>
+                  Próxima menstruação: <strong style={{ color: '#111827' }}>{formatBR(current.nextStart)}</strong>
                 </div>
               )}
             </div>
@@ -101,21 +101,21 @@ export default function Cycle() {
           {/* No cycle data */}
           {!cp && (
             <div style={{ background: '#fff', borderRadius: 16, border: '1px solid #E5E7EB', padding: 20, textAlign: 'center', marginBottom: 18 }}>
-              <Droplets size={28} color="#7C3AED" style={{ marginBottom: 8 }} />
+              <Droplets size={28} color="#14161F" style={{ marginBottom: 8 }} />
               <p style={{ fontSize: 14, fontWeight: 500, color: '#111827', marginBottom: 4 }}>Registre seu ciclo</p>
-              <p style={{ fontSize: 13, color: '#6B7280', marginBottom: 12 }}>Seus treinos serao adaptados automaticamente a cada fase.</p>
+              <p style={{ fontSize: 13, color: '#6B7280', marginBottom: 12 }}>Seus treinos serão adaptados automaticamente a cada fase.</p>
             </div>
           )}
 
           {/* Privacy notice */}
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, background: '#FAF5FF', borderRadius: 10, padding: '10px 12px', marginBottom: 16 }}>
-            <ShieldCheck size={14} color="#7C3AED" style={{ flexShrink: 0, marginTop: 1 }} />
-            <span style={{ fontSize: 11, color: '#7C3AED', lineHeight: 1.5 }}>Dados de ciclo sao privados e nunca compartilhados com personal trainers ou gestores.</span>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, background: '#FDFAF3', borderRadius: 10, padding: '10px 12px', marginBottom: 16 }}>
+            <ShieldCheck size={14} color="#14161F" style={{ flexShrink: 0, marginTop: 1 }} />
+            <span style={{ fontSize: 11, color: '#14161F', lineHeight: 1.5 }}>Dados de ciclo são privados e nunca compartilhados com personal trainers ou gestores.</span>
           </div>
 
           {/* Add cycle */}
           {!showForm ? (
-            <button onClick={() => setShowForm(true)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, width: '100%', padding: 12, background: '#7C3AED', color: '#fff', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, cursor: 'pointer', marginBottom: 18 }}>
+            <button onClick={() => setShowForm(true)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, width: '100%', padding: 12, background: '#14161F', color: '#fff', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, cursor: 'pointer', marginBottom: 18 }}>
               <Plus size={16} /> Registrar novo ciclo
             </button>
           ) : (
@@ -128,12 +128,12 @@ export default function Cycle() {
           {/* History */}
           {entries.length > 0 && (
             <div>
-              <div style={{ fontSize: 15, fontWeight: 600, color: '#111827', marginBottom: 10 }}>Historico</div>
+              <div style={{ fontSize: 15, fontWeight: 600, color: '#111827', marginBottom: 10 }}>Histórico</div>
               {entries.map(entry => (
                 <div key={entry.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fff', borderRadius: 12, border: '1px solid #E5E7EB', padding: '10px 14px', marginBottom: 6 }}>
                   <div>
                     <strong style={{ fontSize: 13, color: '#111827' }}>{formatBR(entry.startDate)}</strong>
-                    <span style={{ fontSize: 12, color: '#6B7280', marginLeft: 8 }}>{entry.cycleLength}d / periodo {entry.periodLength}d</span>
+                    <span style={{ fontSize: 12, color: '#6B7280', marginLeft: 8 }}>{entry.cycleLength}d / período {entry.periodLength}d</span>
                   </div>
                   <button onClick={() => handleDelete(entry.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9CA3AF', padding: 4 }}><Trash2 size={14} /></button>
                 </div>

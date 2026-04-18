@@ -10,7 +10,7 @@ interface WorkoutCommentProps {
 const styles = {
   container: {
     padding: '12px 0 16px',
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
   } as React.CSSProperties,
   textarea: {
     width: '100%',
@@ -18,7 +18,7 @@ const styles = {
     padding: '10px 12px',
     border: '1px solid #E5E7EB',
     borderRadius: 10,
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
     fontSize: 14,
     color: '#111827',
     resize: 'vertical' as const,
@@ -32,7 +32,7 @@ const styles = {
     borderRadius: 8,
     padding: '8px 16px',
     fontSize: 13,
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
     fontWeight: 600,
     cursor: 'pointer',
   } as React.CSSProperties,

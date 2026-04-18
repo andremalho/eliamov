@@ -36,10 +36,10 @@ const PHASE_CONFIG: Record<
   { color: string; label: string; icon: React.ElementType; gradient: string }
 > = {
   menstrual: {
-    color: '#F472B6',
+    color: '#D97757',
     label: 'Menstrual',
     icon: Droplets,
-    gradient: 'linear-gradient(135deg, #F472B626, #F472B60D)',
+    gradient: 'linear-gradient(135deg, #D9775726, #D977570D)',
   },
   follicular: {
     color: '#22C55E',
@@ -49,13 +49,13 @@ const PHASE_CONFIG: Record<
   },
   ovulatory: {
     color: '#F59E0B',
-    label: 'Ovulatoria',
+    label: 'Ovulatória',
     icon: Sun,
     gradient: 'linear-gradient(135deg, #F59E0B26, #F59E0B0D)',
   },
   luteal: {
     color: '#F97316',
-    label: 'Lutea',
+    label: 'Lútea',
     icon: Moon,
     gradient: 'linear-gradient(135deg, #F9731626, #F973160D)',
   },
@@ -99,9 +99,9 @@ const metaItem: React.CSSProperties = {
 };
 
 const heading: React.CSSProperties = {
-  fontFamily: "'Cormorant Garamond', serif",
+  fontFamily: "'Fraunces', serif",
   fontSize: 20,
-  color: '#2D1B4E',
+  color: '#14161F',
   margin: 0,
   fontWeight: 600,
 };
@@ -145,7 +145,7 @@ export default function Training() {
         setLibrary(lib);
         if (t) setActiveWorkout(t.workout);
       })
-      .catch(() => setError('Nao foi possivel carregar os treinos.'))
+      .catch(() => setError('Não foi possivel carregar os treinos.'))
       .finally(() => setLoading(false));
   }, []);
 
@@ -308,10 +308,10 @@ export default function Training() {
               {/* Workout name */}
               <h2
                 style={{
-                  fontFamily: "'Cormorant Garamond', serif",
+                  fontFamily: "'Fraunces', serif",
                   fontSize: 26,
                   fontWeight: 700,
-                  color: '#2D1B4E',
+                  color: '#14161F',
                   margin: '14px 0 4px',
                 }}
               >
@@ -394,11 +394,11 @@ export default function Training() {
                   padding: '14px 0',
                   borderRadius: 14,
                   border: 'none',
-                  background: timerActive ? '#374151' : '#7C3AED',
+                  background: timerActive ? '#374151' : '#14161F',
                   color: '#fff',
                   fontWeight: 600,
                   fontSize: 15,
-                  fontFamily: "'DM Sans', sans-serif",
+                  fontFamily: "'Figtree', sans-serif",
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -436,7 +436,7 @@ export default function Training() {
               <h3 style={{ ...heading, marginBottom: 16 }}>
                 <Dumbbell
                   size={18}
-                  style={{ verticalAlign: -3, marginRight: 6, color: '#7C3AED' }}
+                  style={{ verticalAlign: -3, marginRight: 6, color: '#14161F' }}
                 />
                 Exercicios
               </h3>
@@ -460,7 +460,7 @@ export default function Training() {
                         width: 28,
                         height: 28,
                         borderRadius: '50%',
-                        background: '#7C3AED',
+                        background: '#14161F',
                         color: '#fff',
                         display: 'flex',
                         alignItems: 'center',
@@ -478,7 +478,7 @@ export default function Training() {
                         style={{
                           fontWeight: 600,
                           fontSize: 14,
-                          color: '#2D1B4E',
+                          color: '#14161F',
                           marginBottom: 4,
                         }}
                       >
@@ -505,7 +505,7 @@ export default function Training() {
 
                       {ex.videoUrl && (
                         <a href={ex.videoUrl} target="_blank" rel="noopener noreferrer"
-                          style={{ fontSize: 12, color: '#7C3AED', display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 4, textDecoration: 'none' }}>
+                          style={{ fontSize: 12, color: '#14161F', display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 4, textDecoration: 'none' }}>
                           <Play size={12} /> Ver video
                         </a>
                       )}
@@ -607,8 +607,8 @@ export default function Training() {
                     <button key={n} onClick={() => setSessionRpe(n)}
                       style={{
                         width: 32, height: 32, borderRadius: '50%',
-                        border: sessionRpe === n ? '2px solid #7C3AED' : '1px solid #E5E7EB',
-                        background: sessionRpe === n ? '#7C3AED' : '#fff',
+                        border: sessionRpe === n ? '2px solid #14161F' : '1px solid #E5E7EB',
+                        background: sessionRpe === n ? '#14161F' : '#fff',
                         color: sessionRpe === n ? '#fff' : '#6b7280',
                         fontSize: 12, fontWeight: 600, cursor: 'pointer',
                       }}>
@@ -623,7 +623,7 @@ export default function Training() {
                   padding: '10px 24px', borderRadius: 10, border: 'none',
                   background: '#22C55E', color: '#fff', fontWeight: 600,
                   fontSize: 14, cursor: 'pointer', display: 'inline-flex',
-                  alignItems: 'center', gap: 6, fontFamily: "'DM Sans', sans-serif",
+                  alignItems: 'center', gap: 6, fontFamily: "'Figtree', sans-serif",
                 }}>
                   <CheckCircle size={14} /> {saving ? 'Salvando...' : 'Salvar treino'}
                 </button>
@@ -631,7 +631,7 @@ export default function Training() {
                   padding: '10px 24px', borderRadius: 10, border: 'none',
                   background: '#F3F4F6', color: '#6b7280', fontWeight: 600,
                   fontSize: 14, cursor: 'pointer', display: 'inline-flex',
-                  alignItems: 'center', gap: 6, fontFamily: "'DM Sans', sans-serif",
+                  alignItems: 'center', gap: 6, fontFamily: "'Figtree', sans-serif",
                 }}>
                   <RotateCcw size={14} /> Descartar
                 </button>
@@ -679,7 +679,7 @@ export default function Training() {
                         style={{
                           fontSize: 15,
                           fontWeight: 600,
-                          color: '#2D1B4E',
+                          color: '#14161F',
                           margin: '8px 0 4px',
                         }}
                       >
@@ -726,7 +726,7 @@ export default function Training() {
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         cursor: 'pointer',
-                        fontFamily: "'DM Sans', sans-serif",
+                        fontFamily: "'Figtree', sans-serif",
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -747,7 +747,7 @@ export default function Training() {
                           style={{
                             fontWeight: 600,
                             fontSize: 15,
-                            color: '#2D1B4E',
+                            color: '#14161F',
                           }}
                         >
                           Fase {pcfg.label}
@@ -799,7 +799,7 @@ export default function Training() {
                                 style={{
                                   fontWeight: 600,
                                   fontSize: 14,
-                                  color: '#2D1B4E',
+                                  color: '#14161F',
                                   marginBottom: 2,
                                 }}
                               >

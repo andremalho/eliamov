@@ -3,7 +3,7 @@ import Layout from '../components/Layout';
 import { nutritionApi, EvolutionData, BodyComposition, WeightEntry } from '../services/nutrition.api';
 import { TrendingUp, TrendingDown, Plus, Trash2, Upload, ChevronDown, ChevronUp } from 'lucide-react';
 
-const V = '#7C3AED';
+const V = '#14161F';
 
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
@@ -47,7 +47,7 @@ export default function Evolution() {
       const evo = await nutritionApi.evolution();
       setData(evo);
     } catch {
-      setError('Nao foi possivel carregar dados de evolucao.');
+      setError('Não foi possivel carregar dados de evolução.');
     }
   };
 
@@ -94,7 +94,7 @@ export default function Evolution() {
       setFormOpen(false);
       await refresh();
     } catch (err: any) {
-      const msg = err?.response?.data?.message ?? 'Falha ao registrar composicao';
+      const msg = err?.response?.data?.message ?? 'Falha ao registrar composição';
       setError(Array.isArray(msg) ? msg.join(', ') : msg);
     } finally {
       setSubmittingBC(false);
@@ -128,7 +128,7 @@ export default function Evolution() {
   const latest = compositions.length ? compositions[compositions.length - 1] : null;
 
   return (
-    <Layout title="Evolucao" subtitle="Acompanhe sua evolucao ao longo do tempo.">
+    <Layout title="Evolução" subtitle="Acompanhe sua evolução ao longo do tempo.">
       <style>{`
         .evo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-bottom: 24px; }
         .evo-card { background: #fff; border-radius: 12px; padding: 16px; border: 1px solid #E5E7EB; }
@@ -249,7 +249,7 @@ export default function Evolution() {
 
           {/* C) Body composition */}
           <div className="evo-section">
-            <div className="evo-section-title">Composicao corporal</div>
+            <div className="evo-section-title">Composição corporal</div>
 
             {latest ? (
               <div className="evo-comp-cards">
@@ -267,7 +267,7 @@ export default function Evolution() {
                 )}
                 {latest.waterPercent != null && (
                   <div className="evo-comp-card">
-                    <div className="evo-comp-card-label">Agua (%)</div>
+                    <div className="evo-comp-card-label">Água (%)</div>
                     <div className="evo-comp-card-value">{Number(latest.waterPercent).toFixed(1)}</div>
                   </div>
                 )}
@@ -279,7 +279,7 @@ export default function Evolution() {
                 )}
               </div>
             ) : (
-              <div className="evo-chart"><div className="evo-empty">Nenhuma medicao de composicao corporal.</div></div>
+              <div className="evo-chart"><div className="evo-empty">Nenhuma medição de composição corporal.</div></div>
             )}
 
             {/* History list */}
@@ -295,7 +295,7 @@ export default function Evolution() {
                       <div style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>
                         {c.bodyFatPercent != null && `Gordura: ${Number(c.bodyFatPercent).toFixed(1)}%  `}
                         {c.muscleMassKg != null && `Musculo: ${Number(c.muscleMassKg).toFixed(1)} kg  `}
-                        {c.waterPercent != null && `Agua: ${Number(c.waterPercent).toFixed(1)}%`}
+                        {c.waterPercent != null && `Água: ${Number(c.waterPercent).toFixed(1)}%`}
                       </div>
                     </div>
                     <button className="evo-btn-danger" onClick={() => handleDeleteBC(c.id)} title="Remover">
@@ -311,7 +311,7 @@ export default function Evolution() {
           <div className="evo-section">
             <button className="evo-toggle" onClick={() => setFormOpen(!formOpen)}>
               {formOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-              {formOpen ? 'Fechar formulario' : 'Nova medicao de composicao'}
+              {formOpen ? 'Fechar formulário' : 'Nova medição de composição'}
             </button>
 
             {formOpen && (
@@ -329,7 +329,7 @@ export default function Evolution() {
                   <input type="number" step="0.1" className="evo-input" placeholder="Massa muscular (kg)" value={bcMuscle} onChange={e => setBcMuscle(e.target.value === '' ? '' : Number(e.target.value))} />
                 </div>
                 <div className="evo-form-row">
-                  <input type="number" step="0.1" className="evo-input" placeholder="Agua (%)" value={bcWater} onChange={e => setBcWater(e.target.value === '' ? '' : Number(e.target.value))} />
+                  <input type="number" step="0.1" className="evo-input" placeholder="Água (%)" value={bcWater} onChange={e => setBcWater(e.target.value === '' ? '' : Number(e.target.value))} />
                   <input type="number" step="0.1" className="evo-input" placeholder="Gordura visceral" value={bcVisceral} onChange={e => setBcVisceral(e.target.value === '' ? '' : Number(e.target.value))} />
                 </div>
                 <div className="evo-form-row">
@@ -337,7 +337,7 @@ export default function Evolution() {
                   <input type="number" step="1" className="evo-input" placeholder="Metabolismo basal (kcal)" value={bcBasal} onChange={e => setBcBasal(e.target.value === '' ? '' : Number(e.target.value))} />
                 </div>
                 <div className="evo-form-row">
-                  <textarea className="evo-textarea" placeholder="Observacoes (opcional)" value={bcNotes} onChange={e => setBcNotes(e.target.value)} />
+                  <textarea className="evo-textarea" placeholder="Observações (opcional)" value={bcNotes} onChange={e => setBcNotes(e.target.value)} />
                 </div>
                 <div className="evo-form-row" style={{ alignItems: 'center' }}>
                   <label className="evo-upload-btn">
@@ -348,7 +348,7 @@ export default function Evolution() {
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}>
                   <button type="submit" className="evo-btn evo-btn-primary" disabled={submittingBC}>
-                    <Plus size={14} /> {submittingBC ? 'Salvando...' : 'Salvar medicao'}
+                    <Plus size={14} /> {submittingBC ? 'Salvando...' : 'Salvar medição'}
                   </button>
                 </div>
               </form>

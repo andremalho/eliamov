@@ -39,10 +39,10 @@ const INTENSITIES = [
   { value: 'low', label: 'Baixa' },
   { value: 'moderate', label: 'Moderada' },
   { value: 'high', label: 'Alta' },
-  { value: 'max', label: 'Maxima' },
+  { value: 'max', label: 'Máxima' },
 ];
 const PHASE_LABELS: Record<string, string> = {
-  menstrual: 'Menstrual', follicular: 'Folicular', ovulatory: 'Ovulatoria', luteal: 'Lutea',
+  menstrual: 'Menstrual', follicular: 'Folicular', ovulatory: 'Ovulatória', luteal: 'Lútea',
 };
 const PHASE_COLORS: Record<string, string> = {
   menstrual: '#ef4444', follicular: '#10b981', ovulatory: '#f59e0b', luteal: '#8b5cf6',
@@ -56,8 +56,8 @@ const ACTION_COLORS: Record<string, { bg: string; color: string }> = {
 const CYCLE_PHASES = [
   { value: 'all', label: 'Todas as fases' },
   { value: 'follicular', label: 'Folicular' },
-  { value: 'ovulatory', label: 'Ovulatoria' },
-  { value: 'luteal', label: 'Lutea' },
+  { value: 'ovulatory', label: 'Ovulatória' },
+  { value: 'luteal', label: 'Lútea' },
   { value: 'menstrual', label: 'Menstrual' },
 ];
 
@@ -69,7 +69,7 @@ const S = {
   wrapper: {
     display: 'flex',
     minHeight: 'calc(100vh - 120px)',
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
   } as React.CSSProperties,
 
   sidebar: {
@@ -100,12 +100,12 @@ const S = {
     padding: '10px 20px',
     border: 'none',
     background: active ? '#ede9fe' : 'transparent',
-    color: active ? '#7c3aed' : '#64748b',
+    color: active ? '#14161F' : '#64748b',
     fontWeight: active ? 600 : 400,
     fontSize: 14,
     cursor: 'pointer',
-    fontFamily: "'DM Sans', sans-serif",
-    borderLeft: active ? '3px solid #7c3aed' : '3px solid transparent',
+    fontFamily: "'Figtree', sans-serif",
+    borderLeft: active ? '3px solid #14161F' : '3px solid transparent',
     transition: 'all 0.15s',
   }) as React.CSSProperties,
 
@@ -144,12 +144,12 @@ const S = {
     gap: 2,
     border: 'none',
     background: 'transparent',
-    color: active ? '#7c3aed' : '#94a3b8',
+    color: active ? '#14161F' : '#94a3b8',
     fontSize: 10,
     fontWeight: active ? 600 : 400,
     cursor: 'pointer',
     padding: '4px 8px',
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
   }) as React.CSSProperties,
 
   pageTitle: {
@@ -177,7 +177,7 @@ const S = {
   } as React.CSSProperties,
 
   cardIcon: {
-    color: '#7c3aed',
+    color: '#14161F',
     marginBottom: 4,
   } as React.CSSProperties,
 
@@ -226,7 +226,7 @@ const S = {
   breakdownFill: (pct: number) => ({
     height: '100%',
     width: `${pct}%`,
-    background: '#7c3aed',
+    background: '#14161F',
     borderRadius: 4,
     transition: 'width 0.3s',
   }) as React.CSSProperties,
@@ -236,14 +236,14 @@ const S = {
     alignItems: 'center',
     gap: 6,
     padding: '10px 18px',
-    background: '#7c3aed',
+    background: '#14161F',
     color: '#fff',
     border: 'none',
     borderRadius: 8,
     fontSize: 14,
     fontWeight: 600,
     cursor: 'pointer',
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
     transition: 'background 0.15s',
   } as React.CSSProperties,
 
@@ -259,7 +259,7 @@ const S = {
     fontSize: 13,
     fontWeight: 500,
     cursor: 'pointer',
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
   } as React.CSSProperties,
 
   btnDanger: {
@@ -273,7 +273,7 @@ const S = {
     borderRadius: 6,
     cursor: 'pointer',
     fontSize: 12,
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
   } as React.CSSProperties,
 
   input: {
@@ -282,7 +282,7 @@ const S = {
     border: '1px solid #e2e8f0',
     borderRadius: 8,
     fontSize: 14,
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
     outline: 'none',
     boxSizing: 'border-box' as const,
   } as React.CSSProperties,
@@ -293,7 +293,7 @@ const S = {
     border: '1px solid #e2e8f0',
     borderRadius: 8,
     fontSize: 14,
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
     outline: 'none',
     resize: 'vertical' as const,
     boxSizing: 'border-box' as const,
@@ -304,7 +304,7 @@ const S = {
     border: '1px solid #e2e8f0',
     borderRadius: 8,
     fontSize: 14,
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
     outline: 'none',
     background: '#fff',
     boxSizing: 'border-box' as const,
@@ -355,7 +355,7 @@ const S = {
     border: '1px solid #e2e8f0',
     borderRadius: 10,
     fontSize: 15,
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
     outline: 'none',
     boxSizing: 'border-box' as const,
   } as React.CSSProperties,
@@ -387,7 +387,7 @@ const S = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    color: '#7c3aed',
+    color: '#14161F',
     fontWeight: 700,
     fontSize: 16,
     flexShrink: 0,
@@ -400,7 +400,7 @@ const S = {
     fontSize: 11,
     fontWeight: 600,
     background: '#ede9fe',
-    color: '#7c3aed',
+    color: '#14161F',
     marginLeft: 8,
   } as React.CSSProperties,
 
@@ -427,13 +427,13 @@ const S = {
   tab: (active: boolean) => ({
     padding: '8px 16px',
     border: 'none',
-    borderBottom: active ? '2px solid #7c3aed' : '2px solid transparent',
+    borderBottom: active ? '2px solid #14161F' : '2px solid transparent',
     background: 'transparent',
-    color: active ? '#7c3aed' : '#64748b',
+    color: active ? '#14161F' : '#64748b',
     fontWeight: active ? 600 : 400,
     fontSize: 14,
     cursor: 'pointer',
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
     display: 'flex',
     alignItems: 'center',
     gap: 6,
@@ -655,9 +655,9 @@ const AdminPanel: React.FC = () => {
   const handleExportUsers = async () => {
     try {
       const blob = await academyApi.exportUsers();
-      downloadCsv(blob, 'usuarios.csv');
+      downloadCsv(blob, 'usuários.csv');
     } catch {
-      alert('Erro ao exportar usuarios.');
+      alert('Erro ao exportar usuários.');
     }
   };
 
@@ -904,7 +904,7 @@ const AdminPanel: React.FC = () => {
           <div style={S.card}>
             <Users size={22} style={S.cardIcon} />
             <div style={S.cardValue}>{dashData.totalUsers}</div>
-            <div style={S.cardLabel}>Usuarios totais</div>
+            <div style={S.cardLabel}>Usuários totais</div>
           </div>
           <div style={S.card}>
             <UserPlus size={22} style={S.cardIcon} />
@@ -919,7 +919,7 @@ const AdminPanel: React.FC = () => {
           <div style={S.card}>
             <TrendingUp size={22} style={S.cardIcon} />
             <div style={S.cardValue}>{(dashData.avgFrequency * 100).toFixed(0)}%</div>
-            <div style={S.cardLabel}>Frequencia media</div>
+            <div style={S.cardLabel}>Frequência media</div>
           </div>
           <div style={S.card}>
             <Award size={22} style={S.cardIcon} />
@@ -935,7 +935,7 @@ const AdminPanel: React.FC = () => {
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
           <div style={S.section}>
-            <h3 style={S.sectionTitle}>Usuarios por papel</h3>
+            <h3 style={S.sectionTitle}>Usuários por papel</h3>
             {dashData.usersByRole.map((r) => (
               <div key={r.role} style={S.breakdownRow}>
                 <span style={{ minWidth: 120, color: '#475569' }}>{r.role}</span>
@@ -947,7 +947,7 @@ const AdminPanel: React.FC = () => {
             ))}
           </div>
           <div style={S.section}>
-            <h3 style={S.sectionTitle}>Usuarios por objetivo</h3>
+            <h3 style={S.sectionTitle}>Usuários por objetivo</h3>
             {dashData.usersByGoal.map((g) => (
               <div key={g.goal} style={S.breakdownRow}>
                 <span style={{ minWidth: 120, color: '#475569' }}>{g.goal || 'Nenhum'}</span>
@@ -964,7 +964,7 @@ const AdminPanel: React.FC = () => {
           <h3 style={S.sectionTitle}>Exportar dados</h3>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             <button style={S.btnSecondary} onClick={handleExportUsers}>
-              <Download size={14} /> Exportar usuarios (CSV)
+              <Download size={14} /> Exportar usuários (CSV)
             </button>
             <button style={S.btnSecondary} onClick={handleExportContent}>
               <Download size={14} /> Exportar conteudo (CSV)
@@ -1108,10 +1108,10 @@ const AdminPanel: React.FC = () => {
                     required placeholder="Titulo do video" />
                 </div>
                 <div style={S.formGroup}>
-                  <label style={S.formLabel}>Descricao</label>
+                  <label style={S.formLabel}>Descrição</label>
                   <textarea style={S.textarea} rows={3} value={videoForm.description}
                     onChange={(e) => setVideoForm({ ...videoForm, description: e.target.value })}
-                    placeholder="Descricao opcional..." />
+                    placeholder="Descrição opcional..." />
                 </div>
                 <div style={S.formGroup}>
                   <label style={S.formLabel}>URL do video</label>
@@ -1194,7 +1194,7 @@ const AdminPanel: React.FC = () => {
                   <label style={S.formLabel}>Resumo</label>
                   <input style={S.input} type="text" value={recipeForm.summary}
                     onChange={(e) => setRecipeForm({ ...recipeForm, summary: e.target.value })}
-                    placeholder="Descricao breve (opcional)" />
+                    placeholder="Descrição breve (opcional)" />
                 </div>
                 <div style={S.formGroup}>
                   <label style={S.formLabel}>Ingredientes (um por linha: quantidade unidade nome)</label>
@@ -1210,7 +1210,7 @@ const AdminPanel: React.FC = () => {
                 </div>
 
                 <div style={{ ...S.section, background: '#f0fdf4', border: '1px solid #bbf7d0', padding: 16, marginBottom: 14 }}>
-                  <h4 style={{ fontSize: 13, fontWeight: 600, color: '#166534', marginBottom: 10 }}>Macros por porcao</h4>
+                  <h4 style={{ fontSize: 13, fontWeight: 600, color: '#166534', marginBottom: 10 }}>Macros por porção</h4>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
                     <div>
                       <label style={{ ...S.formLabel, fontSize: 11 }}>Calorias</label>
@@ -1259,7 +1259,7 @@ const AdminPanel: React.FC = () => {
                       placeholder="30" />
                   </div>
                   <div style={S.formGroup}>
-                    <label style={S.formLabel}>Porcoes</label>
+                    <label style={S.formLabel}>Porções</label>
                     <input style={S.input} type="number" value={recipeForm.servings}
                       onChange={(e) => setRecipeForm({ ...recipeForm, servings: e.target.value })}
                       placeholder="1" />
@@ -1275,7 +1275,7 @@ const AdminPanel: React.FC = () => {
                     </select>
                   </div>
                   <div style={S.formGroup}>
-                    <label style={S.formLabel}>Restricoes (separadas por virgula)</label>
+                    <label style={S.formLabel}>Restrições (separadas por virgula)</label>
                     <input style={S.input} type="text" value={recipeForm.dietaryRestrictions}
                       onChange={(e) => setRecipeForm({ ...recipeForm, dietaryRestrictions: e.target.value })}
                       placeholder="sem gluten, sem lactose, vegana" />
@@ -1307,7 +1307,7 @@ const AdminPanel: React.FC = () => {
                         {r.cyclePhase} &middot; {r.macros ? `${r.macros.calories} kcal` : '-'} &middot;
                         {r.prepTimeMinutes + r.cookTimeMinutes > 0
                           ? ` ${r.prepTimeMinutes + r.cookTimeMinutes} min`
-                          : ''} &middot; {r.servings} {r.servings === 1 ? 'porcao' : 'porcoes'} &middot;
+                          : ''} &middot; {r.servings} {r.servings === 1 ? 'porção' : 'porções'} &middot;
                         {formatDate(r.publishedAt || r.createdAt)}
                       </div>
                       {r.dietaryRestrictions.length > 0 && (
@@ -1366,8 +1366,8 @@ const AdminPanel: React.FC = () => {
                   onChange={(e) => setWorkoutForm({ ...workoutForm, phase: e.target.value })}>
                   <option value="menstrual">Menstrual</option>
                   <option value="follicular">Folicular</option>
-                  <option value="ovulatory">Ovulatoria</option>
-                  <option value="luteal">Lutea</option>
+                  <option value="ovulatory">Ovulatória</option>
+                  <option value="luteal">Lútea</option>
                 </select>
               </div>
               <div style={S.formGroup}>
@@ -1392,25 +1392,25 @@ const AdminPanel: React.FC = () => {
               </div>
             </div>
             <div style={S.formGroup}>
-              <label style={S.formLabel}>Duracao (min)</label>
+              <label style={S.formLabel}>Duração (min)</label>
               <input style={S.input} type="number" value={workoutForm.duration}
                 onChange={(e) => setWorkoutForm({ ...workoutForm, duration: e.target.value })}
                 placeholder="30" />
             </div>
             <div style={S.formGroup}>
-              <label style={S.formLabel}>Exercicios (um por linha: nome | series | reps | duracao | descanso | notas)</label>
+              <label style={S.formLabel}>Exercicios (um por linha: nome | series | reps | duração | descanso | notas)</label>
               <textarea style={S.textarea} rows={6} value={workoutForm.exercisesText}
                 onChange={(e) => setWorkoutForm({ ...workoutForm, exercisesText: e.target.value })}
                 required placeholder={"Agachamento livre | 4 | 8-10 | | 90s |\nLeg press | 3 | 10-12 | | 60s |\nPrancha | 3 | | 30s | 30s |"} />
             </div>
             <div style={S.formGroup}>
-              <label style={S.formLabel}>Descricao</label>
+              <label style={S.formLabel}>Descrição</label>
               <textarea style={S.textarea} rows={3} value={workoutForm.description}
                 onChange={(e) => setWorkoutForm({ ...workoutForm, description: e.target.value })}
-                placeholder="Descricao do treino e orientacoes..." />
+                placeholder="Descrição do treino e orientações..." />
             </div>
             <div style={S.formGroup}>
-              <label style={S.formLabel}>Referencia cientifica (opcional)</label>
+              <label style={S.formLabel}>Referência científica (opcional)</label>
               <input style={S.input} type="text" value={workoutForm.reference}
                 onChange={(e) => setWorkoutForm({ ...workoutForm, reference: e.target.value })}
                 placeholder="McNulty et al. 2020, Sports Med" />
@@ -1448,7 +1448,7 @@ const AdminPanel: React.FC = () => {
 
         {/* Built-in library */}
         <div style={S.section}>
-          <h3 style={S.sectionTitle}>Biblioteca padrao ({fullLibrary.builtin.length} treinos)</h3>
+          <h3 style={S.sectionTitle}>Biblioteca padrão ({fullLibrary.builtin.length} treinos)</h3>
           {(['menstrual', 'follicular', 'ovulatory', 'luteal'] as const).map((phase) => {
             const phaseWorkouts = fullLibrary.builtin.filter((w) => w.phase === phase);
             if (phaseWorkouts.length === 0) return null;
@@ -1468,7 +1468,7 @@ const AdminPanel: React.FC = () => {
                         {w.type} &middot; {w.duration} min &middot; RPE {w.rpe} &middot; {w.intensity} &middot; {w.exercises.length} exercicios
                       </div>
                     </div>
-                    <span style={{ ...S.badge, background: '#f1f5f9', color: '#64748b', fontSize: 10 }}>padrao</span>
+                    <span style={{ ...S.badge, background: '#f1f5f9', color: '#64748b', fontSize: 10 }}>padrão</span>
                   </div>
                 ))}
               </div>
@@ -1491,7 +1491,7 @@ const AdminPanel: React.FC = () => {
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Pesquisar usuarios por nome ou email..."
+          placeholder="Pesquisar usuários por nome ou email..."
         />
       </div>
 
@@ -1549,8 +1549,8 @@ const AdminPanel: React.FC = () => {
                 <thead>
                   <tr style={{ borderBottom: '2px solid #e5e7eb', textAlign: 'left' }}>
                     <th style={{ padding: '8px 12px', color: '#475569', fontWeight: 600 }}>Data</th>
-                    <th style={{ padding: '8px 12px', color: '#475569', fontWeight: 600 }}>Usuario</th>
-                    <th style={{ padding: '8px 12px', color: '#475569', fontWeight: 600 }}>Acao</th>
+                    <th style={{ padding: '8px 12px', color: '#475569', fontWeight: 600 }}>Usuário</th>
+                    <th style={{ padding: '8px 12px', color: '#475569', fontWeight: 600 }}>Ação</th>
                     <th style={{ padding: '8px 12px', color: '#475569', fontWeight: 600 }}>Recurso</th>
                     <th style={{ padding: '8px 12px', color: '#475569', fontWeight: 600 }}>Caminho</th>
                   </tr>
@@ -1594,7 +1594,7 @@ const AdminPanel: React.FC = () => {
                 </span>
                 <button style={S.btnSecondary} disabled={auditPage >= Math.ceil(auditTotal / 30)}
                   onClick={() => setAuditPage((p) => p + 1)}>
-                  Proxima
+                  Próxima
                 </button>
               </div>
             )}
@@ -1607,10 +1607,10 @@ const AdminPanel: React.FC = () => {
   /* ---- Config Tab ---- */
   const renderConfig = () => (
     <>
-      <h2 style={S.pageTitle}>Configuracoes</h2>
+      <h2 style={S.pageTitle}>Configurações</h2>
 
       <div style={S.section}>
-        <h3 style={S.sectionTitle}>Informacoes da conta</h3>
+        <h3 style={S.sectionTitle}>Informações da conta</h3>
         <div style={S.configRow}>
           <span style={S.configLabel}>Nome</span>
           <span style={S.configValue}>{currentUser.name}</span>
@@ -1636,13 +1636,13 @@ const AdminPanel: React.FC = () => {
       <div style={S.section}>
         <h3 style={S.sectionTitle}>White Label / Branding</h3>
         <p style={{ fontSize: 13, color: '#64748b', marginBottom: 12 }}>
-          Configure cores e identidade visual da sua academia. As alteracoes sao aplicadas para todos os usuarios do tenant.
+          Configure cores e identidade visual da sua academia. As alterações são aplicadas para todos os usuários do tenant.
         </p>
         <div style={S.formRow}>
           <div style={S.formGroup}>
             <label style={S.formLabel}>Cor primaria</label>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <input type="color" defaultValue="#7C3AED" style={{ width: 40, height: 32, border: 'none', cursor: 'pointer' }}
+              <input type="color" defaultValue="#14161F" style={{ width: 40, height: 32, border: 'none', cursor: 'pointer' }}
                 onChange={(e) => {
                   document.documentElement.style.setProperty('--color-primary', e.target.value);
                 }} />
@@ -1681,7 +1681,7 @@ const AdminPanel: React.FC = () => {
       <div style={{ ...S.section, background: '#f0fdf4', border: '1px solid #bbf7d0' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
           <Info size={16} style={{ color: '#166534' }} />
-          <h3 style={{ ...S.sectionTitle, marginBottom: 0, color: '#166534' }}>Versao</h3>
+          <h3 style={{ ...S.sectionTitle, marginBottom: 0, color: '#166534' }}>Versão</h3>
         </div>
         <p style={{ fontSize: 13, color: '#166534' }}>EliaMov CMS v1.0</p>
       </div>

@@ -8,64 +8,148 @@ export default function GamificationToast() {
 
   if (xpEvents.length === 0) return null;
 
+  const toastBase: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 12,
+    padding: '12px 18px',
+    minWidth: 220,
+    border: '1px solid rgba(245,239,230,0.14)',
+    fontFamily: "'Figtree', sans-serif",
+  };
+
   return (
-    <div style={{
-      position: 'fixed', top: 70, right: 16, zIndex: 100,
-      display: 'flex', flexDirection: 'column', gap: 8,
-      pointerEvents: 'none',
-    }}>
+    <div
+      style={{
+        position: 'fixed',
+        top: 88,
+        right: 20,
+        zIndex: 100,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 10,
+        pointerEvents: 'none',
+      }}
+    >
       <style>{`
-        @keyframes xpSlideIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @keyframes xpFadeOut { from { opacity: 1; } to { opacity: 0; transform: translateY(-10px); } }
+        @keyframes elia-toast-in {
+          from { transform: translateX(120%) translateY(0); opacity: 0; }
+          to   { transform: translateX(0) translateY(0); opacity: 1; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .elia-toast { animation: none; }
+        }
       `}</style>
+
       {xpEvents.map((event) => (
-        <div key={event.id} style={{
-          pointerEvents: 'auto',
-          animation: 'xpSlideIn 0.3s ease-out',
-        }}>
-          {/* XP Toast */}
-          <div onClick={() => dismissEvent(event.id)} style={{
-            background: 'linear-gradient(135deg, #7C3AED, #9333EA)',
-            color: '#fff', borderRadius: 12, padding: '10px 16px',
-            display: 'flex', alignItems: 'center', gap: 8,
-            boxShadow: '0 4px 20px rgba(124,58,237,0.4)',
-            cursor: 'pointer', minWidth: 180,
-            fontFamily: "'DM Sans', sans-serif",
-          }}>
-            <Zap size={18} style={{ color: '#FCD34D' }} />
+        <div
+          key={event.id}
+          className="elia-toast"
+          style={{
+            pointerEvents: 'auto',
+            animation: 'elia-toast-in 0.5s cubic-bezier(0.16,1,0.3,1)',
+          }}
+        >
+          {/* XP */}
+          <div
+            onClick={() => dismissEvent(event.id)}
+            role="button"
+            style={{
+              ...toastBase,
+              background: '#14161F',
+              color: '#F5EFE6',
+              cursor: 'pointer',
+              borderLeft: '2px solid #D97757',
+            }}
+          >
+            <Zap size={16} color="#C9A977" />
             <div>
-              <div style={{ fontSize: 15, fontWeight: 700 }}>+{event.amount} XP</div>
-              <div style={{ fontSize: 11, opacity: 0.85 }}>{event.action}</div>
+              <div
+                style={{
+                  fontFamily: "'Fraunces', serif",
+                  fontSize: 18,
+                  fontWeight: 450,
+                  letterSpacing: '-0.015em',
+                  lineHeight: 1.1,
+                }}
+              >
+                +{event.amount} <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, letterSpacing: '0.16em', color: '#C9A977' }}>XP</span>
+              </div>
+              <div
+                style={{
+                  fontSize: 11.5,
+                  color: 'rgba(245,239,230,0.65)',
+                  marginTop: 2,
+                  letterSpacing: '0.02em',
+                }}
+              >
+                {event.action}
+              </div>
             </div>
           </div>
 
           {/* Level up */}
           {event.leveledUp && (
-            <div style={{
-              background: 'linear-gradient(135deg, #F59E0B, #D97706)',
-              color: '#fff', borderRadius: 12, padding: '10px 16px',
-              display: 'flex', alignItems: 'center', gap: 8,
-              boxShadow: '0 4px 20px rgba(245,158,11,0.4)',
-              marginTop: 6, fontFamily: "'DM Sans', sans-serif",
-            }}>
-              <TrendingUp size={18} />
-              <div style={{ fontSize: 14, fontWeight: 700 }}>Subiu de nivel!</div>
+            <div
+              style={{
+                ...toastBase,
+                marginTop: 8,
+                background: '#C9A977',
+                color: '#14161F',
+                borderLeft: '2px solid #14161F',
+              }}
+            >
+              <TrendingUp size={16} />
+              <div
+                style={{
+                  fontFamily: "'Fraunces', serif",
+                  fontSize: 15,
+                  fontWeight: 500,
+                  letterSpacing: '-0.01em',
+                }}
+              >
+                Subiu de nível
+              </div>
             </div>
           )}
 
           {/* New badges */}
           {event.newBadges.map((badge) => (
-            <div key={badge} style={{
-              background: 'linear-gradient(135deg, #22C55E, #16A34A)',
-              color: '#fff', borderRadius: 12, padding: '10px 16px',
-              display: 'flex', alignItems: 'center', gap: 8,
-              boxShadow: '0 4px 20px rgba(34,197,94,0.4)',
-              marginTop: 6, fontFamily: "'DM Sans', sans-serif",
-            }}>
-              <Award size={18} />
+            <div
+              key={badge}
+              style={{
+                ...toastBase,
+                marginTop: 8,
+                background: '#FDFAF3',
+                color: '#14161F',
+                border: '1px solid rgba(20,22,31,0.12)',
+                borderLeft: '2px solid #9CA89A',
+              }}
+            >
+              <Award size={16} color="#9CA89A" />
               <div>
-                <div style={{ fontSize: 14, fontWeight: 700 }}>Badge desbloqueado!</div>
-                <div style={{ fontSize: 11, opacity: 0.9 }}>{BADGE_LABELS[badge] || badge}</div>
+                <div
+                  style={{
+                    fontFamily: "'JetBrains Mono', monospace",
+                    fontSize: 10,
+                    letterSpacing: '0.24em',
+                    textTransform: 'uppercase',
+                    color: '#9CA89A',
+                    marginBottom: 3,
+                  }}
+                >
+                  ● Novo badge
+                </div>
+                <div
+                  style={{
+                    fontFamily: "'Fraunces', serif",
+                    fontSize: 15,
+                    fontWeight: 450,
+                    letterSpacing: '-0.015em',
+                  }}
+                >
+                  {BADGE_LABELS[badge] || badge}
+                </div>
               </div>
             </div>
           ))}

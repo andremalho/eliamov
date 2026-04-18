@@ -39,11 +39,11 @@ const AcademyStep: React.FC<AcademyStepProps> = ({ data, onChange, onContinue })
       exit={{ opacity: 0, x: -30 }}
       transition={{ duration: 0.3 }}
     >
-      <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, color: '#2D1B4E', marginBottom: 4 }}>
+      <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 28, color: '#14161F', marginBottom: 4 }}>
         Sua academia
       </h2>
       <p style={{ color: '#6B7280', fontSize: 14, marginBottom: 24 }}>
-        Conecte-se a sua academia para uma experiencia integrada.
+        Conecte-se a sua academia para uma experiência integrada.
       </p>
 
       <div>
@@ -68,7 +68,7 @@ const AcademyStep: React.FC<AcademyStepProps> = ({ data, onChange, onContinue })
             padding: '14px 24px',
             border: 'none',
             borderRadius: 999,
-            background: '#7C3AED',
+            background: '#14161F',
             color: '#fff',
             fontSize: 16,
             fontWeight: 600,

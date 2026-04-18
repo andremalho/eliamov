@@ -108,9 +108,9 @@ const TrainerDashboard: React.FC = () => {
       });
       setPrescribeTitle('');
       setPrescribeNotes('');
-      setPrescriptionSuccess('Prescricao enviada com sucesso.');
+      setPrescriptionSuccess('Prescrição enviada com sucesso.');
     } catch {
-      setPrescriptionSuccess('Erro ao enviar prescricao.');
+      setPrescriptionSuccess('Erro ao enviar prescrição.');
     } finally {
       setSendingPrescription(false);
     }
@@ -234,7 +234,7 @@ const TrainerDashboard: React.FC = () => {
 
             {progress.weightHistory.length > 0 && (
               <>
-                <h4 style={{ color: '#334e68', marginBottom: 8 }}>Historico de peso</h4>
+                <h4 style={{ color: '#334e68', marginBottom: 8 }}>Histórico de peso</h4>
                 {progress.weightHistory.map((entry) => (
                   <div key={entry.id} className="trainer-workout-item">
                     <div className="trainer-workout-info">
@@ -273,7 +273,7 @@ const TrainerDashboard: React.FC = () => {
               rows={4}
               value={prescribeNotes}
               onChange={(e) => setPrescribeNotes(e.target.value)}
-              placeholder="Orientacoes para a aluna..."
+              placeholder="Orientações para a aluna..."
               style={{ marginBottom: 12, width: '100%' }}
             />
 

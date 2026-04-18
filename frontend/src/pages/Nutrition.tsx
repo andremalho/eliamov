@@ -25,8 +25,8 @@ const MEAL_COLORS: Record<string, string> = {
   breakfast: '#F59E0B',
   morning_snack: '#84CC16',
   lunch: '#3B82F6',
-  afternoon_snack: '#8B5CF6',
-  dinner: '#EC4899',
+  afternoon_snack: '#D97757',
+  dinner: '#B85A3D',
   supper: '#6366F1',
   other: '#6B7280',
 };
@@ -40,14 +40,14 @@ const s = {
     marginBottom: 16,
   } as React.CSSProperties,
   title: {
-    fontFamily: 'DM Sans, sans-serif',
+    fontFamily: 'Figtree, sans-serif',
     fontSize: 15,
     fontWeight: 600,
     color: '#111827',
     margin: '0 0 14px',
   } as React.CSSProperties,
   label: {
-    fontFamily: 'DM Sans, sans-serif',
+    fontFamily: 'Figtree, sans-serif',
     fontSize: 12,
     fontWeight: 600,
     color: '#6B7280',
@@ -55,17 +55,17 @@ const s = {
     display: 'block',
   } as React.CSSProperties,
   muted: {
-    fontFamily: 'DM Sans, sans-serif',
+    fontFamily: 'Figtree, sans-serif',
     fontSize: 13,
     color: '#6B7280',
   } as React.CSSProperties,
   mutedSmall: {
-    fontFamily: 'DM Sans, sans-serif',
+    fontFamily: 'Figtree, sans-serif',
     fontSize: 11,
     color: '#6B7280',
   } as React.CSSProperties,
   input: {
-    fontFamily: 'DM Sans, sans-serif',
+    fontFamily: 'Figtree, sans-serif',
     fontSize: 14,
     color: '#111827',
     width: '100%',
@@ -77,7 +77,7 @@ const s = {
     boxSizing: 'border-box' as const,
   } as React.CSSProperties,
   textarea: {
-    fontFamily: 'DM Sans, sans-serif',
+    fontFamily: 'Figtree, sans-serif',
     fontSize: 14,
     color: '#111827',
     width: '100%',
@@ -91,7 +91,7 @@ const s = {
     lineHeight: 1.5,
   } as React.CSSProperties,
   select: {
-    fontFamily: 'DM Sans, sans-serif',
+    fontFamily: 'Figtree, sans-serif',
     fontSize: 14,
     color: '#111827',
     width: '100%',
@@ -105,21 +105,21 @@ const s = {
     WebkitAppearance: 'none' as const,
   } as React.CSSProperties,
   submitBtn: (disabled: boolean) => ({
-    fontFamily: 'DM Sans, sans-serif',
+    fontFamily: 'Figtree, sans-serif',
     fontSize: 14,
     fontWeight: 600,
     width: '100%',
     padding: '12px 0',
     borderRadius: 12,
     border: 'none',
-    background: disabled ? '#D1D5DB' : '#7C3AED',
+    background: disabled ? '#D1D5DB' : '#14161F',
     color: '#fff',
     cursor: disabled ? 'not-allowed' : 'pointer',
     transition: 'background 0.15s',
     marginTop: 4,
   } as React.CSSProperties),
   error: {
-    fontFamily: 'DM Sans, sans-serif',
+    fontFamily: 'Figtree, sans-serif',
     fontSize: 13,
     color: '#dc2626',
     background: '#FEF2F2',
@@ -129,14 +129,14 @@ const s = {
     marginBottom: 12,
   } as React.CSSProperties,
   pillTab: (active: boolean) => ({
-    fontFamily: 'DM Sans, sans-serif',
+    fontFamily: 'Figtree, sans-serif',
     fontSize: 13,
     fontWeight: 600,
     flex: 1,
     padding: '10px 0',
     borderRadius: 10,
     border: 'none',
-    background: active ? '#7C3AED' : 'transparent',
+    background: active ? '#14161F' : 'transparent',
     color: active ? '#fff' : '#6B7280',
     cursor: 'pointer',
     transition: 'all 0.2s',
@@ -146,7 +146,7 @@ const s = {
     gap: 5,
   } as React.CSSProperties),
   mealChip: (active: boolean, color: string) => ({
-    fontFamily: 'DM Sans, sans-serif',
+    fontFamily: 'Figtree, sans-serif',
     fontSize: 11,
     fontWeight: 600,
     padding: '5px 10px',
@@ -172,7 +172,7 @@ function ProgressBar({ value, max, label, unit }: { value: number; max: number; 
     <div style={{ marginBottom: 10 }}>
       <div style={{
         display: 'flex', justifyContent: 'space-between',
-        fontFamily: 'DM Sans, sans-serif', fontSize: 12, marginBottom: 4,
+        fontFamily: 'Figtree, sans-serif', fontSize: 12, marginBottom: 4,
       }}>
         <span style={{ color: '#6B7280', fontWeight: 500 }}>{label}</span>
         <span style={{ color: over ? '#dc2626' : '#111827', fontWeight: 600 }}>
@@ -185,7 +185,7 @@ function ProgressBar({ value, max, label, unit }: { value: number; max: number; 
             width: `${pct}%`,
             background: over
               ? 'linear-gradient(90deg, #dc2626, #ef4444)'
-              : 'linear-gradient(90deg, #7C3AED, #A78BFA)',
+              : 'linear-gradient(90deg, #14161F, #E89A80)',
             borderRadius: 6,
             height: '100%',
             transition: 'width 0.4s ease',
@@ -250,7 +250,7 @@ export default function Nutrition() {
 
   useEffect(() => {
     refresh()
-      .catch(() => setError('Nao foi possivel carregar.'))
+      .catch(() => setError('Não foi possivel carregar.'))
       .finally(() => setLoading(false));
   }, []);
 
@@ -353,12 +353,12 @@ export default function Nutrition() {
     : null;
 
   return (
-    <Layout title="Nutricao" subtitle="Acompanhe alimentacao, peso e metas.">
+    <Layout title="Nutrição" subtitle="Acompanhe alimentação, peso e metas.">
       {loading ? (
         <div style={{ textAlign: 'center', padding: '48px 0' }}>
           <div style={{
             width: 32, height: 32, border: '3px solid #E5E7EB',
-            borderTopColor: '#7C3AED', borderRadius: '50%',
+            borderTopColor: '#14161F', borderRadius: '50%',
             animation: 'spin 0.8s linear infinite',
             margin: '0 auto 12px',
           }} />
@@ -386,9 +386,9 @@ export default function Nutrition() {
                 marginTop: 10, padding: '6px 10px',
                 borderRadius: 8, background: '#F3EEFF',
               }}>
-                <Target size={12} color="#7C3AED" />
-                <span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 11, color: '#7C3AED', fontWeight: 500 }}>
-                  {GOAL_LABELS[goal.goal] ?? goal.goal} -- {summary.entryCount} refeicoes registradas
+                <Target size={12} color="#14161F" />
+                <span style={{ fontFamily: 'Figtree, sans-serif', fontSize: 11, color: '#14161F', fontWeight: 500 }}>
+                  {GOAL_LABELS[goal.goal] ?? goal.goal} -- {summary.entryCount} refeições registradas
                 </span>
               </div>
             </section>
@@ -401,7 +401,7 @@ export default function Nutrition() {
                 {/* Big weight display */}
                 <div style={{ textAlign: 'center', minWidth: 90 }}>
                   <div style={{
-                    fontFamily: 'DM Sans, sans-serif',
+                    fontFamily: 'Figtree, sans-serif',
                     fontSize: 28, fontWeight: 700, color: '#111827',
                     lineHeight: 1,
                   }}>
@@ -425,7 +425,7 @@ export default function Nutrition() {
                         <Minus size={16} color="#6B7280" />
                       )}
                       <span style={{
-                        fontFamily: 'DM Sans, sans-serif',
+                        fontFamily: 'Figtree, sans-serif',
                         fontSize: 14, fontWeight: 600,
                         color: weightDelta < 0 ? '#16a34a' : weightDelta > 0 ? '#dc2626' : '#6B7280',
                       }}>
@@ -454,7 +454,7 @@ export default function Nutrition() {
             marginBottom: 16,
           }}>
             {([
-              { key: 'meals' as const, label: 'Refeicoes', icon: <UtensilsCrossed size={14} /> },
+              { key: 'meals' as const, label: 'Refeições', icon: <UtensilsCrossed size={14} /> },
               { key: 'weight' as const, label: 'Peso', icon: <Scale size={14} /> },
               { key: 'goal' as const, label: 'Metas', icon: <Target size={14} /> },
             ]).map((t) => (
@@ -473,7 +473,7 @@ export default function Nutrition() {
           {tab === 'meals' && (
             <>
               <section style={s.card}>
-                <p style={s.title}>Nova refeicao</p>
+                <p style={s.title}>Nova refeição</p>
                 <form onSubmit={handleMealSubmit}>
                   <div style={{ marginBottom: 14 }}>
                     <span style={s.label}>Data</span>
@@ -482,7 +482,7 @@ export default function Nutrition() {
 
                   {/* Meal type chips */}
                   <div style={{ marginBottom: 14 }}>
-                    <span style={s.label}>Refeicao</span>
+                    <span style={s.label}>Refeição</span>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                       {MEAL_LABELS.map((m) => (
                         <button
@@ -498,13 +498,13 @@ export default function Nutrition() {
                   </div>
 
                   <div style={{ marginBottom: 14 }}>
-                    <span style={s.label}>Descricao</span>
+                    <span style={s.label}>Descrição</span>
                     <input
                       type="text"
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                       required
-                      placeholder="O que voce comeu?"
+                      placeholder="O que você comeu?"
                       style={s.input}
                     />
                   </div>
@@ -537,13 +537,13 @@ export default function Nutrition() {
                   </div>
 
                   <button type="submit" disabled={submitting} style={s.submitBtn(submitting)}>
-                    {submitting ? 'Salvando...' : 'Salvar refeicao'}
+                    {submitting ? 'Salvando...' : 'Salvar refeição'}
                   </button>
                 </form>
               </section>
 
               <section style={s.card}>
-                <p style={s.title}>Historico</p>
+                <p style={s.title}>Histórico</p>
                 {entries.length === 0 ? (
                   <div style={{ textAlign: 'center', padding: '24px 0' }}>
                     <Apple size={32} color="#D1D5DB" style={{ marginBottom: 8 }} />
@@ -561,13 +561,13 @@ export default function Nutrition() {
                         <div style={{ flex: 1 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
                             <span style={{
-                              fontFamily: 'DM Sans, sans-serif', fontSize: 13,
+                              fontFamily: 'Figtree, sans-serif', fontSize: 13,
                               fontWeight: 600, color: '#111827',
                             }}>
                               {entry.description}
                             </span>
                             <span style={{
-                              fontFamily: 'DM Sans, sans-serif', fontSize: 10,
+                              fontFamily: 'Figtree, sans-serif', fontSize: 10,
                               fontWeight: 600, padding: '2px 7px', borderRadius: 10,
                               background: `${MEAL_COLORS[entry.meal] || '#6B7280'}18`,
                               color: MEAL_COLORS[entry.meal] || '#6B7280',
@@ -629,7 +629,7 @@ export default function Nutrition() {
               </section>
 
               <section style={s.card}>
-                <p style={s.title}>Historico de peso</p>
+                <p style={s.title}>Histórico de peso</p>
                 {weights.length === 0 ? (
                   <div style={{ textAlign: 'center', padding: '24px 0' }}>
                     <Scale size={32} color="#D1D5DB" style={{ marginBottom: 8 }} />
@@ -650,14 +650,14 @@ export default function Nutrition() {
                           <div style={{ flex: 1 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
                               <span style={{
-                                fontFamily: 'DM Sans, sans-serif',
+                                fontFamily: 'Figtree, sans-serif',
                                 fontSize: 15, fontWeight: 700, color: '#111827',
                               }}>
                                 {w.weight} kg
                               </span>
                               {delta !== null && delta !== 0 && (
                                 <span style={{
-                                  fontFamily: 'DM Sans, sans-serif',
+                                  fontFamily: 'Figtree, sans-serif',
                                   fontSize: 11, fontWeight: 600,
                                   color: delta < 0 ? '#16a34a' : '#dc2626',
                                   display: 'flex', alignItems: 'center', gap: 2,
@@ -706,10 +706,10 @@ export default function Nutrition() {
                   marginBottom: 16,
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-                    <Target size={14} color="#7C3AED" />
+                    <Target size={14} color="#14161F" />
                     <span style={{
-                      fontFamily: 'DM Sans, sans-serif', fontSize: 13,
-                      fontWeight: 600, color: '#7C3AED',
+                      fontFamily: 'Figtree, sans-serif', fontSize: 13,
+                      fontWeight: 600, color: '#14161F',
                     }}>
                       {GOAL_LABELS[goal.goal] ?? goal.goal}
                     </span>
@@ -723,13 +723,13 @@ export default function Nutrition() {
                     ].map((m) => (
                       <div key={m.label} style={{ textAlign: 'center' }}>
                         <div style={{
-                          fontFamily: 'DM Sans, sans-serif',
-                          fontSize: 16, fontWeight: 700, color: '#7C3AED',
+                          fontFamily: 'Figtree, sans-serif',
+                          fontSize: 16, fontWeight: 700, color: '#14161F',
                         }}>
                           {m.value}
                         </div>
                         <div style={{
-                          fontFamily: 'DM Sans, sans-serif',
+                          fontFamily: 'Figtree, sans-serif',
                           fontSize: 10, color: '#9B8ACE',
                         }}>
                           {m.unit}

@@ -18,7 +18,7 @@ const styles = {
     justifyContent: 'center',
     zIndex: 1000,
     padding: 16,
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
   } as React.CSSProperties,
   modal: {
     background: '#FFFFFF',
@@ -39,7 +39,7 @@ const styles = {
     fontSize: 18,
     fontWeight: 700,
     color: '#111827',
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
     margin: 0,
   } as React.CSSProperties,
   closeBtn: {
@@ -55,7 +55,7 @@ const styles = {
     fontWeight: 600,
     color: '#374151',
     marginBottom: 6,
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
   } as React.CSSProperties,
   input: {
     width: '100%',
@@ -63,7 +63,7 @@ const styles = {
     border: '1px solid #E5E7EB',
     borderRadius: 10,
     fontSize: 14,
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
     color: '#111827',
     outline: 'none',
     marginBottom: 16,
@@ -74,7 +74,7 @@ const styles = {
     border: '1px solid #E5E7EB',
     borderRadius: 10,
     fontSize: 14,
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
     color: '#111827',
     outline: 'none',
     marginBottom: 16,
@@ -87,7 +87,7 @@ const styles = {
     border: '1px solid #E5E7EB',
     borderRadius: 10,
     fontSize: 14,
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
     color: '#111827',
     resize: 'vertical' as const,
     outline: 'none',
@@ -102,7 +102,7 @@ const styles = {
     borderRadius: 10,
     fontSize: 15,
     fontWeight: 700,
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
     cursor: 'pointer',
   } as React.CSSProperties,
   disabledBtn: {
@@ -117,7 +117,7 @@ const styles = {
     borderRadius: 8,
     fontSize: 13,
     color: '#166534',
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
   } as React.CSSProperties,
 };
 
@@ -182,12 +182,12 @@ const PrescribeWorkout: React.FC<PrescribeWorkoutProps> = ({ students, onClose }
           placeholder="Ex: Treino de forca - Semana 1"
         />
 
-        <label style={styles.label}>Observacoes e instrucoes</label>
+        <label style={styles.label}>Observações e instruções</label>
         <textarea
           style={styles.textarea}
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
-          placeholder="Orientacoes para a aluna..."
+          placeholder="Orientações para a aluna..."
         />
 
         <label style={styles.label}>Data agendada</label>

@@ -4,7 +4,7 @@ import { Heart } from 'lucide-react';
 import { FeedPost } from '../../services/feed.api';
 
 const PHASE_COLORS: Record<string, string> = {
-  menstrual: '#F472B6',
+  menstrual: '#D97757',
   follicular: '#22C55E',
   ovulatory: '#F59E0B',
   luteal: '#F97316',
@@ -38,7 +38,7 @@ export default function FeedPreview({ posts }: FeedPreviewProps) {
           style={{
             fontSize: 16,
             fontWeight: 600,
-            color: '#2D1B4E',
+            color: '#14161F',
             margin: 0,
           }}
         >
@@ -46,7 +46,7 @@ export default function FeedPreview({ posts }: FeedPreviewProps) {
         </h3>
         <Link
           to="/feed"
-          style={{ fontSize: 13, color: '#7c3aed', textDecoration: 'none', fontWeight: 500 }}
+          style={{ fontSize: 13, color: '#14161F', textDecoration: 'none', fontWeight: 500 }}
         >
           Ver tudo →
         </Link>

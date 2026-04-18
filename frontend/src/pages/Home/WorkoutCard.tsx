@@ -14,7 +14,7 @@ export default function WorkoutCard() {
         borderRadius: 16,
         padding: '20px',
         marginBottom: 16,
-        borderLeft: '4px solid #7c3aed',
+        borderLeft: '4px solid #14161F',
         boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
       }}
     >

@@ -22,22 +22,22 @@ const LEVELS = [
   { value: 'sedentary', label: 'Sedentario' },
   { value: 'beginner', label: 'Iniciante' },
   { value: 'intermediate', label: 'Intermediario' },
-  { value: 'advanced', label: 'Avancado' },
+  { value: 'advanced', label: 'Avançado' },
 ];
 const GOALS = [
   { value: 'weight_loss', label: 'Perda de peso' },
-  { value: 'health', label: 'Saude' },
+  { value: 'health', label: 'Saúde' },
   { value: 'strength', label: 'Forca' },
   { value: 'wellbeing', label: 'Bem-estar' },
-  { value: 'pregnancy', label: 'Gestacao' },
-  { value: 'bone_health', label: 'Saude ossea' },
+  { value: 'pregnancy', label: 'Gestação' },
+  { value: 'bone_health', label: 'Saúde ossea' },
 ];
 
 const S: Record<string, React.CSSProperties> = {
-  screen: { maxWidth: 600, margin: '0 auto', padding: '0 16px 40px', fontFamily: "'DM Sans', sans-serif", background: '#F9FAFB', minHeight: '100vh' },
+  screen: { maxWidth: 600, margin: '0 auto', padding: '0 16px 40px', fontFamily: "'Figtree', sans-serif", background: '#F9FAFB', minHeight: '100vh' },
   header: { textAlign: 'center', padding: '32px 0 20px' },
   avatarWrap: { position: 'relative', display: 'inline-block', marginBottom: 12 },
-  avatar: { width: 80, height: 80, borderRadius: '50%', background: '#7C3AED', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#EDE9FE', fontWeight: 700, fontSize: 28, overflow: 'hidden' },
+  avatar: { width: 80, height: 80, borderRadius: '50%', background: '#14161F', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FBEAE1', fontWeight: 700, fontSize: 28, overflow: 'hidden' },
   cameraBadge: { position: 'absolute', bottom: 0, right: 0, width: 28, height: 28, borderRadius: '50%', background: '#111827', border: '2px solid #F9FAFB', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' },
   name: { fontSize: 20, fontWeight: 600, color: '#111827' },
   email: { fontSize: 13, color: '#6B7280', marginTop: 2 },
@@ -46,7 +46,7 @@ const S: Record<string, React.CSSProperties> = {
   row: { display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #F3F4F6' },
   label: { fontSize: 13, color: '#6B7280' },
   value: { fontSize: 13, fontWeight: 500, color: '#111827' },
-  input: { width: '100%', padding: '10px 12px', border: '1.5px solid #E5E7EB', borderRadius: 10, fontSize: 14, fontFamily: "'DM Sans', sans-serif", outline: 'none', boxSizing: 'border-box' as const },
+  input: { width: '100%', padding: '10px 12px', border: '1.5px solid #E5E7EB', borderRadius: 10, fontSize: 14, fontFamily: "'Figtree', sans-serif", outline: 'none', boxSizing: 'border-box' as const },
   btn: { width: '100%', padding: 12, border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, cursor: 'pointer' },
 };
 
@@ -142,13 +142,13 @@ export default function Profile() {
 
       {/* Level & XP */}
       {stats && (
-        <div style={{ ...S.card, background: 'linear-gradient(135deg, #F5F3FF, #EDE9FE)', border: '1px solid #C4B5FD' }}>
+        <div style={{ ...S.card, background: 'linear-gradient(135deg, #FDFAF3, #FBEAE1)', border: '1px solid #E89A80' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-            <span style={{ fontSize: 16, fontWeight: 700, color: '#2D1B4E' }}>Nivel {stats.level}</span>
-            <span style={{ fontSize: 13, fontWeight: 600, color: '#7C3AED' }}>{stats.xp} XP</span>
+            <span style={{ fontSize: 16, fontWeight: 700, color: '#14161F' }}>Nivel {stats.level}</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: '#14161F' }}>{stats.xp} XP</span>
           </div>
           <div style={{ background: '#E5E7EB', borderRadius: 6, height: 8, overflow: 'hidden', marginBottom: 6 }}>
-            <div style={{ width: `${(stats.xp % 500) / 5}%`, height: '100%', background: 'linear-gradient(90deg, #7C3AED, #9333EA)', borderRadius: 6, transition: 'width 0.5s' }} />
+            <div style={{ width: `${(stats.xp % 500) / 5}%`, height: '100%', background: 'linear-gradient(90deg, #14161F, #9333EA)', borderRadius: 6, transition: 'width 0.5s' }} />
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#6B7280' }}>
             <span>{stats.xp % 500}/500 XP para nivel {stats.level + 1}</span>
@@ -169,9 +169,9 @@ export default function Profile() {
 
       {/* Report */}
       <div style={S.card}>
-        <span style={S.cardTitle}>Relatorio para consulta</span>
+        <span style={S.cardTitle}>Relatório para consulta</span>
         <p style={{ fontSize: 13, color: '#6B7280', margin: '4px 0 12px' }}>
-          Gere um PDF com seu historico de ciclos, saude mental, medicacoes e sintomas para levar ao medico.
+          Gere um PDF com seu histórico de ciclos, saúde mental, medicações e sintomas para levar ao médico.
         </p>
         <DownloadReportButton patientName={currentUser.name} />
       </div>
@@ -179,8 +179,8 @@ export default function Profile() {
       {/* Info card */}
       <div style={S.card}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-          <span style={S.cardTitle}>Informacoes</span>
-          {!editing && <button onClick={() => setEditing(true)} style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'none', border: 'none', cursor: 'pointer', color: '#7C3AED', fontSize: 13, fontWeight: 600 }}><Edit3 size={14} /> Editar</button>}
+          <span style={S.cardTitle}>Informações</span>
+          {!editing && <button onClick={() => setEditing(true)} style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'none', border: 'none', cursor: 'pointer', color: '#14161F', fontSize: 13, fontWeight: 600 }}><Edit3 size={14} /> Editar</button>}
         </div>
         {!editing ? (
           <>
@@ -226,7 +226,7 @@ export default function Profile() {
             {error && <div style={{ background: '#FEE2E2', color: '#991B1B', padding: '8px 12px', borderRadius: 8, fontSize: 13 }}>{error}</div>}
             <div style={{ display: 'flex', gap: 8 }}>
               <button type="button" onClick={() => setEditing(false)} style={{ ...S.btn, background: '#F3F4F6', color: '#374151', flex: 1 }}>Cancelar</button>
-              <button type="submit" disabled={submitting} style={{ ...S.btn, background: '#7C3AED', color: '#fff', flex: 1, opacity: submitting ? 0.6 : 1 }}>
+              <button type="submit" disabled={submitting} style={{ ...S.btn, background: '#14161F', color: '#fff', flex: 1, opacity: submitting ? 0.6 : 1 }}>
                 {submitting ? 'Salvando...' : 'Salvar'}
               </button>
             </div>
@@ -252,7 +252,7 @@ export default function Profile() {
       {/* Calendar */}
       <div style={S.card}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
-          <Calendar size={16} color="#7C3AED" />
+          <Calendar size={16} color="#14161F" />
           <span style={S.cardTitle}>Calendarios</span>
         </div>
         {calConns.map(c => (
@@ -286,7 +286,7 @@ export default function Profile() {
         <div style={{ display: 'flex', gap: 8 }}>
           {languages.map(l => (
             <button key={l.code} onClick={() => changeLang(l.code)}
-              style={{ flex: 1, padding: '8px', borderRadius: 10, border: `1.5px solid ${lang === l.code ? '#7C3AED' : '#E5E7EB'}`, background: lang === l.code ? '#FAF5FF' : '#fff', cursor: 'pointer', fontSize: 13, fontWeight: lang === l.code ? 600 : 400, color: lang === l.code ? '#7C3AED' : '#374151' }}>
+              style={{ flex: 1, padding: '8px', borderRadius: 10, border: `1.5px solid ${lang === l.code ? '#14161F' : '#E5E7EB'}`, background: lang === l.code ? '#FDFAF3' : '#fff', cursor: 'pointer', fontSize: 13, fontWeight: lang === l.code ? 600 : 400, color: lang === l.code ? '#14161F' : '#374151' }}>
               {l.label}
             </button>
           ))}

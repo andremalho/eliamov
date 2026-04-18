@@ -7,7 +7,7 @@ import Layout from '../components/Layout';
 const GOAL_OPTIONS = [
   { value: 'weight_loss', label: 'Emagrecimento', icon: '⚖️' },
   { value: 'strength', label: 'Forca', icon: '💪' },
-  { value: 'health', label: 'Saude', icon: '❤️' },
+  { value: 'health', label: 'Saúde', icon: '❤️' },
   { value: 'wellbeing', label: 'Bem-estar', icon: '🧘' },
 ];
 
@@ -15,7 +15,7 @@ const FITNESS_LEVELS = [
   { value: 'sedentary', label: 'Sedentaria' },
   { value: 'beginner', label: 'Iniciante' },
   { value: 'intermediate', label: 'Intermediaria' },
-  { value: 'advanced', label: 'Avancada' },
+  { value: 'advanced', label: 'Avançada' },
 ];
 
 const RELATIONSHIP_OPTIONS = [
@@ -200,7 +200,7 @@ export default function OnboardingFlow() {
         return (
           <>
             <label>
-              Data da ultima menstruacao
+              Data da última menstruação
               <input
                 type="date"
                 value={formData.lastPeriodDate || ''}
@@ -208,7 +208,7 @@ export default function OnboardingFlow() {
               />
             </label>
             <label>
-              Duracao do ciclo (dias)
+              Duração do ciclo (dias)
               <input
                 type="number"
                 value={formData.cycleDuration ?? 28}
@@ -218,7 +218,7 @@ export default function OnboardingFlow() {
               />
             </label>
             <label>
-              Duracao da menstruacao (dias)
+              Duração da menstruação (dias)
               <input
                 type="number"
                 value={formData.periodDuration ?? 5}
@@ -314,7 +314,7 @@ export default function OnboardingFlow() {
                 value={formData.bio || ''}
                 onChange={(e) => setField('bio', e.target.value)}
                 rows={4}
-                placeholder="Conte sobre sua experiencia..."
+                placeholder="Conte sobre sua experiência..."
               />
             </label>
           </>
@@ -367,7 +367,7 @@ export default function OnboardingFlow() {
                 value={formData.inviteToken || ''}
                 onChange={(e) => setField('inviteToken', e.target.value)}
                 required
-                placeholder="Cole aqui o codigo de convite da usuaria"
+                placeholder="Cole aqui o codigo de convite da usuária"
               />
             </label>
           </>
@@ -414,8 +414,8 @@ export default function OnboardingFlow() {
       case 1:
         return (
           <div className="onboarding-pending">
-            <p style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>Aguardando aprovacao</p>
-            <p>Voce sera notificada quando sua academia for aprovada.</p>
+            <p style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>Aguardando aprovação</p>
+            <p>Você sera notificada quando sua academia for aprovada.</p>
           </div>
         );
       default:
@@ -453,7 +453,7 @@ export default function OnboardingFlow() {
                 ? 'Salvando...'
                 : currentStep === totalSteps - 1
                   ? 'Concluir'
-                  : 'Proximo'}
+                  : 'Próximo'}
             </button>
           )}
 

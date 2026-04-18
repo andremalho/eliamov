@@ -192,8 +192,8 @@ export default function Fertility() {
           if (ovIdx < 0) return null;
           return (
             <g>
-              <circle cx={xScale(ovIdx)} cy={yScale(bbt[ovIdx].temp)} r={6} fill="none" stroke="#7C3AED" strokeWidth={2} />
-              <text x={xScale(ovIdx)} y={yScale(bbt[ovIdx].temp) - 10} textAnchor="middle" fontSize={7} fill="#7C3AED" fontWeight={700}>OV</text>
+              <circle cx={xScale(ovIdx)} cy={yScale(bbt[ovIdx].temp)} r={6} fill="none" stroke="#14161F" strokeWidth={2} />
+              <text x={xScale(ovIdx)} y={yScale(bbt[ovIdx].temp) - 10} textAnchor="middle" fontSize={7} fill="#14161F" fontWeight={700}>OV</text>
             </g>
           );
         })()}
@@ -211,7 +211,7 @@ export default function Fertility() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
         <Heart size={26} color="#BE185D" />
-        <h1 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 26, fontWeight: 600, color: '#2D1B4E', margin: 0 }}>
+        <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: 26, fontWeight: 600, color: '#14161F', margin: 0 }}>
           Planejamento familiar
         </h1>
       </div>
@@ -272,7 +272,7 @@ export default function Fertility() {
           </div>
 
           {/* Intercourse toggle */}
-          <label style={labelStyle}>Relacao sexual</label>
+          <label style={labelStyle}>Relação sexual</label>
           <div style={{ marginBottom: 12 }}>
             <button
               type="button"
@@ -284,15 +284,15 @@ export default function Fertility() {
                 color: intercourse ? '#fff' : '#6B7280',
               }}
             >
-              {intercourse ? 'Sim' : 'Nao'}
+              {intercourse ? 'Sim' : 'Não'}
             </button>
           </div>
 
           {/* Notes */}
-          <label style={labelStyle}>Observacoes</label>
+          <label style={labelStyle}>Observações</label>
           <textarea
             value={notes} onChange={(e) => setNotes(e.target.value)}
-            placeholder="Anotacoes do dia..."
+            placeholder="Anotações do dia..."
             rows={3}
             style={{ ...inputStyle, resize: 'vertical', marginBottom: 14, fontFamily: 'inherit' }}
           />
@@ -337,9 +337,9 @@ export default function Fertility() {
               </div>
 
               {fertileWindow.estimatedOvulation && (
-                <div style={{ background: '#F5F3FF', borderRadius: 10, padding: 12, marginBottom: 10 }}>
-                  <p style={{ fontSize: 11, color: '#9CA3AF', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>Ovulacao estimada</p>
-                  <p style={{ fontSize: 14, fontWeight: 600, color: '#7C3AED', margin: '4px 0 0' }}>
+                <div style={{ background: '#FDFAF3', borderRadius: 10, padding: 12, marginBottom: 10 }}>
+                  <p style={{ fontSize: 11, color: '#9CA3AF', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>Ovulação estimada</p>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: '#14161F', margin: '4px 0 0' }}>
                     {formatBR(fertileWindow.estimatedOvulation)}
                   </p>
                 </div>
@@ -349,7 +349,7 @@ export default function Fertility() {
                 <span style={{ fontSize: 12, color: '#9CA3AF' }}>Metodo: {fertileWindow.method}</span>
                 {daysToWindow !== null && (
                   <span style={{ fontSize: 12, fontWeight: 600, color: '#BE185D' }}>
-                    {daysToWindow} dia{daysToWindow !== 1 ? 's' : ''} ate proxima janela
+                    {daysToWindow} dia{daysToWindow !== 1 ? 's' : ''} até próxima janela
                   </span>
                 )}
               </div>
@@ -359,7 +359,7 @@ export default function Fertility() {
           {/* Section C: BBT Chart */}
           {chartData && chartData.bbt && chartData.bbt.length > 0 && (
             <div style={card}>
-              <p style={{ fontSize: 15, fontWeight: 600, color: '#374151', marginBottom: 4 }}>Grafico de temperatura basal</p>
+              <p style={{ fontSize: 15, fontWeight: 600, color: '#374151', marginBottom: 4 }}>Gráfico de temperatura basal</p>
               <p style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 12 }}>Temperatura corporal basal (BBT)</p>
               {renderChart()}
               <div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginTop: 10, flexWrap: 'wrap' }}>
@@ -374,8 +374,8 @@ export default function Fertility() {
                 <span style={{ fontSize: 10, color: '#DC2626', display: 'flex', alignItems: 'center', gap: 4 }}>
                   <span style={{ width: 8, height: 8, borderRadius: '50%', border: '1.5px solid #DC2626', display: 'inline-block' }} /> LH
                 </span>
-                <span style={{ fontSize: 10, color: '#7C3AED', display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', border: '2px solid #7C3AED', display: 'inline-block' }} /> Ovulacao
+                <span style={{ fontSize: 10, color: '#14161F', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', border: '2px solid #14161F', display: 'inline-block' }} /> Ovulação
                 </span>
               </div>
               <p style={{ fontSize: 10, color: '#9CA3AF', marginTop: 12, textAlign: 'center', fontStyle: 'italic' }}>

@@ -39,7 +39,7 @@ export default function HomeTabBar() {
             alignItems: 'center',
             justifyContent: 'center',
             textDecoration: 'none',
-            color: isActive ? '#7c3aed' : '#9ca3af',
+            color: isActive ? '#14161F' : '#9ca3af',
             fontSize: 10,
             fontWeight: isActive ? 600 : 400,
             gap: 2,

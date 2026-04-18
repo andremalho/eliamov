@@ -33,7 +33,7 @@ const STATUS_COLORS: Record<string, { bg: string; color: string; label: string }
   normal: { bg: '#DCFCE7', color: '#166534', label: 'Normal' },
   low: { bg: '#FEF3C7', color: '#92400E', label: 'Baixo' },
   high: { bg: '#FEF3C7', color: '#92400E', label: 'Alto' },
-  critical: { bg: '#FEE2E2', color: '#991B1B', label: 'Critico' },
+  critical: { bg: '#FEE2E2', color: '#991B1B', label: 'Crítico' },
 };
 
 function Badge({ status }: { status: string }) {
@@ -60,10 +60,10 @@ function MiniChart({ data }: { data: { date: string; value: number }[] }) {
   return (
     <div style={{ overflowX: 'auto' }}>
       <svg width={w + 20} height={h + 24} style={{ display: 'block' }}>
-        <polyline points={points} fill="none" stroke="#7C3AED" strokeWidth={2} />
+        <polyline points={points} fill="none" stroke="#14161F" strokeWidth={2} />
         {data.map((d, i) => (
           <g key={i}>
-            <circle cx={i * stepX} cy={parseFloat(points.split(' ')[i].split(',')[1])} r={3} fill="#7C3AED" />
+            <circle cx={i * stepX} cy={parseFloat(points.split(' ')[i].split(',')[1])} r={3} fill="#14161F" />
             <text x={i * stepX} y={h + 16} textAnchor="middle" fontSize={9} fill="#6B7280">{formatBR(d.date).slice(0, 5)}</text>
           </g>
         ))}
@@ -99,7 +99,7 @@ export default function LabAnalysis() {
       const list = await labAnalysisApi.list();
       setExams(list);
     } catch {
-      setError('Nao foi possivel carregar exames.');
+      setError('Não foi possivel carregar exames.');
     }
   };
 
@@ -162,20 +162,20 @@ export default function LabAnalysis() {
   };
 
   return (
-    <Layout title="Exames laboratoriais" subtitle="Envie seus exames e receba analise inteligente.">
+    <Layout title="Exames laboratoriais" subtitle="Envie seus exames e receba análise inteligente.">
       <style>{`
         .la-card { background:#fff; border-radius:12px; padding:20px; margin-bottom:16px; border:1px solid #E5E7EB; }
-        .la-card h3 { font-size:16px; font-weight:600; color:#2D1B4E; margin:0 0 16px; display:flex; align-items:center; gap:8px; }
+        .la-card h3 { font-size:16px; font-weight:600; color:#14161F; margin:0 0 16px; display:flex; align-items:center; gap:8px; }
         .la-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; }
         .la-field label { display:block; font-size:12px; font-weight:500; color:#6B7280; margin-bottom:4px; }
         .la-field input, .la-field textarea { width:100%; padding:8px 10px; border:1px solid #D1D5DB; border-radius:8px; font-size:14px; font-family:inherit; box-sizing:border-box; }
-        .la-field input:focus, .la-field textarea:focus { outline:none; border-color:#7C3AED; box-shadow:0 0 0 2px rgba(124,58,237,0.15); }
+        .la-field input:focus, .la-field textarea:focus { outline:none; border-color:#14161F; box-shadow:0 0 0 2px rgba(217,119,87,0.15); }
         .la-unit { font-size:10px; color:#9CA3AF; font-weight:400; }
-        .la-btn { display:inline-flex; align-items:center; gap:6px; padding:10px 20px; background:#7C3AED; color:#fff; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit; margin-top:8px; }
+        .la-btn { display:inline-flex; align-items:center; gap:6px; padding:10px 20px; background:#14161F; color:#fff; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit; margin-top:8px; }
         .la-btn:disabled { opacity:0.6; cursor:not-allowed; }
-        .la-btn:hover:not(:disabled) { background:#6D28D9; }
-        .la-ai { background:#F5F3FF; border:1px solid #DDD6FE; border-radius:10px; padding:16px; margin-top:16px; white-space:pre-wrap; font-size:14px; line-height:1.6; color:#374151; }
-        .la-ai h4 { font-size:14px; font-weight:600; color:#7C3AED; margin:0 0 8px; }
+        .la-btn:hover:not(:disabled) { background:#14161F; }
+        .la-ai { background:#FDFAF3; border:1px solid #EEE7DB; border-radius:10px; padding:16px; margin-top:16px; white-space:pré-wrap; font-size:14px; line-height:1.6; color:#374151; }
+        .la-ai h4 { font-size:14px; font-weight:600; color:#14161F; margin:0 0 8px; }
         .la-hist { list-style:none; padding:0; margin:0; }
         .la-hist li { border:1px solid #E5E7EB; border-radius:10px; padding:12px 16px; margin-bottom:8px; cursor:pointer; transition:background 0.15s; }
         .la-hist li:hover { background:#FAFAFA; }
@@ -186,8 +186,8 @@ export default function LabAnalysis() {
         .la-val { display:flex; align-items:center; justify-content:space-between; font-size:13px; padding:4px 0; }
         .la-val-label { color:#6B7280; }
         .la-val-num { font-weight:600; color:#111827; }
-        .la-evo-btn { background:none; border:none; cursor:pointer; color:#7C3AED; font-size:12px; font-weight:500; display:inline-flex; align-items:center; gap:4px; padding:2px 6px; border-radius:4px; }
-        .la-evo-btn:hover { background:#F5F3FF; }
+        .la-evo-btn { background:none; border:none; cursor:pointer; color:#14161F; font-size:12px; font-weight:500; display:inline-flex; align-items:center; gap:4px; padding:2px 6px; border-radius:4px; }
+        .la-evo-btn:hover { background:#FDFAF3; }
         .la-alert-count { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:600; padding:2px 8px; border-radius:999px; }
         .la-result-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px; margin-top:12px; }
         .la-result-item { display:flex; align-items:center; justify-content:space-between; background:#FAFAFA; padding:8px 12px; border-radius:8px; }
@@ -203,7 +203,7 @@ export default function LabAnalysis() {
         <>
           {/* ── Section A: Upload / Create exam ── */}
           <section className="la-card">
-            <h3><FlaskRound size={18} style={{ color: '#7C3AED' }} /> Novo exame</h3>
+            <h3><FlaskRound size={18} style={{ color: '#14161F' }} /> Novo exame</h3>
             <form onSubmit={handleSubmit}>
               <div className="la-top-row">
                 <div className="la-field">
@@ -220,7 +220,7 @@ export default function LabAnalysis() {
                 </div>
               </div>
 
-              <p style={{ fontSize: 13, fontWeight: 600, color: '#2D1B4E', marginBottom: 12 }}>Marcadores</p>
+              <p style={{ fontSize: 13, fontWeight: 600, color: '#14161F', marginBottom: 12 }}>Marcadores</p>
               <div className="la-grid">
                 {MARKERS.map((m) => (
                   <div key={m.key} className="la-field">
@@ -268,7 +268,7 @@ export default function LabAnalysis() {
                 )}
                 {analysis.aiAnalysis && (
                   <div className="la-ai">
-                    <h4>Analise IA</h4>
+                    <h4>Análise IA</h4>
                     {analysis.aiAnalysis}
                   </div>
                 )}
@@ -278,7 +278,7 @@ export default function LabAnalysis() {
 
           {/* ── Section B: History ── */}
           <section className="la-card">
-            <h3><TrendingUp size={18} style={{ color: '#7C3AED' }} /> Historico de exames</h3>
+            <h3><TrendingUp size={18} style={{ color: '#14161F' }} /> Histórico de exames</h3>
             {exams.length === 0 ? (
               <p className="muted small">Nenhum exame registrado ainda.</p>
             ) : (
@@ -323,24 +323,24 @@ export default function LabAnalysis() {
                                 <button
                                   className="la-evo-btn"
                                   onClick={(ev) => { ev.stopPropagation(); showEvolution(k); }}
-                                  title="Ver evolucao"
+                                  title="Ver evolução"
                                 >
-                                  <TrendingUp size={12} /> Evolucao
+                                  <TrendingUp size={12} /> Evolução
                                 </button>
                               </div>
                             );
                           })}
                           {/* Evolution chart overlay */}
                           {evoMarker && Object.keys(ex.values).includes(evoMarker) && (
-                            <div style={{ gridColumn: '1/-1', marginTop: 8, background: '#F5F3FF', padding: 12, borderRadius: 8, position: 'relative' }}>
+                            <div style={{ gridColumn: '1/-1', marginTop: 8, background: '#FDFAF3', padding: 12, borderRadius: 8, position: 'relative' }}>
                               <button
                                 onClick={(ev) => { ev.stopPropagation(); setEvoMarker(null); }}
                                 style={{ position: 'absolute', top: 8, right: 8, background: 'none', border: 'none', cursor: 'pointer', color: '#6B7280' }}
                               >
                                 <X size={14} />
                               </button>
-                              <p style={{ fontSize: 13, fontWeight: 600, color: '#7C3AED', marginBottom: 8 }}>
-                                Evolucao: {MARKERS.find((m) => m.key === evoMarker)?.label ?? evoMarker}
+                              <p style={{ fontSize: 13, fontWeight: 600, color: '#14161F', marginBottom: 8 }}>
+                                Evolução: {MARKERS.find((m) => m.key === evoMarker)?.label ?? evoMarker}
                               </p>
                               {evoLoading ? <p className="muted small">Carregando...</p> : <MiniChart data={evoData} />}
                             </div>

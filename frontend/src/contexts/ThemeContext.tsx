@@ -19,18 +19,18 @@ export interface AppTheme {
 }
 
 const DEFAULT_THEME: AppTheme = {
-  name: 'eliaMov',
-  slogan: 'Movimento inteligente. Vida ativa.',
+  name: 'elia·mov',
+  slogan: 'A ciência do feminino, em movimento.',
   colors: {
-    primary: '#7C3AED',
-    primaryDark: '#2D1B4E',
-    accent: '#E85D04',      // pingo do "i" - laranja vibrante
-    accentLight: '#FB923C',
-    textDark: '#1E293B',
-    bg: '#F9FAFB',
-    card: '#FFFFFF',
-    border: '#E5E7EB',
-    muted: '#6B7280',
+    primary: '#14161F',       // Ink — autoridade
+    primaryDark: '#000000',
+    accent: '#D97757',        // Terracotta — signature
+    accentLight: '#E89A80',
+    textDark: '#14161F',
+    bg: '#F5EFE6',            // Cream — off-white editorial
+    card: '#FDFAF3',          // Parchment
+    border: 'rgba(20, 22, 31, 0.08)',
+    muted: '#6B6C73',
   },
 };
 

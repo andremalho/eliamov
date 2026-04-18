@@ -10,7 +10,7 @@ const PHASE_COLORS: Record<string, string> = {
   menstrual: '#DB2777',
   follicular: '#16A34A',
   ovulatory: '#D97706',
-  luteal: '#7C3AED',
+  luteal: '#14161F',
   all: '#6B7280',
 };
 
@@ -18,19 +18,19 @@ const PHASE_BG: Record<string, string> = {
   menstrual: '#FDF2F8',
   follicular: '#F0FDF4',
   ovulatory: '#FFFBEB',
-  luteal: '#F5F3FF',
+  luteal: '#FDFAF3',
   all: '#F9FAFB',
 };
 
 const PHASE_LABELS: Record<string, string> = {
   follicular: 'Folicular',
-  ovulatory: 'Ovulatoria',
-  luteal: 'Lutea',
+  ovulatory: 'Ovulatória',
+  luteal: 'Lútea',
   menstrual: 'Menstrual',
   all: 'Todas',
 };
 
-const CATEGORY_COLORS = ['#7C3AED', '#2563EB', '#059669', '#DC2626', '#D97706', '#DB2777'];
+const CATEGORY_COLORS = ['#14161F', '#2563EB', '#059669', '#DC2626', '#D97706', '#DB2777'];
 
 const formatDuration = (seconds: number): string => {
   const m = Math.floor(seconds / 60);
@@ -40,17 +40,17 @@ const formatDuration = (seconds: number): string => {
 
 /* ---- Icons ---- */
 const ArticleIcon = () => (
-  <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+  <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#14161F" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
     <path d="M4 4h16v16H4z" /><path d="M8 8h8M8 12h8M8 16h4" />
   </svg>
 );
 const VideoIcon = () => (
-  <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+  <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#14161F" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
     <rect x="2" y="4" width="15" height="16" rx="2" /><path d="M17 8l5-3v14l-5-3" />
   </svg>
 );
 const BookmarkIcon = () => (
-  <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+  <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#14161F" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
     <path d="M5 3h14v18l-7-5-7 5V3z" />
   </svg>
 );
@@ -60,14 +60,14 @@ const PlayIcon = () => (
   </svg>
 );
 const EmptyIcon = ({ children }: { children: React.ReactNode }) => (
-  <div style={{ width: 56, height: 56, borderRadius: '50%', background: '#F5F3FF', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+  <div style={{ width: 56, height: 56, borderRadius: '50%', background: '#FDFAF3', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
     {children}
   </div>
 );
 
 /* ---- Styles ---- */
 const st = {
-  container: { fontFamily: "'DM Sans', sans-serif", display: 'flex', flexDirection: 'column' as const, gap: 16 },
+  container: { fontFamily: "'Figtree', sans-serif", display: 'flex', flexDirection: 'column' as const, gap: 16 },
   tabRow: {
     display: 'flex',
     background: '#F3F4F6',
@@ -81,10 +81,10 @@ const st = {
     border: 'none',
     borderRadius: 10,
     background: active ? '#fff' : 'transparent',
-    color: active ? '#7C3AED' : '#6B7280',
+    color: active ? '#14161F' : '#6B7280',
     fontSize: 13,
     fontWeight: active ? 600 : 500,
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
     cursor: 'pointer',
     transition: 'all 0.2s',
     boxShadow: active ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
@@ -105,7 +105,7 @@ const st = {
     fontSize: 12,
     color: '#374151',
     background: '#fff',
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
     outline: 'none',
     appearance: 'none' as const,
     backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239CA3AF' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`,
@@ -120,7 +120,7 @@ const st = {
     borderRadius: 10,
     fontSize: 12,
     color: '#374151',
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
     outline: 'none',
     background: '#fff',
   },
@@ -171,7 +171,7 @@ const st = {
     border: 'none',
     cursor: 'pointer',
     fontSize: 18,
-    color: saved ? '#7C3AED' : '#D1D5DB',
+    color: saved ? '#14161F' : '#D1D5DB',
     padding: '2px 4px',
     flexShrink: 0,
     transition: 'color 0.2s',
@@ -233,7 +233,7 @@ const st = {
     width: 48,
     height: 48,
     borderRadius: '50%',
-    background: 'rgba(124,58,237,0.85)',
+    background: 'rgba(217,119,87,0.85)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -269,7 +269,7 @@ const st = {
     fontWeight: 600,
     padding: '5px 12px',
     cursor: 'pointer',
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
     whiteSpace: 'nowrap' as const,
   },
   typeBadge: (isArticle: boolean) => ({
@@ -277,8 +277,8 @@ const st = {
     fontWeight: 600,
     padding: '3px 8px',
     borderRadius: 20,
-    background: isArticle ? '#EDE9FE' : '#DBEAFE',
-    color: isArticle ? '#7C3AED' : '#2563EB',
+    background: isArticle ? '#FBEAE1' : '#DBEAFE',
+    color: isArticle ? '#14161F' : '#2563EB',
     marginRight: 8,
   }),
   emptyState: {
@@ -358,7 +358,7 @@ export default function Content() {
     setError(null);
     contentApi.listArticles(buildParams())
       .then((res) => setArticles(res.data))
-      .catch(() => setError('Nao foi possivel carregar os artigos.'))
+      .catch(() => setError('Não foi possivel carregar os artigos.'))
       .finally(() => setLoading(false));
   }, [buildParams]);
 
@@ -367,7 +367,7 @@ export default function Content() {
     setError(null);
     contentApi.listVideos(buildParams())
       .then((res) => setVideos(res.data))
-      .catch(() => setError('Nao foi possivel carregar os videos.'))
+      .catch(() => setError('Não foi possivel carregar os videos.'))
       .finally(() => setLoading(false));
   }, [buildParams]);
 
@@ -427,7 +427,7 @@ export default function Content() {
 
   const renderArticleCard = (article: Article) => {
     const expanded = expandedId === article.id;
-    const phaseColor = PHASE_COLORS[article.cyclePhase] || '#7C3AED';
+    const phaseColor = PHASE_COLORS[article.cyclePhase] || '#14161F';
 
     return (
       <div key={article.id} style={st.card} onClick={() => toggle(article.id)}>
@@ -459,7 +459,7 @@ export default function Content() {
             </div>
           ) : (
             <p style={st.summary}>
-              {article.summary || (article.body ? article.body.slice(0, 150) + (article.body.length > 150 ? '...' : '') : 'Sem descricao.')}
+              {article.summary || (article.body ? article.body.slice(0, 150) + (article.body.length > 150 ? '...' : '') : 'Sem descrição.')}
             </p>
           )}
           <span style={st.date}>{formatBR(article.publishedAt)}</span>
@@ -579,8 +579,8 @@ export default function Content() {
             <select style={st.select} value={phase} onChange={(e) => setPhase(e.target.value)}>
               <option value="">Fase</option>
               <option value="follicular">Folicular</option>
-              <option value="ovulatory">Ovulatoria</option>
-              <option value="luteal">Lutea</option>
+              <option value="ovulatory">Ovulatória</option>
+              <option value="luteal">Lútea</option>
               <option value="menstrual">Menstrual</option>
             </select>
           </div>

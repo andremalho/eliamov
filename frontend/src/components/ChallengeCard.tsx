@@ -12,13 +12,13 @@ function formatDateRange(start: string, end: string): string {
     const [, m, d] = iso.slice(0, 10).split('-');
     return `${d}/${m}`;
   };
-  return `${fmt(start)} - ${fmt(end)}`;
+  return `${fmt(start)} — ${fmt(end)}`;
 }
 
 export default function ChallengeCard({ challenge, onJoin, onViewLeaderboard }: ChallengeCardProps) {
   const pct = Math.min(100, Math.round((challenge.myProgress / challenge.goalValue) * 100));
   const completed = challenge.myCompleted !== null;
-  const fillColor = completed ? '#16a34a' : '#6d4ac4';
+  const fillColor = completed ? '#9CA89A' : '#D97757';
 
   return (
     <div className="card challenge-card">
@@ -41,13 +41,13 @@ export default function ChallengeCard({ challenge, onJoin, onViewLeaderboard }: 
         />
       </div>
       <div className="challenge-progress-label">
-        {challenge.myProgress}/{challenge.goalValue} &mdash; {pct}%
+        {challenge.myProgress}/{challenge.goalValue} · {pct}%
       </div>
 
       {/* Completed badge */}
       {completed && (
         <div style={{ marginTop: 8 }}>
-          <span className="challenge-completed-badge">&#10003; Completado!</span>
+          <span className="challenge-completed-badge">✓ Completado</span>
         </div>
       )}
 

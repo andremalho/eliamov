@@ -34,19 +34,19 @@ const CONTENT: Record<string, { title: string; subtitle: string; button: string;
   female_user: {
     title: 'Bem-vinda ao eliaMov',
     subtitle: 'Seu corpo. Seu ritmo. Sua comunidade.',
-    button: 'Comecar minha jornada \u2192',
+    button: 'Começar minha jornada \u2192',
     particles: true,
   },
   personal_trainer: {
     title: 'Bem-vindo, Personal',
-    subtitle: 'Gerencie suas alunas com precisao.',
+    subtitle: 'Gerencie suas alunas com precisão.',
     button: 'Ir para meu painel \u2192',
     particles: false,
   },
   family_companion: {
     title: 'Bem-vindo(a)',
-    subtitle: 'Acompanhe quem voce ama.',
-    button: 'Comecar \u2192',
+    subtitle: 'Acompanhe quem você ama.',
+    button: 'Começar \u2192',
     particles: false,
   },
   academy_admin: {
@@ -57,7 +57,7 @@ const CONTENT: Record<string, { title: string; subtitle: string; button: string;
   },
 };
 
-const PARTICLE_COLORS = ['#EC4899', '#A855F7', '#C084FC', '#F472B6', '#818CF8', '#E879F9', '#F9A8D4', '#DDD6FE'];
+const PARTICLE_COLORS = ['#B85A3D', '#A855F7', '#C084FC', '#D97757', '#818CF8', '#E879F9', '#F9A8D4', '#EEE7DB'];
 
 const WelcomeStep: React.FC<WelcomeStepProps> = ({ profileType, onFinish }) => {
   const content = CONTENT[profileType] || CONTENT.female_user;
@@ -103,9 +103,9 @@ const WelcomeStep: React.FC<WelcomeStepProps> = ({ profileType, onFinish }) => {
         >
           <h1
             style={{
-              fontFamily: "'Cormorant Garamond', serif",
+              fontFamily: "'Fraunces', serif",
               fontSize: 32,
-              color: '#2D1B4E',
+              color: '#14161F',
               marginBottom: 8,
               fontWeight: 600,
             }}
@@ -119,15 +119,15 @@ const WelcomeStep: React.FC<WelcomeStepProps> = ({ profileType, onFinish }) => {
               padding: '16px 40px',
               border: 'none',
               borderRadius: 999,
-              background: '#7C3AED',
+              background: '#14161F',
               color: '#fff',
               fontSize: 16,
               fontWeight: 600,
               cursor: 'pointer',
               transition: 'background 0.2s',
             }}
-            onMouseEnter={(e) => ((e.target as HTMLButtonElement).style.background = '#6D28D9')}
-            onMouseLeave={(e) => ((e.target as HTMLButtonElement).style.background = '#7C3AED')}
+            onMouseEnter={(e) => ((e.target as HTMLButtonElement).style.background = '#14161F')}
+            onMouseLeave={(e) => ((e.target as HTMLButtonElement).style.background = '#14161F')}
           >
             {content.button}
           </button>

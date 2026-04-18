@@ -24,36 +24,36 @@ const s = {
     marginBottom: 16,
   } as React.CSSProperties,
   title: {
-    fontFamily: 'DM Sans, sans-serif',
+    fontFamily: 'Figtree, sans-serif',
     fontSize: 15,
     fontWeight: 600,
     color: '#111827',
     margin: 0,
   } as React.CSSProperties,
   muted: {
-    fontFamily: 'DM Sans, sans-serif',
+    fontFamily: 'Figtree, sans-serif',
     fontSize: 13,
     color: '#6B7280',
   } as React.CSSProperties,
   mutedSmall: {
-    fontFamily: 'DM Sans, sans-serif',
+    fontFamily: 'Figtree, sans-serif',
     fontSize: 11,
     color: '#6B7280',
   } as React.CSSProperties,
   pill: (active: boolean) => ({
-    fontFamily: 'DM Sans, sans-serif',
+    fontFamily: 'Figtree, sans-serif',
     fontSize: 12,
     fontWeight: 500,
     padding: '5px 12px',
     borderRadius: 20,
-    border: active ? '1.5px solid #7C3AED' : '1px solid #E5E7EB',
+    border: active ? '1.5px solid #14161F' : '1px solid #E5E7EB',
     background: active ? '#F3EEFF' : '#fff',
-    color: active ? '#7C3AED' : '#6B7280',
+    color: active ? '#14161F' : '#6B7280',
     cursor: 'pointer',
     transition: 'all 0.15s',
   } as React.CSSProperties),
   textarea: {
-    fontFamily: 'DM Sans, sans-serif',
+    fontFamily: 'Figtree, sans-serif',
     fontSize: 14,
     color: '#111827',
     width: '100%',
@@ -73,26 +73,26 @@ const s = {
     border: '1px solid #E5E7EB',
     background: '#F9FAFB',
     cursor: 'pointer',
-    fontFamily: 'DM Sans, sans-serif',
+    fontFamily: 'Figtree, sans-serif',
     fontSize: 12,
     fontWeight: 500,
     color: '#6B7280',
     transition: 'background 0.15s',
   } as React.CSSProperties,
   submitBtn: (disabled: boolean) => ({
-    fontFamily: 'DM Sans, sans-serif',
+    fontFamily: 'Figtree, sans-serif',
     fontSize: 13,
     fontWeight: 600,
     padding: '8px 20px',
     borderRadius: 10,
     border: 'none',
-    background: disabled ? '#D1D5DB' : '#7C3AED',
+    background: disabled ? '#D1D5DB' : '#14161F',
     color: '#fff',
     cursor: disabled ? 'not-allowed' : 'pointer',
     transition: 'background 0.15s',
   } as React.CSSProperties),
   error: {
-    fontFamily: 'DM Sans, sans-serif',
+    fontFamily: 'Figtree, sans-serif',
     fontSize: 13,
     color: '#dc2626',
     background: '#FEF2F2',
@@ -145,7 +145,7 @@ export default function Feed() {
       setPosts(res.data);
       setNextCursor(res.nextCursor);
     } catch {
-      setError('Nao foi possivel carregar o feed.');
+      setError('Não foi possivel carregar o feed.');
     } finally {
       setLoading(false);
     }
@@ -198,7 +198,7 @@ export default function Feed() {
       setPostType('free');
       rewardXP(20, 'post');
     } catch (err: any) {
-      const msg = err?.response?.data?.message ?? 'Falha ao criar publicacao';
+      const msg = err?.response?.data?.message ?? 'Falha ao criar publicação';
       setError(Array.isArray(msg) ? msg.join(', ') : msg);
     } finally {
       setSubmitting(false);
@@ -253,7 +253,7 @@ export default function Feed() {
       await feedApi.deletePost(postId);
       setPosts((prev) => prev.filter((p) => p.id !== postId));
     } catch {
-      setError('Falha ao remover publicacao.');
+      setError('Falha ao remover publicação.');
     }
   };
 
@@ -276,7 +276,7 @@ export default function Feed() {
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 5,
             background: 'none', border: 'none', cursor: 'pointer',
-            fontFamily: 'DM Sans, sans-serif', fontSize: 11, color: '#9CA3AF',
+            fontFamily: 'Figtree, sans-serif', fontSize: 11, color: '#9CA3AF',
           }}
         >
           <RefreshCw size={12} /> Puxe para atualizar
@@ -293,11 +293,11 @@ export default function Feed() {
               background: '#F3EEFF', display: 'flex', alignItems: 'center',
               justifyContent: 'center', flexShrink: 0,
             }}>
-              <User size={18} color="#7C3AED" />
+              <User size={18} color="#14161F" />
             </div>
             <textarea
               style={s.textarea}
-              placeholder="No que voce esta pensando?"
+              placeholder="No que você esta pensando?"
               value={content}
               onChange={(e) => setContent(e.target.value)}
               rows={3}
@@ -333,7 +333,7 @@ export default function Feed() {
             {/* Photo / Camera buttons */}
             <input ref={feedFileRef} type="file" accept="image/*,video/*" style={{ display: 'none' }} onChange={handleFileUpload} />
             <button type="button" onClick={() => feedFileRef.current?.click()} disabled={uploading} style={s.mediaBtn}>
-              <Image size={14} color="#7C3AED" /> {uploading ? 'Enviando...' : 'Foto'}
+              <Image size={14} color="#14161F" /> {uploading ? 'Enviando...' : 'Foto'}
             </button>
             <button
               type="button"
@@ -345,7 +345,7 @@ export default function Feed() {
               }}
               style={s.mediaBtn}
             >
-              <Camera size={14} color="#7C3AED" /> Camera
+              <Camera size={14} color="#14161F" /> Camera
             </button>
 
             {/* Separator */}
@@ -385,7 +385,7 @@ export default function Feed() {
         <div style={{ textAlign: 'center', padding: '48px 0' }}>
           <div style={{
             width: 32, height: 32, border: '3px solid #E5E7EB',
-            borderTopColor: '#7C3AED', borderRadius: '50%',
+            borderTopColor: '#14161F', borderRadius: '50%',
             animation: 'spin 0.8s linear infinite',
             margin: '0 auto 12px',
           }} />
@@ -402,13 +402,13 @@ export default function Feed() {
             background: '#F3EEFF', display: 'flex', alignItems: 'center',
             justifyContent: 'center', margin: '0 auto 16px',
           }}>
-            <MessageSquarePlus size={26} color="#7C3AED" />
+            <MessageSquarePlus size={26} color="#14161F" />
           </div>
           <p style={{
-            fontFamily: 'DM Sans, sans-serif', fontSize: 15,
+            fontFamily: 'Figtree, sans-serif', fontSize: 15,
             fontWeight: 600, color: '#111827', margin: '0 0 6px',
           }}>
-            Nenhuma publicacao ainda
+            Nenhuma publicação ainda
           </p>
           <p style={{ ...s.muted, margin: 0 }}>
             Seja a primeira a compartilhar algo com o grupo!

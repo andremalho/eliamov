@@ -14,15 +14,15 @@ const RPE_LABELS: Record<number, string> = {
   6: 'Moderado+',
   7: 'Dificil',
   8: 'Muito dificil',
-  9: 'Quase maximo',
-  10: 'Maximo',
+  9: 'Quase máximo',
+  10: 'Máximo',
 };
 
 const RISK_MAP: Record<string, { label: string; color: string; bg: string }> = {
   undertrained: { label: 'Subtreino', color: '#1D4ED8', bg: '#DBEAFE' },
   optimal: { label: 'Otimo', color: '#166534', bg: '#DCFCE7' },
   elevated: { label: 'Elevado', color: '#92400E', bg: '#FEF3C7' },
-  high_injury_risk: { label: 'Risco de lesao', color: '#991B1B', bg: '#FEE2E2' },
+  high_injury_risk: { label: 'Risco de lesão', color: '#991B1B', bg: '#FEE2E2' },
 };
 
 export default function AthleteDashboard() {
@@ -54,7 +54,7 @@ export default function AthleteDashboard() {
       setAcwr(acwrData);
       if (dash.readiness != null) setReadiness(dash.readiness);
     } catch {
-      setError('Nao foi possivel carregar dados.');
+      setError('Não foi possivel carregar dados.');
     }
   };
 
@@ -101,26 +101,26 @@ export default function AthleteDashboard() {
   const maxLoad = Math.max(...logs.map((l) => l.trainingLoad ?? 0), 1);
 
   return (
-    <Layout title="Desempenho atletico" subtitle="Registre treinos e monitore carga e recuperacao.">
+    <Layout title="Desempenho atletico" subtitle="Registre treinos e monitore carga e recuperação.">
       <style>{`
         .ad-card { background:#fff; border-radius:12px; padding:20px; margin-bottom:16px; border:1px solid #E5E7EB; }
         .ad-card h3 { font-size:16px; font-weight:600; color:#1F2937; margin:0 0 16px; display:flex; align-items:center; gap:8px; }
         .ad-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:12px; }
         .ad-field label { display:block; font-size:12px; font-weight:500; color:#6B7280; margin-bottom:4px; }
         .ad-field input, .ad-field textarea, .ad-field select { width:100%; padding:8px 10px; border:1px solid #D1D5DB; border-radius:8px; font-size:14px; font-family:inherit; box-sizing:border-box; }
-        .ad-field input:focus, .ad-field textarea:focus { outline:none; border-color:#7C3AED; box-shadow:0 0 0 2px rgba(124,58,237,0.15); }
+        .ad-field input:focus, .ad-field textarea:focus { outline:none; border-color:#14161F; box-shadow:0 0 0 2px rgba(217,119,87,0.15); }
         .ad-field .ad-unit { font-size:10px; color:#9CA3AF; font-weight:400; }
-        .ad-btn { display:inline-flex; align-items:center; gap:6px; padding:10px 20px; background:#7C3AED; color:#fff; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit; margin-top:8px; }
+        .ad-btn { display:inline-flex; align-items:center; gap:6px; padding:10px 20px; background:#14161F; color:#fff; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit; margin-top:8px; }
         .ad-btn:disabled { opacity:0.6; cursor:not-allowed; }
-        .ad-btn:hover:not(:disabled) { background:#6D28D9; }
+        .ad-btn:hover:not(:disabled) { background:#14161F; }
         .ad-slider-wrap { display:flex; flex-direction:column; gap:4px; }
         .ad-slider-val { display:flex; align-items:center; justify-content:space-between; }
         .ad-slider-val span { font-size:12px; color:#6B7280; }
-        .ad-slider-val strong { font-size:18px; color:#7C3AED; }
-        .ad-slider { width:100%; accent-color:#7C3AED; }
-        .ad-load-box { background:#F5F3FF; border-radius:8px; padding:12px 16px; margin-top:12px; display:flex; align-items:center; gap:12px; }
+        .ad-slider-val strong { font-size:18px; color:#14161F; }
+        .ad-slider { width:100%; accent-color:#14161F; }
+        .ad-load-box { background:#FDFAF3; border-radius:8px; padding:12px 16px; margin-top:12px; display:flex; align-items:center; gap:12px; }
         .ad-load-label { font-size:12px; color:#6B7280; }
-        .ad-load-num { font-size:22px; font-weight:700; color:#7C3AED; }
+        .ad-load-num { font-size:22px; font-weight:700; color:#14161F; }
         .ad-load-unit { font-size:12px; color:#9CA3AF; }
         .ad-acwr-big { font-size:42px; font-weight:700; line-height:1; }
         .ad-acwr-risk { display:inline-flex; align-items:center; gap:4px; padding:4px 12px; border-radius:999px; font-size:13px; font-weight:600; margin-top:8px; }
@@ -147,7 +147,7 @@ export default function AthleteDashboard() {
         <>
           {/* ── Section A: Daily Log ── */}
           <section className="ad-card">
-            <h3><Activity size={18} style={{ color: '#7C3AED' }} /> Registro diario</h3>
+            <h3><Activity size={18} style={{ color: '#14161F' }} /> Registro diario</h3>
             <form onSubmit={handleSubmit}>
               <div className="ad-grid">
                 <div className="ad-field">
@@ -163,7 +163,7 @@ export default function AthleteDashboard() {
                   <input type="number" min={30} max={200} value={restingHR} onChange={(e) => setRestingHR(e.target.value === '' ? '' : Number(e.target.value))} placeholder="—" />
                 </div>
                 <div className="ad-field">
-                  <label>Duracao treino <span className="ad-unit">(min)</span></label>
+                  <label>Duração treino <span className="ad-unit">(min)</span></label>
                   <input type="number" min={0} max={600} value={duration} onChange={(e) => setDuration(e.target.value === '' ? '' : Number(e.target.value))} placeholder="—" />
                 </div>
                 <div className="ad-field">
@@ -183,7 +183,7 @@ export default function AthleteDashboard() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: '#9CA3AF' }}>
                     <span>1 - Muito facil</span>
                     <span>5 - Moderado</span>
-                    <span>10 - Maximo</span>
+                    <span>10 - Máximo</span>
                   </div>
                 </div>
               </div>
@@ -214,14 +214,14 @@ export default function AthleteDashboard() {
 
               {/* Notes */}
               <div className="ad-field" style={{ marginTop: 16 }}>
-                <label>Observacoes</label>
+                <label>Observações</label>
                 <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} placeholder="Opcional..." />
               </div>
 
               {/* Training load display */}
               <div className="ad-load-box">
                 <div>
-                  <div className="ad-load-label">Carga de treino (RPE x duracao)</div>
+                  <div className="ad-load-label">Carga de treino (RPE x duração)</div>
                   <div>
                     <span className="ad-load-num">{trainingLoad || '—'}</span>{' '}
                     <span className="ad-load-unit">UA</span>
@@ -264,13 +264,13 @@ export default function AthleteDashboard() {
                 </div>
                 <div>
                   <div style={{ fontSize: 16, fontWeight: 600, color: '#1F2937', marginBottom: 4 }}>
-                    {readiness >= 80 ? 'Excelente! Pronta para intensidade maxima.' :
+                    {readiness >= 80 ? 'Excelente! Pronta para intensidade máxima.' :
                      readiness >= 60 ? 'Boa prontidao. Treino normal.' :
                      readiness >= 40 ? 'Moderada. Considere reduzir intensidade.' :
-                     'Baixa. Priorize recuperacao hoje.'}
+                     'Baixa. Priorize recuperação hoje.'}
                   </div>
                   <div style={{ fontSize: 12, color: '#6B7280' }}>
-                    Baseado em HRV, sono, fadiga e vigor do ultimo registro.
+                    Baseado em HRV, sono, fadiga e vigor do último registro.
                   </div>
                 </div>
               </div>
@@ -283,10 +283,10 @@ export default function AthleteDashboard() {
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
                 <AlertTriangle size={24} style={{ color: '#DC2626', flexShrink: 0, marginTop: 2 }} />
                 <div>
-                  <h3 style={{ color: '#991B1B', margin: '0 0 4px', fontSize: 15 }}>Alerta: risco elevado de lesao</h3>
+                  <h3 style={{ color: '#991B1B', margin: '0 0 4px', fontSize: 15 }}>Alerta: risco elevado de lesão</h3>
                   <p style={{ fontSize: 13, color: '#991B1B', margin: 0, lineHeight: 1.5 }}>
                     Seu ACWR esta acima de 1.5. Reduza o volume de treino esta semana para evitar overtraining.
-                    Considere sessoes de recuperacao ativa, mobilidade e yoga.
+                    Considere sessões de recuperação ativa, mobilidade e yoga.
                   </p>
                 </div>
               </div>
@@ -297,7 +297,7 @@ export default function AthleteDashboard() {
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
                 <ThermometerSun size={22} style={{ color: '#D97706', flexShrink: 0, marginTop: 2 }} />
                 <div>
-                  <h3 style={{ color: '#92400E', margin: '0 0 4px', fontSize: 15 }}>Atencao: carga elevada</h3>
+                  <h3 style={{ color: '#92400E', margin: '0 0 4px', fontSize: 15 }}>Atenção: carga elevada</h3>
                   <p style={{ fontSize: 13, color: '#92400E', margin: 0, lineHeight: 1.5 }}>
                     ACWR entre 1.3 e 1.5. Monitore sintomas de fadiga e ajuste a intensidade se necessario.
                   </p>
@@ -308,7 +308,7 @@ export default function AthleteDashboard() {
 
           {/* ── Section B: ACWR Card ── */}
           <section className="ad-card">
-            <h3><Shield size={18} style={{ color: '#7C3AED' }} /> Razao carga aguda:cronica (ACWR)</h3>
+            <h3><Shield size={18} style={{ color: '#14161F' }} /> Razão carga aguda:crônica (ACWR)</h3>
             {acwr ? (
               <>
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20 }}>
@@ -328,7 +328,7 @@ export default function AthleteDashboard() {
                     <div><strong>Zona ideal:</strong> 0.8 - 1.3</div>
                     <div>{'< 0.8'}: Subtreino</div>
                     <div>1.3 - 1.5: Elevado</div>
-                    <div>{'> 1.5'}: Risco de lesao</div>
+                    <div>{'> 1.5'}: Risco de lesão</div>
                   </div>
                 </div>
 
@@ -341,19 +341,19 @@ export default function AthleteDashboard() {
                         className="ad-compare-bar"
                         style={{
                           width: `${Math.min(100, acwr.chronic > 0 ? (acwr.acute / Math.max(acwr.acute, acwr.chronic)) * 100 : 50)}%`,
-                          background: '#7C3AED',
+                          background: '#14161F',
                         }}
                       >
                         {Math.round(acwr.acute)}
                       </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span className="ad-compare-label">Cronica</span>
+                      <span className="ad-compare-label">Crônica</span>
                       <div
                         className="ad-compare-bar"
                         style={{
                           width: `${Math.min(100, acwr.acute > 0 ? (acwr.chronic / Math.max(acwr.acute, acwr.chronic)) * 100 : 50)}%`,
-                          background: '#A78BFA',
+                          background: '#E89A80',
                         }}
                       >
                         {Math.round(acwr.chronic)}
@@ -370,9 +370,9 @@ export default function AthleteDashboard() {
 
           {/* ── Section C: Last 7 days ── */}
           <section className="ad-card">
-            <h3><TrendingUp size={18} style={{ color: '#7C3AED' }} /> Ultimos 7 dias</h3>
+            <h3><TrendingUp size={18} style={{ color: '#14161F' }} /> Últimos 7 dias</h3>
             {logs.length === 0 ? (
-              <p className="muted small">Nenhum registro nos ultimos 7 dias.</p>
+              <p className="muted small">Nenhum registro nos últimos 7 dias.</p>
             ) : (
               <>
                 <div style={{ overflowX: 'auto' }}>
@@ -396,7 +396,7 @@ export default function AthleteDashboard() {
                           <td>{l.hrv ?? '—'}</td>
                           <td>{l.restingHR ?? '—'}</td>
                           <td>{l.rpe ?? '—'}</td>
-                          <td style={{ fontWeight: 600, color: '#7C3AED' }}>{l.trainingLoad ?? '—'}</td>
+                          <td style={{ fontWeight: 600, color: '#14161F' }}>{l.trainingLoad ?? '—'}</td>
                           <td>{l.sleepScore ?? '—'}</td>
                           <td>{l.fatigueScore ?? '—'}</td>
                           <td>{l.vigorScore ?? '—'}</td>
@@ -416,7 +416,7 @@ export default function AthleteDashboard() {
                       return (
                         <div key={l.id} className="ad-bar-wrap">
                           <div className="ad-bar-val">{load || ''}</div>
-                          <div className="ad-bar" style={{ height: `${Math.max(pct, 4)}%`, background: load > 0 ? '#7C3AED' : '#E5E7EB' }} />
+                          <div className="ad-bar" style={{ height: `${Math.max(pct, 4)}%`, background: load > 0 ? '#14161F' : '#E5E7EB' }} />
                           <div className="ad-bar-label">{formatBR(l.date).slice(0, 5)}</div>
                         </div>
                       );

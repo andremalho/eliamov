@@ -9,7 +9,7 @@ import { NextAssessmentBadge } from '../components/NextAssessmentBadge';
 import { PhaseContextCard } from '../components/PhaseContextCard';
 import api from '../services/api';
 
-type Tab = 'avaliacao' | 'padrao' | 'historico' | 'evolucao';
+type Tab = 'avaliação' | 'padrão' | 'histórico' | 'evolução';
 
 const SEVERITY_COLORS: Record<string, string> = {
   minimal: '#16A34A', mild: '#84CC16', low: '#16A34A', none: '#16A34A',
@@ -17,32 +17,32 @@ const SEVERITY_COLORS: Record<string, string> = {
   severe: '#DC2626', high: '#DC2626',
 };
 const SEVERITY_LABELS: Record<string, string> = {
-  minimal: 'Minimo', mild: 'Leve', low: 'Baixo', none: 'Nenhum',
+  minimal: 'Mínimo', mild: 'Leve', low: 'Baixo', none: 'Nenhum',
   moderate: 'Moderado', moderately_severe: 'Moderado-grave',
   severe: 'Severo', high: 'Alto',
 };
 const PATTERN_LABELS: Record<string, string> = {
-  stable: 'Padrao estavel',
-  luteal_exacerbation: 'Piora na fase lutea',
-  pmdd_pattern: 'Padrao compativel com TDPM',
-  generalized_depression: 'Depressao persistente',
+  stable: 'Padrão estavel',
+  luteal_exacerbation: 'Piora na fase lútea',
+  pmdd_pattern: 'Padrão compativel com TDPM',
+  generalized_depression: 'Depressão persistente',
   generalized_anxiety: 'Ansiedade persistente',
-  mixed: 'Padrao misto',
-  needs_clinical_review: 'Avaliacao clinica recomendada',
+  mixed: 'Padrão misto',
+  needs_clinical_review: 'Avaliação clínica recomendada',
 };
 const PHASE_LABELS: Record<string, string> = {
-  menstrual: 'Menstrual', follicular: 'Folicular', ovulatory: 'Ovulatoria', luteal: 'Lutea', unknown: 'Desconhecida',
+  menstrual: 'Menstrual', follicular: 'Folicular', ovulatory: 'Ovulatória', luteal: 'Lútea', unknown: 'Desconhecida',
 };
 
 const card: React.CSSProperties = { background: '#fff', borderRadius: 16, border: '1px solid #E5E7EB', padding: 20, marginBottom: 16 };
 const tabBtn = (active: boolean): React.CSSProperties => ({
   flex: 1, padding: '10px 4px', borderRadius: 999, border: 'none', fontSize: 13, fontWeight: 600,
-  cursor: 'pointer', background: active ? '#7C3AED' : '#F3F4F6', color: active ? '#fff' : '#6B7280',
-  fontFamily: "'DM Sans', sans-serif", transition: 'all 0.15s',
+  cursor: 'pointer', background: active ? '#14161F' : '#F3F4F6', color: active ? '#fff' : '#6B7280',
+  fontFamily: "'Figtree', sans-serif", transition: 'all 0.15s',
 });
 
 export default function MentalHealth() {
-  const [tab, setTab] = useState<Tab>('avaliacao');
+  const [tab, setTab] = useState<Tab>('avaliação');
   const [activeInstrument, setActiveInstrument] = useState<Instrument | null>(null);
   const [result, setResult] = useState<any>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -53,14 +53,14 @@ export default function MentalHealth() {
   const [timelineType, setTimelineType] = useState<'phq9' | 'gad7' | 'pss10'>('phq9');
 
   useEffect(() => {
-    if (tab === 'avaliacao' || tab === 'padrao') {
+    if (tab === 'avaliação' || tab === 'padrão') {
       setPatternLoading(true);
       Promise.all([
         api.get('/mental-health/pattern/latest').catch(() => ({ data: null })),
         api.get('/mental-health/history?type=phq9').catch(() => ({ data: [] })),
       ]).then(([p, h]) => { setPattern(p.data); setHistory(h.data ?? []); }).finally(() => setPatternLoading(false));
     }
-    if (tab === 'historico') {
+    if (tab === 'histórico') {
       setLoading(true);
       api.get('/mental-health/history').then(r => setHistory(r.data ?? [])).catch(() => {}).finally(() => setLoading(false));
     }
@@ -72,7 +72,7 @@ export default function MentalHealth() {
       const res = await api.post('/mental-health/assessment', { assessmentType: instrument.key, answers });
       setResult(res.data);
       setActiveInstrument(null);
-    } catch { alert('Erro ao enviar avaliacao.'); }
+    } catch { alert('Erro ao enviar avaliação.'); }
     finally { setSubmitting(false); }
   };
 
@@ -81,28 +81,28 @@ export default function MentalHealth() {
     try {
       const res = await api.post('/mental-health/pattern/compute');
       setPattern(res.data);
-    } catch { alert('Erro ao recalcular padrao.'); }
+    } catch { alert('Erro ao recalcular padrão.'); }
     finally { setPatternLoading(false); }
   };
 
   return (
     <Layout>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-        <Brain size={26} color="#7C3AED" />
-        <h1 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 26, fontWeight: 600, color: '#2D1B4E', margin: 0 }}>Saude Mental</h1>
+        <Brain size={26} color="#14161F" />
+        <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: 26, fontWeight: 600, color: '#14161F', margin: 0 }}>Saúde Mental</h1>
       </div>
-      <p style={{ fontSize: 14, color: '#6B7280', margin: '0 0 16px' }}>Avalie, acompanhe e entenda seus padroes emocionais</p>
+      <p style={{ fontSize: 14, color: '#6B7280', margin: '0 0 16px' }}>Avalie, acompanhe e entenda seus padrões emocionais</p>
 
       {/* Tab pills */}
       <div style={{ display: 'flex', gap: 6, marginBottom: 20 }}>
-        <button style={tabBtn(tab === 'avaliacao')} onClick={() => { setTab('avaliacao'); setActiveInstrument(null); setResult(null); }}>Avaliacao</button>
-        <button style={tabBtn(tab === 'padrao')} onClick={() => setTab('padrao')}>Meu Padrao</button>
-        <button style={tabBtn(tab === 'historico')} onClick={() => setTab('historico')}>Historico</button>
-        <button style={tabBtn(tab === 'evolucao')} onClick={() => setTab('evolucao')}>Evolucao</button>
+        <button style={tabBtn(tab === 'avaliação')} onClick={() => { setTab('avaliação'); setActiveInstrument(null); setResult(null); }}>Avaliação</button>
+        <button style={tabBtn(tab === 'padrão')} onClick={() => setTab('padrão')}>Meu Padrão</button>
+        <button style={tabBtn(tab === 'histórico')} onClick={() => setTab('histórico')}>Histórico</button>
+        <button style={tabBtn(tab === 'evolução')} onClick={() => setTab('evolução')}>Evolução</button>
       </div>
 
-      {/* ── Tab 1: Avaliacao ── */}
-      {tab === 'avaliacao' && !activeInstrument && !result && (
+      {/* ── Tab 1: Avaliação ── */}
+      {tab === 'avaliação' && !activeInstrument && !result && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <PhaseContextCard activeTab="mental" />
           <NextAssessmentBadge
@@ -118,8 +118,8 @@ export default function MentalHealth() {
                   <span style={{ fontSize: 12, color: '#9CA3AF' }}>{inst.questions.length} perguntas</span>
                 </div>
                 <button onClick={() => setActiveInstrument(inst)} style={{
-                  padding: '8px 16px', borderRadius: 10, border: 'none', background: '#7C3AED', color: '#fff',
-                  fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", flexShrink: 0,
+                  padding: '8px 16px', borderRadius: 10, border: 'none', background: '#14161F', color: '#fff',
+                  fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: "'Figtree', sans-serif", flexShrink: 0,
                 }}>Iniciar</button>
               </div>
             </div>
@@ -127,28 +127,28 @@ export default function MentalHealth() {
         </div>
       )}
 
-      {tab === 'avaliacao' && activeInstrument && (
+      {tab === 'avaliação' && activeInstrument && (
         <MentalHealthQuestionnaire instrument={activeInstrument} onComplete={(answers) => handleComplete(activeInstrument, answers)} />
       )}
 
-      {tab === 'avaliacao' && result && (
+      {tab === 'avaliação' && result && (
         <>
         {result.criticalAlertTriggered && (
           <div style={{
-            ...card, background: '#FAF5FF', borderColor: '#C4B5FD',
+            ...card, background: '#FDFAF3', borderColor: '#E89A80',
             display: 'flex', alignItems: 'flex-start', gap: 12, padding: 18,
           }}>
             <span style={{ fontSize: 24, flexShrink: 0 }}>💜</span>
             <div>
-              <p style={{ fontSize: 14, color: '#2D1B4E', lineHeight: 1.6, margin: '0 0 12px', fontWeight: 500 }}>
-                Notamos algo importante na sua avaliacao. Se estiver passando por um momento dificil,
-                o CVV atende 24h pelo numero 188 (ligacao gratuita) ou em cvv.org.br
+              <p style={{ fontSize: 14, color: '#14161F', lineHeight: 1.6, margin: '0 0 12px', fontWeight: 500 }}>
+                Notamos algo importante na sua avaliação. Se estiver passando por um momento dificil,
+                o CVV atende 24h pelo número 188 (ligação gratuita) ou em cvv.org.br
               </p>
               <a href="tel:188" style={{
                 display: 'inline-flex', alignItems: 'center', gap: 6,
-                padding: '8px 18px', borderRadius: 10, background: '#2D1B4E',
+                padding: '8px 18px', borderRadius: 10, background: '#14161F',
                 color: '#fff', fontSize: 13, fontWeight: 600, textDecoration: 'none',
-                fontFamily: "'DM Sans', sans-serif",
+                fontFamily: "'Figtree', sans-serif",
               }}>
                 Ligar agora — 188
               </a>
@@ -156,7 +156,7 @@ export default function MentalHealth() {
           </div>
         )}
         <div style={{ ...card, background: '#F0FDF4', borderColor: '#BBF7D0', textAlign: 'center' }}>
-          <h3 style={{ fontSize: 18, fontWeight: 600, color: '#166534', marginBottom: 8 }}>Avaliacao concluida!</h3>
+          <h3 style={{ fontSize: 18, fontWeight: 600, color: '#166534', marginBottom: 8 }}>Avaliação concluida!</h3>
           <div style={{ fontSize: 36, fontWeight: 700, color: '#1F2937', marginBottom: 4 }}>{result.totalScore}</div>
           <span style={{ padding: '4px 14px', borderRadius: 999, fontSize: 13, fontWeight: 600, color: '#fff', background: SEVERITY_COLORS[result.severityLevel] || '#6B7280' }}>
             {SEVERITY_LABELS[result.severityLevel] || result.severityLevel}
@@ -164,33 +164,33 @@ export default function MentalHealth() {
           {result.cyclePhaseAtAssessment && result.cyclePhaseAtAssessment !== 'unknown' && (
             <p style={{ fontSize: 12, color: '#6B7280', marginTop: 8 }}>Fase do ciclo: {PHASE_LABELS[result.cyclePhaseAtAssessment]} (dia {result.cycleDay})</p>
           )}
-          <button onClick={() => setResult(null)} style={{ marginTop: 16, padding: '10px 24px', borderRadius: 10, border: 'none', background: '#7C3AED', color: '#fff', fontWeight: 600, fontSize: 14, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Nova avaliacao</button>
+          <button onClick={() => setResult(null)} style={{ marginTop: 16, padding: '10px 24px', borderRadius: 10, border: 'none', background: '#14161F', color: '#fff', fontWeight: 600, fontSize: 14, cursor: 'pointer', fontFamily: "'Figtree', sans-serif" }}>Nova avaliação</button>
         </div>
         </>
       )}
 
-      {/* ── Tab 2: Padrao ── */}
-      {tab === 'padrao' && (
+      {/* ── Tab 2: Padrão ── */}
+      {tab === 'padrão' && (
         patternLoading ? <p style={{ color: '#6B7280', textAlign: 'center', padding: 20 }}>Carregando...</p> : (
           <div>
             {!pattern ? (
               <div style={{ ...card, textAlign: 'center' }}>
-                <p style={{ color: '#6B7280', marginBottom: 12 }}>Nenhum padrao calculado ainda. Realize pelo menos 3 avaliacoes e clique abaixo.</p>
-                <button onClick={handleRecomputePattern} style={{ padding: '10px 24px', borderRadius: 10, border: 'none', background: '#7C3AED', color: '#fff', fontWeight: 600, fontSize: 14, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Calcular padrao</button>
+                <p style={{ color: '#6B7280', marginBottom: 12 }}>Nenhum padrão calculado ainda. Realize pelo menos 3 avaliações e clique abaixo.</p>
+                <button onClick={handleRecomputePattern} style={{ padding: '10px 24px', borderRadius: 10, border: 'none', background: '#14161F', color: '#fff', fontWeight: 600, fontSize: 14, cursor: 'pointer', fontFamily: "'Figtree', sans-serif" }}>Calcular padrão</button>
               </div>
             ) : (
               <>
                 <div style={card}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                    <h3 style={{ fontSize: 16, fontWeight: 600, color: '#1F2937', margin: 0 }}>Padrao identificado</h3>
-                    <button onClick={handleRecomputePattern} style={{ fontSize: 12, color: '#7C3AED', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Recalcular</button>
+                    <h3 style={{ fontSize: 16, fontWeight: 600, color: '#1F2937', margin: 0 }}>Padrão identificado</h3>
+                    <button onClick={handleRecomputePattern} style={{ fontSize: 12, color: '#14161F', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'Figtree', sans-serif" }}>Recalcular</button>
                   </div>
-                  <div style={{ padding: '10px 14px', borderRadius: 10, background: '#F5F3FF', marginBottom: 12, fontSize: 14, fontWeight: 600, color: '#5B21B6' }}>
+                  <div style={{ padding: '10px 14px', borderRadius: 10, background: '#FDFAF3', marginBottom: 12, fontSize: 14, fontWeight: 600, color: '#5B21B6' }}>
                     {PATTERN_LABELS[pattern.overallPattern] || pattern.overallPattern}
                   </div>
                   <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
                     {pattern.pmddSuspected && <span style={{ padding: '3px 10px', borderRadius: 999, fontSize: 11, fontWeight: 600, background: '#FEE2E2', color: '#DC2626' }}>TDPM suspeito</span>}
-                    {pattern.generalDepressionSuspected && <span style={{ padding: '3px 10px', borderRadius: 999, fontSize: 11, fontWeight: 600, background: '#FEF3C7', color: '#D97706' }}>Depressao persistente</span>}
+                    {pattern.generalDepressionSuspected && <span style={{ padding: '3px 10px', borderRadius: 999, fontSize: 11, fontWeight: 600, background: '#FEF3C7', color: '#D97706' }}>Depressão persistente</span>}
                     {pattern.generalAnxietySuspected && <span style={{ padding: '3px 10px', borderRadius: 999, fontSize: 11, fontWeight: 600, background: '#DBEAFE', color: '#2563EB' }}>Ansiedade persistente</span>}
                   </div>
                 </div>
@@ -199,7 +199,7 @@ export default function MentalHealth() {
                 {pattern.clinicianAlertRequired && (
                   <div style={{ ...card, background: '#FEF2F2', borderColor: '#FECACA' }}>
                     <p style={{ fontSize: 14, color: '#991B1B', fontWeight: 500, margin: 0, lineHeight: 1.6 }}>
-                      Seu medico foi notificado sobre uma mudanca no seu padrao. Considere agendar uma consulta em breve.
+                      Seu médico foi notificado sobre uma mudanca no seu padrão. Considere agendar uma consulta em breve.
                     </p>
                   </div>
                 )}
@@ -234,7 +234,7 @@ export default function MentalHealth() {
                     <div style={{ height: 10, background: '#E5E7EB', borderRadius: 5, overflow: 'hidden', marginBottom: 6 }}>
                       <div style={{ height: '100%', width: `${pattern.adherenceScore}%`, background: pattern.adherenceScore >= 66 ? '#16A34A' : pattern.adherenceScore >= 33 ? '#D97706' : '#DC2626', borderRadius: 5, transition: 'width 0.5s' }} />
                     </div>
-                    <p style={{ fontSize: 12, color: '#6B7280', margin: 0 }}>Voce completou {pattern.adherenceScore}% das avaliacoes recomendadas nos ultimos 3 meses.</p>
+                    <p style={{ fontSize: 12, color: '#6B7280', margin: 0 }}>Você completou {pattern.adherenceScore}% das avaliações recomendadas nos últimos 3 meses.</p>
                   </div>
                 )}
 
@@ -242,9 +242,9 @@ export default function MentalHealth() {
                 <div style={card}>
                   <h3 style={{ fontSize: 14, fontWeight: 600, color: '#374151', marginBottom: 12 }}>Comparativo por fase do ciclo</h3>
                   {[
-                    { label: 'PHQ-9 Lutea', val: pattern.lutealPhq9Avg, max: 27, color: '#DC2626' },
+                    { label: 'PHQ-9 Lútea', val: pattern.lutealPhq9Avg, max: 27, color: '#DC2626' },
                     { label: 'PHQ-9 Folicular', val: pattern.follicularPhq9Avg, max: 27, color: '#16A34A' },
-                    { label: 'GAD-7 Lutea', val: pattern.lutealGad7Avg, max: 21, color: '#DC2626' },
+                    { label: 'GAD-7 Lútea', val: pattern.lutealGad7Avg, max: 21, color: '#DC2626' },
                     { label: 'GAD-7 Folicular', val: pattern.follicularGad7Avg, max: 21, color: '#16A34A' },
                   ].map((bar, i) => (
                     <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
@@ -257,7 +257,7 @@ export default function MentalHealth() {
                   ))}
                 </div>
 
-                <div style={{ ...card, background: '#F5F3FF' }}>
+                <div style={{ ...card, background: '#FDFAF3' }}>
                   <p style={{ fontSize: 13, color: '#374151', lineHeight: 1.6, margin: 0 }}>{pattern.patientSummary}</p>
                 </div>
               </>
@@ -266,12 +266,12 @@ export default function MentalHealth() {
         )
       )}
 
-      {/* ── Tab 3: Historico ── */}
-      {tab === 'historico' && (
+      {/* ── Tab 3: Histórico ── */}
+      {tab === 'histórico' && (
         loading ? <p style={{ color: '#6B7280', textAlign: 'center', padding: 20 }}>Carregando...</p> : (
           history.length === 0 ? (
             <div style={{ ...card, textAlign: 'center' }}>
-              <p style={{ color: '#6B7280' }}>Nenhuma avaliacao registrada.</p>
+              <p style={{ color: '#6B7280' }}>Nenhuma avaliação registrada.</p>
             </div>
           ) : (
             <div>
@@ -302,15 +302,15 @@ export default function MentalHealth() {
         )
       )}
 
-      {/* ── Tab 4: Evolucao ── */}
-      {tab === 'evolucao' && (
+      {/* ── Tab 4: Evolução ── */}
+      {tab === 'evolução' && (
         <div>
           <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
             {([['phq9', 'Humor'], ['gad7', 'Ansiedade'], ['pss10', 'Estresse']] as const).map(([key, label]) => (
               <button key={key} onClick={() => setTimelineType(key)} style={{
                 flex: 1, padding: '8px 4px', borderRadius: 999, border: 'none', fontSize: 12, fontWeight: 600,
-                cursor: 'pointer', background: timelineType === key ? '#EDE9FE' : '#F3F4F6',
-                color: timelineType === key ? '#7C3AED' : '#6B7280', fontFamily: "'DM Sans', sans-serif",
+                cursor: 'pointer', background: timelineType === key ? '#FBEAE1' : '#F3F4F6',
+                color: timelineType === key ? '#14161F' : '#6B7280', fontFamily: "'Figtree', sans-serif",
               }}>{label}</button>
             ))}
           </div>
@@ -318,15 +318,15 @@ export default function MentalHealth() {
             <MentalHealthTimeline type={timelineType} />
           </div>
           <p style={{ fontSize: 12, color: '#6B7280', textAlign: 'center', marginTop: 8 }}>
-            {timelineType === 'phq9' && 'Pontuacoes mais baixas indicam menos sintomas depressivos.'}
-            {timelineType === 'gad7' && 'Pontuacoes mais baixas indicam menos sintomas de ansiedade.'}
-            {timelineType === 'pss10' && 'Pontuacoes mais baixas indicam menor estresse percebido.'}
+            {timelineType === 'phq9' && 'Pontuações mais baixas indicam menos sintomas depressivos.'}
+            {timelineType === 'gad7' && 'Pontuações mais baixas indicam menos sintomas de ansiedade.'}
+            {timelineType === 'pss10' && 'Pontuações mais baixas indicam menor estresse percebido.'}
           </p>
         </div>
       )}
 
       <p style={{ fontSize: 11, color: '#9CA3AF', textAlign: 'center', marginTop: 20, fontStyle: 'italic' }}>
-        Estes dados sao confidenciais e protegidos. Em caso de crise: CVV 188 (24h).
+        Estes dados são confidenciais e protegidos. Em caso de crise: CVV 188 (24h).
       </p>
     </Layout>
   );

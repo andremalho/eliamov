@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Droplets, Sprout, Sun, Moon } from 'lucide-react';
+import { Droplets, Sprout, Sun, Moon, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { CurrentPhase } from '../../services/cycle.api';
 
@@ -9,37 +9,32 @@ const PHASE_CONFIG: Record<
   { color: string; label: string; icon: string; message: string }
 > = {
   menstrual: {
-    color: '#F472B6',
+    color: '#B85A3D',
     label: 'Menstrual',
     icon: 'Droplets',
-    message: 'Cuide-se com carinho. Prefira exercicios leves hoje.',
+    message: 'Cuide-se com carinho. Exercícios leves hoje.',
   },
   follicular: {
-    color: '#22C55E',
+    color: '#9CA89A',
     label: 'Folicular',
     icon: 'Sprout',
-    message: 'Energia em alta! Otimo momento para desafios.',
+    message: 'Energia em alta — ótimo momento para desafios.',
   },
   ovulatory: {
-    color: '#F59E0B',
-    label: 'Ovulatoria',
+    color: '#C9A977',
+    label: 'Ovulatória',
     icon: 'Sun',
-    message: 'Pico de energia e disposicao. Aproveite!',
+    message: 'Pico de disposição. Aproveite.',
   },
   luteal: {
-    color: '#F97316',
-    label: 'Lutea',
+    color: '#D97757',
+    label: 'Lútea',
     icon: 'Moon',
-    message: 'Fase de recolhimento. Exercicios moderados sao ideais.',
+    message: 'Fase de recolhimento. Intensidade moderada.',
   },
 };
 
-const ICONS: Record<string, React.ElementType> = {
-  Droplets,
-  Sprout,
-  Sun,
-  Moon,
-};
+const ICONS: Record<string, React.ElementType> = { Droplets, Sprout, Sun, Moon };
 
 interface PhaseCardProps {
   phase: CurrentPhase | null;
@@ -48,9 +43,26 @@ interface PhaseCardProps {
 export default function PhaseCard({ phase }: PhaseCardProps) {
   if (!phase || !phase.phase) {
     return (
-      <div className="phase-card phase-card--empty">
-        <p style={{ color: '#6b7280', fontSize: 14, textAlign: 'center' }}>
-          Registre seu ciclo para receber recomendacoes personalizadas.
+      <div
+        className="phase-card phase-card--empty"
+        style={{
+          background: '#FDFAF3',
+          border: '1px solid rgba(20,22,31,0.08)',
+          padding: 24,
+          marginBottom: 16,
+          textAlign: 'center',
+          fontFamily: "'Figtree', sans-serif",
+        }}
+      >
+        <p
+          style={{
+            color: 'rgba(20,22,31,0.62)',
+            fontSize: 13.5,
+            margin: 0,
+            lineHeight: 1.5,
+          }}
+        >
+          Registre seu ciclo para receber recomendações personalizadas.
         </p>
       </div>
     );
@@ -64,87 +76,147 @@ export default function PhaseCard({ phase }: PhaseCardProps) {
   return (
     <motion.div
       className="phase-card"
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
+      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       style={{
-        background: `linear-gradient(135deg, ${config.color}26, ${config.color}0D)`,
-        borderRadius: 16,
-        padding: '20px',
+        position: 'relative',
+        background: '#FDFAF3',
+        border: '1px solid rgba(20,22,31,0.08)',
+        borderLeft: `2px solid ${config.color}`,
+        padding: 24,
         marginBottom: 16,
+        fontFamily: "'Figtree', sans-serif",
+        color: '#14161F',
+        overflow: 'hidden',
       }}
     >
-      <div className="phase-card-header">
-        <div
-          className="phase-card-icon"
-          style={{
-            width: 44,
-            height: 44,
-            borderRadius: '50%',
-            background: `${config.color}33`,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          {IconComp && <IconComp size={22} color={config.color} />}
-        </div>
-
-        <div style={{ marginLeft: 12, flex: 1 }}>
-          <h3
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          top: '-50%',
+          right: '-20%',
+          width: '60%',
+          height: '180%',
+          background: `radial-gradient(closest-side, ${config.color}22, transparent 70%)`,
+          filter: 'blur(40px)',
+          pointerEvents: 'none',
+        }}
+      />
+      <div style={{ position: 'relative' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, marginBottom: 14 }}>
+          <div
             style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: 20,
-              color: '#2D1B4E',
-              margin: 0,
-              fontWeight: 600,
+              width: 44,
+              height: 44,
+              borderRadius: '50%',
+              background: 'transparent',
+              border: `1px solid ${config.color}`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
             }}
           >
-            Fase {config.label}
-          </h3>
-          {phase.dayOfCycle != null && (
-            <span style={{ fontSize: 13, color: '#6b7280' }}>
-              Dia {phase.dayOfCycle} do ciclo
-            </span>
-          )}
+            {IconComp && <IconComp size={20} color={config.color} strokeWidth={1.5} />}
+          </div>
+
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div
+              style={{
+                fontFamily: "'JetBrains Mono', monospace",
+                fontSize: 10,
+                letterSpacing: '0.28em',
+                textTransform: 'uppercase',
+                color: 'rgba(20,22,31,0.55)',
+                marginBottom: 4,
+              }}
+            >
+              Fase atual
+            </div>
+            <h3
+              style={{
+                fontFamily: "'Fraunces', serif",
+                fontSize: 24,
+                color: '#14161F',
+                margin: 0,
+                fontWeight: 450,
+                letterSpacing: '-0.02em',
+                lineHeight: 1.1,
+              }}
+            >
+              {config.label}
+            </h3>
+            {phase.dayOfCycle != null && (
+              <span
+                style={{
+                  fontSize: 12,
+                  color: 'rgba(20,22,31,0.55)',
+                  marginTop: 2,
+                  display: 'inline-block',
+                  fontFamily: "'JetBrains Mono', monospace",
+                  letterSpacing: '0.1em',
+                }}
+              >
+                DIA {phase.dayOfCycle}
+              </span>
+            )}
+          </div>
         </div>
-      </div>
 
-      <p style={{ fontSize: 14, color: '#374151', margin: '12px 0' }}>
-        {config.message}
-      </p>
-
-      {phase.phase === 'ovulatory' && (
-        <span
+        <p
           style={{
-            display: 'inline-block',
-            background: '#F59E0B',
-            color: '#fff',
-            fontSize: 11,
-            fontWeight: 600,
-            padding: '3px 10px',
-            borderRadius: 20,
-            marginBottom: 12,
+            fontFamily: "'Fraunces', serif",
+            fontStyle: 'italic',
+            fontSize: 15,
+            color: 'rgba(20,22,31,0.78)',
+            margin: '0 0 16px',
+            lineHeight: 1.5,
           }}
         >
-          Janela de pico
-        </span>
-      )}
+          {config.message}
+        </p>
 
-      <Link
-        to="/training"
-        style={{
-          display: 'block',
-          textAlign: 'center',
-          color: config.color,
-          fontWeight: 600,
-          fontSize: 14,
-          textDecoration: 'none',
-          marginTop: 4,
-        }}
-      >
-        Ver plano de hoje →
-      </Link>
+        {phase.phase === 'ovulatory' && (
+          <span
+            style={{
+              display: 'inline-block',
+              background: '#C9A977',
+              color: '#14161F',
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: 10,
+              fontWeight: 600,
+              letterSpacing: '0.2em',
+              textTransform: 'uppercase',
+              padding: '5px 12px',
+              marginBottom: 16,
+            }}
+          >
+            ● Janela de pico
+          </span>
+        )}
+
+        <Link
+          to="/training"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 10,
+            color: '#14161F',
+            fontFamily: "'Figtree', sans-serif",
+            fontWeight: 600,
+            fontSize: 12,
+            letterSpacing: '0.14em',
+            textTransform: 'uppercase',
+            textDecoration: 'none',
+            paddingBottom: 4,
+            borderBottom: `1px solid ${config.color}`,
+          }}
+        >
+          Ver plano de hoje <ArrowRight size={13} />
+        </Link>
+      </div>
     </motion.div>
   );
 }

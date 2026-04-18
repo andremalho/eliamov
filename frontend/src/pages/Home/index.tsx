@@ -6,27 +6,62 @@ import { PhaseContextCard } from '../../components/PhaseContextCard';
 import Layout from '../../components/Layout';
 
 const PHASE_NAMES: Record<string, string> = {
-  menstrual: 'Menstrual', follicular: 'Folicular', ovulatory: 'Ovulatoria', luteal: 'Lutea', unknown: 'Ciclo nao registrado',
+  menstrual: 'Menstrual', follicular: 'Folicular', ovulatory: 'Ovulatória', luteal: 'Lútea', unknown: 'Ciclo não registrado',
 };
-const PHASE_COLORS: Record<string, string> = {
-  menstrual: '#ef4444', follicular: '#22c55e', ovulatory: '#eab308', luteal: '#f97316', unknown: '#9ca3af',
+const PHASE_TINTS: Record<string, string> = {
+  menstrual: '#B85A3D',
+  follicular: '#9CA89A',
+  ovulatory: '#C9A977',
+  luteal: '#D97757',
+  unknown: 'rgba(245,239,230,0.3)',
 };
 const TREND_LABELS: Record<string, string> = {
-  improving: '↓ Melhorando', stable: '→ Estavel', worsening: '↑ Atencao', insufficient_data: '— Sem dados',
+  improving: '↓ Melhorando', stable: '→ Estável', worsening: '↑ Atenção', insufficient_data: '— Sem dados',
 };
 
 const SHORTCUTS = [
   { label: 'Treino', icon: '🏋️', path: '/training' },
-  { label: 'Nutricao', icon: '🥗', path: '/nutrition' },
+  { label: 'Nutrição', icon: '🥗', path: '/nutrition' },
   { label: 'Ciclo', icon: '🩸', path: '/cycle' },
-  { label: 'Saude Mental', icon: '🧠', path: '/mental-health' },
+  { label: 'Mente', icon: '🧠', path: '/mental-health' },
 ];
 
 const ALERT_STYLES: Record<string, { bg: string; border: string; color: string }> = {
-  alert: { bg: '#FEF2F2', border: '#FECACA', color: '#991B1B' },
-  warning: { bg: '#FFFBEB', border: '#FDE68A', color: '#92400E' },
-  info: { bg: '#EFF6FF', border: '#BFDBFE', color: '#1E40AF' },
+  alert: { bg: 'rgba(139,58,47,0.06)', border: '#8B3A2F', color: '#8B3A2F' },
+  warning: { bg: 'rgba(201,169,119,0.1)', border: '#C9A977', color: '#7A5F2E' },
+  info: { bg: 'rgba(20,22,31,0.04)', border: '#14161F', color: '#14161F' },
 };
+
+const GRAIN =
+  "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='200' height='200' filter='url(%23n)' opacity='0.9'/></svg>";
+
+function CardShell({ children, onClick, clickable }: { children: React.ReactNode; onClick?: () => void; clickable?: boolean }) {
+  const style: React.CSSProperties = {
+    background: '#FDFAF3',
+    border: '1px solid rgba(20,22,31,0.08)',
+    padding: 18,
+    textAlign: 'left',
+    cursor: clickable ? 'pointer' : 'default',
+    fontFamily: "'Figtree', sans-serif",
+    transition: 'border-color 0.3s ease, transform 0.3s cubic-bezier(0.16,1,0.3,1)',
+    display: 'block',
+    width: '100%',
+  };
+  if (clickable) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        style={style}
+        onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.borderColor = '#D97757')}
+        onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.borderColor = 'rgba(20,22,31,0.08)')}
+      >
+        {children}
+      </button>
+    );
+  }
+  return <div style={style}>{children}</div>;
+}
 
 export default function Home() {
   const { data, loading } = useDashboard();
@@ -36,107 +71,360 @@ export default function Home() {
     return (
       <Layout>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 300 }}>
-          <div style={{ width: 36, height: 36, border: '3px solid #EDE9FE', borderTopColor: '#7C3AED', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }} />
-          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+          <div
+            style={{
+              width: 28,
+              height: 28,
+              border: '2px solid rgba(20,22,31,0.1)',
+              borderTopColor: '#D97757',
+              borderRadius: '50%',
+              animation: 'elia-spin 0.8s linear infinite',
+            }}
+          />
+          <style>{`@keyframes elia-spin { to { transform: rotate(360deg); } }`}</style>
         </div>
       </Layout>
     );
   }
 
   const phase = data?.phaseContext?.phase ?? 'unknown';
-  const phaseColor = PHASE_COLORS[phase] ?? '#9ca3af';
+  const phaseTint = PHASE_TINTS[phase] ?? '#9CA89A';
   const phaseName = PHASE_NAMES[phase] ?? 'Desconhecida';
 
   return (
     <Layout>
-      <div style={{ maxWidth: 520, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 16 }}>
-
-        {/* CARD PRINCIPAL — FASE DO CICLO */}
-        <div style={{
-          background: `linear-gradient(135deg, #0F1F3D, ${phaseColor}99)`,
-          borderRadius: 18, padding: 22, color: '#fff',
-        }}>
-          <p style={{ fontSize: 12, opacity: 0.7, marginBottom: 4 }}>Fase atual</p>
-          <h1 style={{ fontSize: 24, fontWeight: 700, margin: '0 0 4px', fontFamily: "'Cormorant Garamond', serif" }}>{phaseName}</h1>
-          {data?.phaseContext?.cycleDay && (
-            <p style={{ fontSize: 14, opacity: 0.8, margin: 0 }}>Dia {data.phaseContext.cycleDay} do ciclo</p>
-          )}
-          {data?.nextPeriodDays !== null && data?.nextPeriodDays !== undefined && data.nextPeriodDays > 0 && (
-            <p style={{ fontSize: 13, opacity: 0.8, margin: '2px 0 0' }}>Proxima menstruacao em {data.nextPeriodDays} dias</p>
-          )}
-          {(data?.streakDays ?? 0) > 0 && (
-            <div style={{ marginTop: 12, display: 'inline-block', background: 'rgba(255,255,255,0.2)', borderRadius: 999, padding: '4px 12px', fontSize: 12, backdropFilter: 'blur(4px)' }}>
-              🔥 {data!.streakDays} dia{data!.streakDays > 1 ? 's' : ''} seguidos de registro
+      <div
+        style={{
+          maxWidth: 560,
+          margin: '0 auto',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 16,
+          fontFamily: "'Figtree', sans-serif",
+        }}
+      >
+        {/* ════ CARD PRINCIPAL — FASE DO CICLO ════ */}
+        <div
+          style={{
+            position: 'relative',
+            background: '#14161F',
+            color: '#F5EFE6',
+            padding: '28px 24px',
+            overflow: 'hidden',
+          }}
+        >
+          {/* Grain */}
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              inset: 0,
+              pointerEvents: 'none',
+              opacity: 0.05,
+              mixBlendMode: 'overlay',
+              backgroundImage: `url("${GRAIN}")`,
+            }}
+          />
+          {/* Aurora com cor da fase */}
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              top: '-40%',
+              right: '-30%',
+              width: '90%',
+              height: '140%',
+              background: `radial-gradient(closest-side, ${phaseTint}55, transparent 70%)`,
+              filter: 'blur(40px)',
+              pointerEvents: 'none',
+            }}
+          />
+          <div style={{ position: 'relative' }}>
+            <div
+              style={{
+                fontFamily: "'JetBrains Mono', monospace",
+                fontSize: 10,
+                letterSpacing: '0.3em',
+                textTransform: 'uppercase',
+                color: 'rgba(245,239,230,0.55)',
+                marginBottom: 12,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
+              }}
+            >
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: phaseTint, display: 'inline-block' }} />
+              Fase atual
             </div>
-          )}
+            <h1
+              style={{
+                fontFamily: "'Fraunces', serif",
+                fontSize: 38,
+                fontWeight: 400,
+                letterSpacing: '-0.03em',
+                margin: '0 0 8px',
+                lineHeight: 1,
+                color: '#F5EFE6',
+              }}
+            >
+              {phaseName}
+            </h1>
+            {data?.phaseContext?.cycleDay && (
+              <p
+                style={{
+                  fontFamily: "'Figtree', sans-serif",
+                  fontSize: 13.5,
+                  color: 'rgba(245,239,230,0.72)',
+                  margin: 0,
+                }}
+              >
+                Dia {data.phaseContext.cycleDay} do ciclo
+              </p>
+            )}
+            {data?.nextPeriodDays !== null && data?.nextPeriodDays !== undefined && data.nextPeriodDays > 0 && (
+              <p
+                style={{
+                  fontFamily: "'Figtree', sans-serif",
+                  fontSize: 13,
+                  color: 'rgba(245,239,230,0.6)',
+                  margin: '3px 0 0',
+                }}
+              >
+                Próxima menstruação em {data.nextPeriodDays} dias
+              </p>
+            )}
+            {(data?.streakDays ?? 0) > 0 && (
+              <div
+                style={{
+                  marginTop: 18,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  border: '1px solid rgba(245,239,230,0.18)',
+                  padding: '6px 14px',
+                  fontSize: 12,
+                  fontFamily: "'Figtree', sans-serif",
+                  letterSpacing: '0.04em',
+                  color: 'rgba(245,239,230,0.9)',
+                }}
+              >
+                <span style={{ color: '#D97757' }}>●</span>
+                {data!.streakDays} dia{data!.streakDays > 1 ? 's' : ''} de registro contínuo
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* GRID DE MÉTRICAS RÁPIDAS */}
+        {/* ════ MÉTRICAS RÁPIDAS ════ */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
-          <button onClick={() => navigate('/mental-health')} style={{
-            background: '#fff', borderRadius: 16, padding: 12, border: '1px solid #F3F4F6',
-            textAlign: 'left', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
-          }}>
-            <p style={{ fontSize: 11, color: '#6B7280', margin: 0 }}>Humor</p>
-            <p style={{ fontSize: 22, fontWeight: 700, color: '#1F2937', margin: '2px 0' }}>{data?.lastPhq9 ? data.lastPhq9.score : '—'}</p>
-            <p style={{ fontSize: 11, color: '#9CA3AF', margin: 0 }}>{data?.lastPhq9 ? TREND_LABELS[data.lastPhq9.trend] : 'Avaliar'}</p>
-          </button>
+          <CardShell clickable onClick={() => navigate('/mental-health')}>
+            <p
+              style={{
+                fontFamily: "'JetBrains Mono', monospace",
+                fontSize: 10,
+                letterSpacing: '0.2em',
+                textTransform: 'uppercase',
+                color: 'rgba(20,22,31,0.5)',
+                margin: 0,
+              }}
+            >
+              Humor
+            </p>
+            <p
+              style={{
+                fontFamily: "'Fraunces', serif",
+                fontSize: 28,
+                fontWeight: 400,
+                letterSpacing: '-0.02em',
+                color: '#14161F',
+                margin: '6px 0 2px',
+                lineHeight: 1,
+              }}
+            >
+              {data?.lastPhq9 ? data.lastPhq9.score : '—'}
+            </p>
+            <p
+              style={{
+                fontFamily: "'Figtree', sans-serif",
+                fontSize: 11,
+                color: 'rgba(20,22,31,0.55)',
+                margin: 0,
+              }}
+            >
+              {data?.lastPhq9 ? TREND_LABELS[data.lastPhq9.trend] : 'Avaliar'}
+            </p>
+          </CardShell>
 
-          <div style={{ background: '#fff', borderRadius: 16, padding: 12, border: '1px solid #F3F4F6' }}>
-            <p style={{ fontSize: 11, color: '#6B7280', margin: 0 }}>Medicacoes</p>
-            <p style={{ fontSize: 22, fontWeight: 700, color: '#1F2937', margin: '2px 0' }}>{data?.activeMedicationsCount ?? 0}</p>
-            <p style={{ fontSize: 11, color: '#9CA3AF', margin: 0 }}>ativas</p>
-          </div>
+          <CardShell>
+            <p
+              style={{
+                fontFamily: "'JetBrains Mono', monospace",
+                fontSize: 10,
+                letterSpacing: '0.2em',
+                textTransform: 'uppercase',
+                color: 'rgba(20,22,31,0.5)',
+                margin: 0,
+              }}
+            >
+              Medicações
+            </p>
+            <p
+              style={{
+                fontFamily: "'Fraunces', serif",
+                fontSize: 28,
+                fontWeight: 400,
+                letterSpacing: '-0.02em',
+                color: '#14161F',
+                margin: '6px 0 2px',
+                lineHeight: 1,
+              }}
+            >
+              {data?.activeMedicationsCount ?? 0}
+            </p>
+            <p
+              style={{
+                fontFamily: "'Figtree', sans-serif",
+                fontSize: 11,
+                color: 'rgba(20,22,31,0.55)',
+                margin: 0,
+              }}
+            >
+              ativas
+            </p>
+          </CardShell>
 
-          <button onClick={() => navigate('/cycle')} style={{
-            background: '#fff', borderRadius: 16, padding: 12, border: '1px solid #F3F4F6',
-            textAlign: 'left', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
-          }}>
-            <p style={{ fontSize: 11, color: '#6B7280', margin: 0 }}>AUB</p>
-            <p style={{ fontSize: 22, fontWeight: 700, color: '#1F2937', margin: '2px 0' }}>
+          <CardShell clickable onClick={() => navigate('/cycle')}>
+            <p
+              style={{
+                fontFamily: "'JetBrains Mono', monospace",
+                fontSize: 10,
+                letterSpacing: '0.2em',
+                textTransform: 'uppercase',
+                color: 'rgba(20,22,31,0.5)',
+                margin: 0,
+              }}
+            >
+              AUB
+            </p>
+            <p
+              style={{
+                fontFamily: "'Fraunces', serif",
+                fontSize: 22,
+                fontWeight: 450,
+                letterSpacing: '-0.015em',
+                color: '#14161F',
+                margin: '6px 0 2px',
+                lineHeight: 1,
+              }}
+            >
               {data?.hormonalInsight?.aubRiskLevel
                 ? data.hormonalInsight.aubRiskLevel === 'low' ? 'Baixo' : data.hormonalInsight.aubRiskLevel === 'moderate' ? 'Mod.' : 'Alto'
                 : '—'}
             </p>
-            <p style={{ fontSize: 11, color: '#9CA3AF', margin: 0 }}>risco</p>
-          </button>
+            <p
+              style={{
+                fontFamily: "'Figtree', sans-serif",
+                fontSize: 11,
+                color: 'rgba(20,22,31,0.55)',
+                margin: 0,
+              }}
+            >
+              risco
+            </p>
+          </CardShell>
         </div>
 
-        {/* ALERTA DE SAÚDE MENTAL */}
-        {data?.phaseContext?.mentalHealthAlert && (() => {
-          const a = data.phaseContext.mentalHealthAlert;
-          const s = ALERT_STYLES[a.level] || ALERT_STYLES.info;
-          return (
-            <div style={{ borderRadius: 16, padding: 14, fontSize: 13, lineHeight: 1.6, background: s.bg, border: `1px solid ${s.border}`, color: s.color }}>
-              {a.message}
-            </div>
-          );
-        })()}
+        {/* ════ ALERTA DE SAÚDE MENTAL ════ */}
+        {data?.phaseContext?.mentalHealthAlert &&
+          (() => {
+            const a = data.phaseContext.mentalHealthAlert;
+            const s = ALERT_STYLES[a.level] || ALERT_STYLES.info;
+            return (
+              <div
+                style={{
+                  padding: '14px 18px',
+                  fontSize: 13,
+                  lineHeight: 1.6,
+                  background: s.bg,
+                  borderLeft: `2px solid ${s.border}`,
+                  color: s.color,
+                  fontFamily: "'Figtree', sans-serif",
+                }}
+              >
+                {a.message}
+              </div>
+            );
+          })()}
 
-        {/* REGISTRO DO DIA */}
+        {/* ════ REGISTRO DO DIA ════ */}
         <DailyLogQuickEntry />
 
-        {/* RECOMENDAÇÕES DA FASE */}
+        {/* ════ RECOMENDAÇÕES DA FASE ════ */}
         <PhaseContextCard />
 
-        {/* ATALHOS RÁPIDOS */}
-        <div style={{ background: '#fff', borderRadius: 16, padding: 16, border: '1px solid #F3F4F6' }}>
-          <p style={{ fontSize: 14, fontWeight: 600, color: '#374151', marginBottom: 12 }}>Acesso rapido</p>
+        {/* ════ ATALHOS ════ */}
+        <div
+          style={{
+            background: '#FDFAF3',
+            border: '1px solid rgba(20,22,31,0.08)',
+            padding: 20,
+          }}
+        >
+          <p
+            style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: 10,
+              letterSpacing: '0.24em',
+              textTransform: 'uppercase',
+              color: '#D97757',
+              marginBottom: 16,
+              marginTop: 0,
+            }}
+          >
+            Acesso rápido
+          </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
-            {SHORTCUTS.map(item => (
-              <button key={item.path} onClick={() => navigate(item.path)} style={{
-                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
-                padding: 8, borderRadius: 12, border: 'none', background: 'transparent',
-                cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
-                transition: 'background 0.15s',
-              }}>
+            {SHORTCUTS.map((item) => (
+              <button
+                key={item.path}
+                onClick={() => navigate(item.path)}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: '14px 8px',
+                  border: '1px solid transparent',
+                  background: 'transparent',
+                  cursor: 'pointer',
+                  fontFamily: "'Figtree', sans-serif",
+                  transition: 'border-color 0.3s ease, background 0.3s ease',
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.borderColor = 'rgba(20,22,31,0.1)';
+                  (e.currentTarget as HTMLElement).style.background = 'rgba(217,119,87,0.05)';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.borderColor = 'transparent';
+                  (e.currentTarget as HTMLElement).style.background = 'transparent';
+                }}
+              >
                 <span style={{ fontSize: 24 }}>{item.icon}</span>
-                <span style={{ fontSize: 11, color: '#4B5563', textAlign: 'center' }}>{item.label}</span>
+                <span
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 500,
+                    color: '#14161F',
+                    textAlign: 'center',
+                    letterSpacing: '0.02em',
+                  }}
+                >
+                  {item.label}
+                </span>
               </button>
             ))}
           </div>
         </div>
-
       </div>
     </Layout>
   );

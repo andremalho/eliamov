@@ -1,16 +1,27 @@
-<svg width="400" height="100" viewBox="0 0 400 100" xmlns="http://www.w3.org/2000/svg">
+<svg width="420" height="110" viewBox="0 0 420 110" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800&amp;display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400&amp;family=Figtree:wght@500&amp;display=swap');
     </style>
   </defs>
   <text
     x="0"
-    y="76"
-    font-family="'Montserrat', sans-serif"
-    font-weight="800"
-    font-size="72"
-    fill="#F9FAFB"
-    letter-spacing="-2"
-  >elia<tspan fill="#C4B5FD">M</tspan>ov</text>
+    y="78"
+    font-family="'Fraunces', serif"
+    font-weight="400"
+    font-size="80"
+    fill="#F5EFE6"
+    letter-spacing="-3"
+    font-variation-settings="'opsz' 96, 'SOFT' 40"
+  >elia</text>
+  <circle cx="196" cy="56" r="6" fill="#D97757"/>
+  <text
+    x="214"
+    y="72"
+    font-family="'Figtree', sans-serif"
+    font-weight="500"
+    font-size="34"
+    fill="#F5EFE6"
+    letter-spacing="5"
+  >mov</text>
 </svg>

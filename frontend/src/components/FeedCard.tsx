@@ -6,25 +6,26 @@ const ACTIVITY_TYPE_LABELS: Record<string, string> = {
   run: 'Corrida',
   ride: 'Ciclismo',
   walk: 'Caminhada',
-  swim: 'Natacao',
+  swim: 'Natação',
   hike: 'Trilha',
   workout: 'Treino',
   yoga: 'Yoga',
   other: 'Outro',
 };
 
+// Tons Lunar Bloom — semântica de fase preservada
 const CYCLE_PHASE_COLORS: Record<string, string> = {
-  menstrual: '#dc2626',
-  follicular: '#16a34a',
-  ovulatory: '#7c3aed',
-  luteal: '#f59e0b',
+  menstrual: '#B85A3D',
+  follicular: '#9CA89A',
+  ovulatory: '#C9A977',
+  luteal: '#D97757',
 };
 
 const CYCLE_PHASE_LABELS: Record<string, string> = {
   menstrual: 'Menstrual',
   follicular: 'Folicular',
-  ovulatory: 'Ovulatoria',
-  luteal: 'Lutea',
+  ovulatory: 'Ovulatória',
+  luteal: 'Lútea',
 };
 
 function timeAgo(iso: string): string {
@@ -71,7 +72,7 @@ interface FeedCardProps {
 }
 
 const HeartIcon: React.FC<{ filled: boolean }> = ({ filled }) => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill={filled ? '#dc2626' : 'none'} stroke={filled ? '#dc2626' : 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill={filled ? '#D97757' : 'none'} stroke={filled ? '#D97757' : 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
   </svg>
 );
@@ -102,7 +103,7 @@ export default function FeedCard({ post, onLike, onComment, onReaction, onDelete
   };
 
   const handleDelete = () => {
-    if (!confirm('Remover esta publicacao?')) return;
+    if (!confirm('Remover esta publicação?')) return;
     onDelete?.(post.id);
   };
 
@@ -205,18 +206,29 @@ export default function FeedCard({ post, onLike, onComment, onReaction, onDelete
         </button>
 
         {/* Share icons */}
-        <div style={{ display: 'flex', gap: 6, marginLeft: 'auto' }}>
+        <div style={{ display: 'flex', gap: 10, marginLeft: 'auto' }}>
           {[
-            { Icon: WhatsAppIcon, href: `https://wa.me/?text=${encodeURIComponent(post.content ?? 'Veja no eliaMov!')}`, title: 'WhatsApp' },
+            { Icon: WhatsAppIcon, href: `https://wa.me/?text=${encodeURIComponent(post.content ?? 'Veja no elia·mov')}`, title: 'WhatsApp' },
             { Icon: InstagramIcon, href: 'https://www.instagram.com/', title: 'Instagram' },
-            { Icon: XIcon, href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(post.content?.slice(0, 100) ?? 'eliaMov')}`, title: 'X' },
-            { Icon: FacebookIcon, href: 'https://www.facebook.com/sharer/sharer.php?u=https://eliamov.com', title: 'Facebook' },
+            { Icon: XIcon, href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(post.content?.slice(0, 100) ?? 'elia·mov')}`, title: 'X' },
+            { Icon: FacebookIcon, href: 'https://www.facebook.com/sharer/sharer.php?u=https://elia.health', title: 'Facebook' },
             { Icon: SnapchatIcon, href: 'https://www.snapchat.com/', title: 'Snapchat' },
           ].map(({ Icon, href, title }) => (
-            <a key={title} href={href} target="_blank" rel="noopener noreferrer" title={title}
-              style={{ color: '#9CA3AF', opacity: 0.6, transition: 'opacity 0.15s', display: 'flex', alignItems: 'center' }}
-              onMouseEnter={e => { (e.target as HTMLElement).style.opacity = '1'; }}
-              onMouseLeave={e => { (e.target as HTMLElement).style.opacity = '0.6'; }}>
+            <a
+              key={title}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={title}
+              style={{
+                color: 'rgba(20,22,31,0.48)',
+                transition: 'color 0.25s cubic-bezier(0.16,1,0.3,1)',
+                display: 'flex',
+                alignItems: 'center',
+              }}
+              onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = '#D97757')}
+              onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = 'rgba(20,22,31,0.48)')}
+            >
               <Icon />
             </a>
           ))}

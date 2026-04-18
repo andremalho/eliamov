@@ -9,8 +9,8 @@ type Tab = 'consultas' | 'agendar' | 'como';
 const card: React.CSSProperties = { background: '#fff', borderRadius: 16, border: '1px solid #E5E7EB', padding: 18, marginBottom: 14 };
 const tabBtn = (active: boolean): React.CSSProperties => ({
   flex: 1, padding: '10px 4px', borderRadius: 999, border: 'none', fontSize: 13, fontWeight: 600,
-  cursor: 'pointer', background: active ? '#7C3AED' : '#F3F4F6', color: active ? '#fff' : '#6B7280',
-  fontFamily: "'DM Sans', sans-serif", transition: 'all 0.15s',
+  cursor: 'pointer', background: active ? '#14161F' : '#F3F4F6', color: active ? '#fff' : '#6B7280',
+  fontFamily: "'Figtree', sans-serif", transition: 'all 0.15s',
 });
 const STATUS_STYLES: Record<string, { bg: string; color: string; label: string }> = {
   scheduled: { bg: '#DBEAFE', color: '#1E40AF', label: 'Agendada' },
@@ -19,7 +19,7 @@ const STATUS_STYLES: Record<string, { bg: string; color: string; label: string }
 };
 const SPECIALTIES = [
   { value: 'ginecologia', label: 'Ginecologia' },
-  { value: 'nutricao', label: 'Nutricao' },
+  { value: 'nutrição', label: 'Nutrição' },
   { value: 'psicologia', label: 'Psicologia' },
   { value: 'outro', label: 'Outro' },
 ];
@@ -64,10 +64,10 @@ export default function Teleconsult() {
     return diff <= 10 * 60000 && diff >= -60 * 60000;
   };
 
-  const inputStyle: React.CSSProperties = { width: '100%', padding: '10px 12px', border: '1.5px solid #E5E7EB', borderRadius: 10, fontSize: 14, outline: 'none', boxSizing: 'border-box', fontFamily: "'DM Sans', sans-serif" };
+  const inputStyle: React.CSSProperties = { width: '100%', padding: '10px 12px', border: '1.5px solid #E5E7EB', borderRadius: 10, fontSize: 14, outline: 'none', boxSizing: 'border-box', fontFamily: "'Figtree', sans-serif" };
 
   return (
-    <Layout title="Teleconsulta" subtitle="Consultas por video com profissionais de saude.">
+    <Layout title="Teleconsulta" subtitle="Consultas por video com profissionais de saúde.">
       <div style={{ display: 'flex', gap: 6, marginBottom: 20 }}>
         <button style={tabBtn(tab === 'consultas')} onClick={() => { setTab('consultas'); setSuccess(false); }}>Minhas Consultas</button>
         <button style={tabBtn(tab === 'agendar')} onClick={() => { setTab('agendar'); setSuccess(false); }}>Agendar</button>
@@ -81,7 +81,7 @@ export default function Teleconsult() {
             <div style={{ ...card, textAlign: 'center' }}>
               <Video size={32} color="#9CA3AF" style={{ marginBottom: 8 }} />
               <p style={{ color: '#6B7280', marginBottom: 12 }}>Nenhuma teleconsulta agendada.</p>
-              <button onClick={() => setTab('agendar')} style={{ padding: '8px 18px', borderRadius: 10, border: 'none', background: '#7C3AED', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Agendar consulta</button>
+              <button onClick={() => setTab('agendar')} style={{ padding: '8px 18px', borderRadius: 10, border: 'none', background: '#14161F', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: "'Figtree', sans-serif" }}>Agendar consulta</button>
             </div>
           ) : (
             consultations.map(c => {
@@ -105,7 +105,7 @@ export default function Teleconsult() {
                       }}><Video size={14} /> Entrar na chamada</a>
                     )}
                     {c.status === 'scheduled' && new Date(c.scheduledAt) > new Date() && (
-                      <button onClick={() => handleCancel(c.id)} style={{ fontSize: 12, color: '#DC2626', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Cancelar</button>
+                      <button onClick={() => handleCancel(c.id)} style={{ fontSize: 12, color: '#DC2626', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'Figtree', sans-serif" }}>Cancelar</button>
                     )}
                   </div>
                 </div>
@@ -119,9 +119,9 @@ export default function Teleconsult() {
       {tab === 'agendar' && (
         success ? (
           <div style={{ ...card, background: '#F0FDF4', borderColor: '#BBF7D0', textAlign: 'center' }}>
-            <p style={{ fontSize: 16, fontWeight: 600, color: '#166534', marginBottom: 8 }}>Solicitacao enviada!</p>
-            <p style={{ fontSize: 13, color: '#166534' }}>Em breve voce recebera a confirmacao com o link da chamada.</p>
-            <button onClick={() => { setSuccess(false); setTab('consultas'); }} style={{ marginTop: 12, padding: '8px 18px', borderRadius: 10, border: 'none', background: '#7C3AED', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Ver minhas consultas</button>
+            <p style={{ fontSize: 16, fontWeight: 600, color: '#166534', marginBottom: 8 }}>Solicitação enviada!</p>
+            <p style={{ fontSize: 13, color: '#166534' }}>Em breve você recebera a confirmação com o link da chamada.</p>
+            <button onClick={() => { setSuccess(false); setTab('consultas'); }} style={{ marginTop: 12, padding: '8px 18px', borderRadius: 10, border: 'none', background: '#14161F', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: "'Figtree', sans-serif" }}>Ver minhas consultas</button>
           </div>
         ) : (
           <div style={card}>
@@ -132,11 +132,11 @@ export default function Teleconsult() {
                 {SPECIALTIES.map(s => (
                   <button key={s.value} onClick={() => setSpecialty(s.value)} style={{
                     padding: '10px 12px', borderRadius: 10,
-                    border: specialty === s.value ? '2px solid #7C3AED' : '1.5px solid #E5E7EB',
-                    background: specialty === s.value ? '#F5F3FF' : '#fff',
-                    color: specialty === s.value ? '#7C3AED' : '#374151',
+                    border: specialty === s.value ? '2px solid #14161F' : '1.5px solid #E5E7EB',
+                    background: specialty === s.value ? '#FDFAF3' : '#fff',
+                    color: specialty === s.value ? '#14161F' : '#374151',
                     fontWeight: specialty === s.value ? 600 : 400, fontSize: 13, cursor: 'pointer',
-                    fontFamily: "'DM Sans', sans-serif",
+                    fontFamily: "'Figtree', sans-serif",
                   }}>{s.label}</button>
                 ))}
               </div>
@@ -152,18 +152,18 @@ export default function Teleconsult() {
               </div>
             </div>
             <div style={{ marginBottom: 14 }}>
-              <label style={{ fontSize: 12, fontWeight: 500, color: '#374151', display: 'block', marginBottom: 4 }}>Plano de saude (opcional)</label>
+              <label style={{ fontSize: 12, fontWeight: 500, color: '#374151', display: 'block', marginBottom: 4 }}>Plano de saúde (opcional)</label>
               <input type="text" value={healthPlan} onChange={e => setHealthPlan(e.target.value)} placeholder="Nome do plano" style={inputStyle} />
             </div>
             <div style={{ marginBottom: 16 }}>
-              <label style={{ fontSize: 12, fontWeight: 500, color: '#374151', display: 'block', marginBottom: 4 }}>Observacoes (opcional)</label>
+              <label style={{ fontSize: 12, fontWeight: 500, color: '#374151', display: 'block', marginBottom: 4 }}>Observações (opcional)</label>
               <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={3} placeholder="Motivo da consulta, sintomas, etc." style={{ ...inputStyle, resize: 'vertical' as const }} />
             </div>
             <button onClick={handleSchedule} disabled={submitting || !preferredDate || !preferredTime} style={{
               width: '100%', padding: 12, borderRadius: 12, border: 'none',
-              background: '#7C3AED', color: '#fff', fontSize: 14, fontWeight: 600,
+              background: '#14161F', color: '#fff', fontSize: 14, fontWeight: 600,
               cursor: 'pointer', opacity: submitting || !preferredDate || !preferredTime ? 0.5 : 1,
-              fontFamily: "'DM Sans', sans-serif",
+              fontFamily: "'Figtree', sans-serif",
             }}>{submitting ? 'Enviando...' : 'Solicitar agendamento'}</button>
           </div>
         )
@@ -174,9 +174,9 @@ export default function Teleconsult() {
         <div>
           {[
             { icon: '📅', title: 'Agende sua consulta', desc: 'Escolha a data, horario e especialidade desejada.' },
-            { icon: '✉️', title: 'Receba a confirmacao', desc: 'Voce recebera um link de video e a confirmacao do profissional.' },
+            { icon: '✉️', title: 'Receba a confirmação', desc: 'Você receberá um link de vídeo e a confirmação do profissional.' },
             { icon: '💻', title: 'Acesse pelo link', desc: 'No horario marcado, clique em "Entrar na chamada" para iniciar o video.' },
-            { icon: '📋', title: 'Resumo disponivel', desc: 'Apos a consulta, o resumo fica disponivel aqui para voce consultar.' },
+            { icon: '📋', title: 'Resumo disponivel', desc: 'Após a consulta, o resumo fica disponivel aqui para você consultar.' },
           ].map((step, i) => (
             <div key={i} style={{ ...card, display: 'flex', alignItems: 'flex-start', gap: 14 }}>
               <span style={{ fontSize: 28, flexShrink: 0 }}>{step.icon}</span>
@@ -186,9 +186,9 @@ export default function Teleconsult() {
               </div>
             </div>
           ))}
-          <div style={{ ...card, background: '#F5F3FF', borderColor: '#C4B5FD' }}>
+          <div style={{ ...card, background: '#FDFAF3', borderColor: '#E89A80' }}>
             <p style={{ fontSize: 13, color: '#5B21B6', margin: 0, lineHeight: 1.6 }}>
-              As teleconsultas sao realizadas por video, com total privacidade e seguranca. Seus dados sao protegidos conforme a LGPD.
+              As teleconsultas são realizadas por video, com total privacidade e seguranca. Seus dados são protegidos conforme a LGPD.
             </p>
           </div>
         </div>

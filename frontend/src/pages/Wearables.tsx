@@ -89,7 +89,7 @@ export default function Wearables() {
                     type="button"
                     className="feature-tile"
                     style={{
-                      ['--accent' as any]: isConnected ? '#16a34a' : '#6d4ac4',
+                      ['--accent' as any]: isConnected ? '#16a34a' : '#14161F',
                       opacity: isConnected ? 0.7 : 1,
                       cursor: isConnected ? 'default' : 'pointer',
                     }}

@@ -9,7 +9,7 @@ interface StudentDetailProps {
   onBack: () => void;
 }
 
-type Tab = 'historico' | 'prescricoes' | 'progresso';
+type Tab = 'histórico' | 'prescrições' | 'progresso';
 
 const formatDuration = (seconds: number): string => {
   const mins = Math.round(seconds / 60);
@@ -36,7 +36,7 @@ const s = {
   screen: {
     minHeight: '100vh',
     background: '#F3F4F6',
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
     padding: '0 0 32px',
   } as React.CSSProperties,
   header: {
@@ -70,7 +70,7 @@ const s = {
     fontSize: 15,
     fontWeight: 700,
     flexShrink: 0,
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
   } as React.CSSProperties,
   studentName: {
     fontSize: 18,
@@ -93,7 +93,7 @@ const s = {
       textAlign: 'center' as const,
       fontSize: 13,
       fontWeight: 600,
-      fontFamily: "'DM Sans', sans-serif",
+      fontFamily: "'Figtree', sans-serif",
       border: 'none',
       cursor: 'pointer',
       background: active ? '#4C1D95' : '#FFFFFF',
@@ -140,7 +140,7 @@ const s = {
     fontWeight: 600,
     color: '#4C1D95',
     cursor: 'pointer',
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
   } as React.CSSProperties,
   statusBadge: (status: string) => {
     const c = statusColors[status] || statusColors.pending;
@@ -163,7 +163,7 @@ const s = {
     borderRadius: 10,
     fontSize: 14,
     fontWeight: 700,
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
     cursor: 'pointer',
     marginTop: 12,
   } as React.CSSProperties,
@@ -172,7 +172,7 @@ const s = {
     color: '#9CA3AF',
     textAlign: 'center' as const,
     padding: '24px 0',
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
   } as React.CSSProperties,
   mutedCard: {
     background: '#FFFFFF',
@@ -218,7 +218,7 @@ const s = {
 };
 
 const StudentDetail: React.FC<StudentDetailProps> = ({ student, onBack }) => {
-  const [activeTab, setActiveTab] = useState<Tab>('historico');
+  const [activeTab, setActiveTab] = useState<Tab>('histórico');
   const [workouts, setWorkouts] = useState<StudentWorkout[]>([]);
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
   const [progress, setProgress] = useState<StudentProgress | null>(null);
@@ -270,9 +270,9 @@ const StudentDetail: React.FC<StudentDetailProps> = ({ student, onBack }) => {
       </div>
 
       <div style={s.tabs}>
-        {(['historico', 'prescricoes', 'progresso'] as Tab[]).map((tab) => (
+        {(['histórico', 'prescrições', 'progresso'] as Tab[]).map((tab) => (
           <button key={tab} style={s.tab(activeTab === tab)} onClick={() => setActiveTab(tab)}>
-            {tab === 'historico' ? 'Historico' : tab === 'prescricoes' ? 'Prescricoes' : 'Progresso'}
+            {tab === 'histórico' ? 'Histórico' : tab === 'prescrições' ? 'Prescrições' : 'Progresso'}
           </button>
         ))}
       </div>
@@ -280,8 +280,8 @@ const StudentDetail: React.FC<StudentDetailProps> = ({ student, onBack }) => {
       <div style={s.content}>
         {loading && <p style={s.loading}>Carregando...</p>}
 
-        {/* Historico tab */}
-        {!loading && activeTab === 'historico' && (
+        {/* Histórico tab */}
+        {!loading && activeTab === 'histórico' && (
           <>
             {workouts.length === 0 && <p style={s.muted}>Nenhum treino registrado.</p>}
             {workouts.map((w) => (
@@ -309,10 +309,10 @@ const StudentDetail: React.FC<StudentDetailProps> = ({ student, onBack }) => {
           </>
         )}
 
-        {/* Prescricoes tab */}
-        {!loading && activeTab === 'prescricoes' && (
+        {/* Prescrições tab */}
+        {!loading && activeTab === 'prescrições' && (
           <>
-            {prescriptions.length === 0 && <p style={s.muted}>Nenhuma prescricao encontrada.</p>}
+            {prescriptions.length === 0 && <p style={s.muted}>Nenhuma prescrição encontrada.</p>}
             {prescriptions.map((p) => (
               <div key={p.id} style={s.card}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -348,7 +348,7 @@ const StudentDetail: React.FC<StudentDetailProps> = ({ student, onBack }) => {
 
                 {progress && progress.weightHistory.length > 0 && (
                   <>
-                    <div style={s.sectionSubtitle}>Historico de peso</div>
+                    <div style={s.sectionSubtitle}>Histórico de peso</div>
                     <div style={s.card}>
                       {progress.weightHistory.map((entry) => (
                         <div key={entry.id} style={s.weightEntry}>
@@ -362,7 +362,7 @@ const StudentDetail: React.FC<StudentDetailProps> = ({ student, onBack }) => {
               </>
             ) : (
               <div style={s.mutedCard}>
-                A aluna nao compartilhou estas informacoes
+                A aluna não compartilhou estas informações
               </div>
             )}
           </>

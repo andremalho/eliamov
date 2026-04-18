@@ -2,21 +2,22 @@ import React, { useEffect, useState } from 'react';
 import { storiesApi, StoryGroup } from '../services/stories.api';
 import { useAuth } from '../contexts/AuthContext';
 
+// Tons Lunar Bloom — cor do ring indica fase do ciclo
 const phaseRingColors: Record<string, string> = {
-  follicular: '#16a34a',
-  ovulatory: '#f59e0b',
-  luteal: '#7c3aed',
-  menstrual: '#dc2626',
+  follicular: '#9CA89A',   // sage
+  ovulatory: '#C9A977',    // brass
+  luteal: '#D97757',       // terracotta
+  menstrual: '#B85A3D',    // terracotta deep
 };
 
 function getRingColor(group: StoryGroup): string {
   const allViewed = group.stories.every(s => s.viewed);
-  if (allViewed) return '#d1d5db';
+  if (allViewed) return 'rgba(20,22,31,0.18)';
   const latest = group.stories[group.stories.length - 1];
   if (latest?.cyclePhase && phaseRingColors[latest.cyclePhase]) {
     return phaseRingColors[latest.cyclePhase];
   }
-  return '#9ca3af';
+  return '#D97757';
 }
 
 function getInitial(name: string): string {

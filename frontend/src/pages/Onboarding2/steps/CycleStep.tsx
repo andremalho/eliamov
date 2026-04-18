@@ -26,7 +26,7 @@ const styles = `
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    background: #7C3AED;
+    background: #14161F;
     cursor: pointer;
     border: 3px solid #fff;
     box-shadow: 0 1px 4px rgba(0,0,0,0.15);
@@ -35,7 +35,7 @@ const styles = `
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    background: #7C3AED;
+    background: #14161F;
     cursor: pointer;
     border: 3px solid #fff;
     box-shadow: 0 1px 4px rgba(0,0,0,0.15);
@@ -45,7 +45,7 @@ const styles = `
   }
   .ob-range-value {
     display: inline-block;
-    background: #7C3AED;
+    background: #14161F;
     color: #fff;
     font-size: 13px;
     font-weight: 600;
@@ -64,7 +64,7 @@ const styles = `
     cursor: pointer;
   }
   .ob-checkbox-row input[type="checkbox"] {
-    accent-color: #7C3AED;
+    accent-color: #14161F;
     width: 18px;
     height: 18px;
   }
@@ -106,16 +106,16 @@ const CycleStep: React.FC<CycleStepProps> = ({ data, onChange, onContinue }) => 
         exit={{ opacity: 0, x: -30 }}
         transition={{ duration: 0.3 }}
       >
-        <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, color: '#2D1B4E', marginBottom: 4 }}>
+        <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 28, color: '#14161F', marginBottom: 4 }}>
           Sobre seu ciclo
         </h2>
         <p style={{ color: '#6B7280', fontSize: 14, marginBottom: 24 }}>
-          Essas informacoes sao privadas e ajudam a personalizar seu plano de treino.
+          Essas informações são privadas e ajudam a personalizar seu plano de treino.
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20, opacity: skipCycle ? 0.4 : 1, pointerEvents: skipCycle ? 'none' : 'auto', transition: 'opacity 0.3s' }}>
           <div>
-            <label style={labelStyle}>Quando foi seu ultimo periodo?</label>
+            <label style={labelStyle}>Quando foi seu último período?</label>
             <input
               type="date"
               style={inputStyle}
@@ -149,7 +149,7 @@ const CycleStep: React.FC<CycleStepProps> = ({ data, onChange, onContinue }) => 
 
           <div>
             <label style={labelStyle}>
-              Quantos dias dura seu periodo?
+              Quantos dias dura seu período?
               <span className="ob-range-value">{data.periodDuration || 5} dias</span>
             </label>
             <div className="ob-range-container">
@@ -172,7 +172,7 @@ const CycleStep: React.FC<CycleStepProps> = ({ data, onChange, onContinue }) => 
 
         <label className="ob-checkbox-row" onClick={() => update('skipCycle', !skipCycle)}>
           <input type="checkbox" checked={skipCycle} onChange={() => update('skipCycle', !skipCycle)} />
-          <span style={{ fontSize: 14, color: '#92400E' }}>Prefiro nao informar agora</span>
+          <span style={{ fontSize: 14, color: '#92400E' }}>Prefiro não informar agora</span>
         </label>
 
         <div style={{ marginTop: 24 }}>
@@ -183,7 +183,7 @@ const CycleStep: React.FC<CycleStepProps> = ({ data, onChange, onContinue }) => 
               padding: '14px 24px',
               border: 'none',
               borderRadius: 999,
-              background: '#7C3AED',
+              background: '#14161F',
               color: '#fff',
               fontSize: 16,
               fontWeight: 600,

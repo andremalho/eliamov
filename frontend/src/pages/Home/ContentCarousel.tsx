@@ -4,10 +4,10 @@ import { Bookmark } from 'lucide-react';
 import { Article } from '../../services/content.api';
 
 const PHASE_CONFIG: Record<string, { color: string; label: string }> = {
-  menstrual: { color: '#F472B6', label: 'Menstrual' },
+  menstrual: { color: '#D97757', label: 'Menstrual' },
   follicular: { color: '#22C55E', label: 'Folicular' },
-  ovulatory: { color: '#F59E0B', label: 'Ovulatoria' },
-  luteal: { color: '#F97316', label: 'Lutea' },
+  ovulatory: { color: '#F59E0B', label: 'Ovulatória' },
+  luteal: { color: '#F97316', label: 'Lútea' },
 };
 
 interface ContentCarouselProps {
@@ -24,11 +24,11 @@ export default function ContentCarousel({ articles, phase }: ContentCarouselProp
         style={{
           fontSize: 16,
           fontWeight: 600,
-          color: '#2D1B4E',
+          color: '#14161F',
           margin: '0 0 12px',
         }}
       >
-        Para voce hoje
+        Para você hoje
         {config && (
           <span style={{ color: config.color, fontWeight: 500 }}>
             {' '}
@@ -39,7 +39,7 @@ export default function ContentCarousel({ articles, phase }: ContentCarouselProp
 
       {articles.length === 0 ? (
         <p style={{ fontSize: 14, color: '#9ca3af', textAlign: 'center', padding: '16px 0' }}>
-          Conteudo sendo preparado para voce.
+          Conteudo sendo preparado para você.
         </p>
       ) : (
         <div

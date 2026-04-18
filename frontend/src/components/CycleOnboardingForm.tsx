@@ -8,20 +8,105 @@ type IudType = 'mirena' | 'kyleena' | null;
 type SurgeryType = 'subtotal_hysterectomy' | 'total_hysterectomy' | 'total_hysterectomy_oophorectomy' | 'other_surgery' | null;
 
 const S = {
-  card: { background: '#fff', borderRadius: 16, border: '1px solid #E5E7EB', padding: 20, marginBottom: 16 } as React.CSSProperties,
-  title: { fontSize: 16, fontWeight: 600, color: '#1F2937', marginBottom: 16 } as React.CSSProperties,
-  label: { fontSize: 13, fontWeight: 500, color: '#374151', display: 'block', marginBottom: 4 } as React.CSSProperties,
-  input: { width: '100%', padding: '10px 12px', border: '1.5px solid #E5E7EB', borderRadius: 10, fontSize: 14, outline: 'none', boxSizing: 'border-box' as const },
-  btnPrimary: { width: '100%', padding: 12, background: '#7C3AED', color: '#fff', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" } as React.CSSProperties,
-  btnSecondary: { width: '100%', padding: 12, background: '#F5F3FF', color: '#7C3AED', border: '1.5px solid #7C3AED', borderRadius: 12, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" } as React.CSSProperties,
+  card: {
+    background: '#FDFAF3',
+    border: '1px solid rgba(20,22,31,0.08)',
+    padding: 22,
+    marginBottom: 16,
+    fontFamily: "'Figtree', sans-serif",
+    color: '#14161F',
+  } as React.CSSProperties,
+  title: {
+    fontFamily: "'Fraunces', serif",
+    fontSize: 22,
+    fontWeight: 450,
+    letterSpacing: '-0.02em',
+    color: '#14161F',
+    marginBottom: 18,
+    lineHeight: 1.15,
+  } as React.CSSProperties,
+  label: {
+    fontFamily: "'Figtree', sans-serif",
+    fontSize: 11,
+    fontWeight: 600,
+    color: 'rgba(20,22,31,0.6)',
+    letterSpacing: '0.14em',
+    textTransform: 'uppercase',
+    display: 'block',
+    marginBottom: 8,
+  } as React.CSSProperties,
+  input: {
+    width: '100%',
+    padding: '12px 14px',
+    border: '1px solid rgba(20,22,31,0.12)',
+    borderRadius: 2,
+    fontSize: 13.5,
+    outline: 'none',
+    boxSizing: 'border-box' as const,
+    background: '#FFFCF5',
+    color: '#14161F',
+    fontFamily: "'Figtree', sans-serif",
+    transition: 'border-color 0.25s',
+  },
+  btnPrimary: {
+    width: '100%',
+    padding: 16,
+    background: '#14161F',
+    color: '#F5EFE6',
+    border: 'none',
+    borderRadius: 2,
+    fontSize: 12,
+    fontWeight: 600,
+    letterSpacing: '0.14em',
+    textTransform: 'uppercase',
+    cursor: 'pointer',
+    fontFamily: "'Figtree', sans-serif",
+    transition: 'background 0.3s',
+  } as React.CSSProperties,
+  btnSecondary: {
+    width: '100%',
+    padding: 16,
+    background: 'transparent',
+    color: '#14161F',
+    border: '1px solid rgba(20,22,31,0.14)',
+    borderRadius: 2,
+    fontSize: 12,
+    fontWeight: 600,
+    letterSpacing: '0.14em',
+    textTransform: 'uppercase',
+    cursor: 'pointer',
+    fontFamily: "'Figtree', sans-serif",
+    transition: 'border-color 0.25s',
+  } as React.CSSProperties,
   optionCard: (selected: boolean) => ({
-    padding: '12px 16px', borderRadius: 12, border: selected ? '2px solid #7C3AED' : '1.5px solid #E5E7EB',
-    background: selected ? '#F5F3FF' : '#fff', cursor: 'pointer', fontSize: 14, color: '#1F2937',
-    fontWeight: selected ? 600 : 400, transition: 'all 0.15s', marginBottom: 8,
+    padding: '14px 18px',
+    border: selected ? '1px solid #14161F' : '1px solid rgba(20,22,31,0.12)',
+    background: selected ? '#14161F' : 'transparent',
+    cursor: 'pointer',
+    fontSize: 14,
+    color: selected ? '#F5EFE6' : '#14161F',
+    fontWeight: selected ? 500 : 400,
+    transition: 'all 0.25s cubic-bezier(0.16,1,0.3,1)',
+    marginBottom: 8,
+    fontFamily: "'Figtree', sans-serif",
   }) as React.CSSProperties,
-  radioLabel: { fontSize: 13, color: '#374151', lineHeight: 1.5 },
-  error: { color: '#DC2626', fontSize: 13, marginTop: 8 },
-  success: { background: '#DCFCE7', color: '#166534', padding: '10px 14px', borderRadius: 10, fontSize: 13, marginTop: 8 },
+  radioLabel: { fontSize: 13, color: 'rgba(20,22,31,0.78)', lineHeight: 1.5 },
+  error: {
+    color: '#8B3A2F',
+    fontSize: 12.5,
+    marginTop: 10,
+    padding: '10px 14px',
+    background: 'rgba(139,58,47,0.06)',
+    borderLeft: '2px solid #8B3A2F',
+  },
+  success: {
+    background: 'rgba(156,168,154,0.1)',
+    borderLeft: '2px solid #9CA89A',
+    color: '#5B6B5C',
+    padding: '10px 14px',
+    fontSize: 13,
+    marginTop: 10,
+  },
 };
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -81,14 +166,14 @@ export function CycleOnboardingForm({ onSuccess }: { onSuccess: () => void }) {
       <div style={S.card}>
         {/* Progress */}
         <div style={{ height: 4, background: '#E5E7EB', borderRadius: 2, marginBottom: 16, overflow: 'hidden' }}>
-          <div style={{ height: '100%', width: '80%', background: '#7C3AED', borderRadius: 2 }} />
+          <div style={{ height: '100%', width: '80%', background: '#14161F', borderRadius: 0 }} />
         </div>
-        <div style={S.title}>Voce usa alguma medicacao atualmente?</div>
+        <div style={S.title}>Você usa alguma medicação atualmente?</div>
 
         {!showMedForm && addedMeds.length === 0 && (
           <div style={{ display: 'flex', gap: 10 }}>
             <button style={S.btnPrimary} onClick={() => setShowMedForm(true)}>Sim</button>
-            <button style={S.btnSecondary} onClick={onSuccess}>Nao, pular</button>
+            <button style={S.btnSecondary} onClick={onSuccess}>Não, pular</button>
           </div>
         )}
 
@@ -124,10 +209,10 @@ export function CycleOnboardingForm({ onSuccess }: { onSuccess: () => void }) {
   if (menstruates === null) {
     return (
       <div style={S.card}>
-        <div style={S.title}>Voce menstrua atualmente?</div>
+        <div style={S.title}>Você menstrua atualmente?</div>
         <div style={{ display: 'flex', gap: 10 }}>
           <button style={S.btnPrimary} onClick={() => setMenstruates(true)}>Sim</button>
-          <button style={S.btnSecondary} onClick={() => setMenstruates(false)}>Nao</button>
+          <button style={S.btnSecondary} onClick={() => setMenstruates(false)}>Não</button>
         </div>
       </div>
     );
@@ -139,16 +224,16 @@ export function CycleOnboardingForm({ onSuccess }: { onSuccess: () => void }) {
       <div style={S.card}>
         <div style={S.title}>Registrar ciclo</div>
         <div style={{ marginBottom: 12 }}>
-          <label style={S.label}>Data de inicio da ultima menstruacao</label>
+          <label style={S.label}>Data de inicio da última menstruação</label>
           <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} style={S.input} />
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
           <div>
-            <label style={S.label}>Duracao do ciclo (dias)</label>
+            <label style={S.label}>Duração do ciclo (dias)</label>
             <input type="number" min={20} max={45} value={cycleLength} onChange={e => setCycleLength(Number(e.target.value))} style={S.input} />
           </div>
           <div>
-            <label style={S.label}>Duracao do periodo (dias)</label>
+            <label style={S.label}>Duração do período (dias)</label>
             <input type="number" min={1} max={15} value={periodLength} onChange={e => setPeriodLength(Number(e.target.value))} style={S.input} />
           </div>
         </div>
@@ -185,7 +270,7 @@ export function CycleOnboardingForm({ onSuccess }: { onSuccess: () => void }) {
 
   return (
     <div style={S.card}>
-      <div style={S.title}>Motivo da ausencia de menstruacao</div>
+      <div style={S.title}>Motivo da ausencia de menstruação</div>
 
       {REASONS.map(r => (
         <div key={r.value} style={S.optionCard(amenorrheaReason === r.value)} onClick={() => { setAmenorrheaReason(r.value); setIudType(null); setSurgeryType(null); }}>
@@ -210,7 +295,7 @@ export function CycleOnboardingForm({ onSuccess }: { onSuccess: () => void }) {
       {/* Pill sub-option */}
       {amenorrheaReason === 'continuous_pill' && (
         <div style={{ padding: '12px 0 0 16px' }}>
-          <label style={S.label}>Qual metodo voce usa?</label>
+          <label style={S.label}>Qual metodo você usa?</label>
           <input type="text" value={continuousPillName} onChange={e => setContinuousPillName(e.target.value)} placeholder="Nome do medicamento" style={S.input} />
         </div>
       )}
@@ -236,7 +321,7 @@ export function CycleOnboardingForm({ onSuccess }: { onSuccess: () => void }) {
       {amenorrheaReason === 'other' && (
         <div style={{ padding: '12px 0 0 16px' }}>
           <label style={S.label}>Descreva o motivo</label>
-          <input type="text" value={amenorrheaOtherDescription} onChange={e => setAmenorrheaOtherDescription(e.target.value)} placeholder="Motivo da ausencia de menstruacao" style={S.input} />
+          <input type="text" value={amenorrheaOtherDescription} onChange={e => setAmenorrheaOtherDescription(e.target.value)} placeholder="Motivo da ausencia de menstruação" style={S.input} />
         </div>
       )}
 

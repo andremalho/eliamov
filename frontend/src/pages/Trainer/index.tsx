@@ -16,7 +16,7 @@ const mockStudents = [
   {
     initials: 'AM', name: 'Ana Martins',
     lastWorkout: 'Forca membros inferiores - ontem',
-    avatarBg: '#EDE9FE', avatarText: '#5B21B6',
+    avatarBg: '#FBEAE1', avatarText: '#5B21B6',
     status: 'today' as const,
     freq: [1, 1, 0, 1, 1, 0, 1],
     history: [
@@ -63,7 +63,7 @@ export default function TrainerDashboard() {
     setOpenStudent((prev) => (prev === name ? null : name));
 
   return (
-    <div style={{ maxWidth: 430, margin: '0 auto', background: '#F9FAFB', minHeight: '100vh', position: 'relative', fontFamily: "'DM Sans', sans-serif" }}>
+    <div style={{ maxWidth: 430, margin: '0 auto', background: '#F9FAFB', minHeight: '100vh', position: 'relative', fontFamily: "'Figtree', sans-serif" }}>
 
       {/* ── 1. STATUS BAR ──────────────────────────────────────── */}
       <div style={{ background: '#111827', padding: '8px 20px', display: 'flex', justifyContent: 'space-between', fontSize: 12, color: '#6B7280' }}>
@@ -87,7 +87,7 @@ export default function TrainerDashboard() {
         <div style={{
           width: 38, height: 38, borderRadius: '50%', background: '#4C1D95',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: '#DDD6FE', fontWeight: 700, fontSize: 14,
+          color: '#EEE7DB', fontWeight: 700, fontSize: 14,
         }}>
           CM
         </div>
@@ -99,8 +99,8 @@ export default function TrainerDashboard() {
         {/* ── 3. METRICS GRID ────────────────────────────────────── */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, padding: '16px 20px' }}>
           {[
-            { Icon: Users, color: '#7C3AED', value: 12, label: 'alunas ativas' },
-            { Icon: CalendarDays, color: '#7C3AED', value: 8, label: 'treinos prescritos hoje' },
+            { Icon: Users, color: '#14161F', value: 12, label: 'alunas ativas' },
+            { Icon: CalendarDays, color: '#14161F', value: 8, label: 'treinos prescritos hoje' },
             { Icon: CheckCheck, color: '#16A34A', value: 5, label: 'completados hoje', valueColor: '#16A34A' },
             { Icon: MessageSquare, color: '#D97706', value: 3, label: 'aguardando feedback', valueColor: '#D97706' },
           ].map(({ Icon, color, value, label, valueColor }, i) => (
@@ -121,7 +121,7 @@ export default function TrainerDashboard() {
             <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>Minhas alunas</span>
             <button style={{
               display: 'flex', alignItems: 'center', gap: 4, background: 'none',
-              border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 600, color: '#7C3AED',
+              border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 600, color: '#14161F',
             }}>
               <UserPlus size={14} />
               convidar
@@ -141,7 +141,7 @@ export default function TrainerDashboard() {
                 style={{
                   display: 'flex', alignItems: 'center', gap: 12, width: 'calc(100% - 40px)',
                   margin: '0 20px 10px', padding: '14px 16px', background: '#fff',
-                  borderRadius: 16, border: `0.5px solid ${isOpen ? '#7C3AED' : '#E5E7EB'}`,
+                  borderRadius: 16, border: `0.5px solid ${isOpen ? '#14161F' : '#E5E7EB'}`,
                   cursor: 'pointer', textAlign: 'left',
                   boxShadow: '0 1px 4px rgba(0,0,0,0.03)', transition: 'border-color 0.15s',
                 }}
@@ -164,7 +164,7 @@ export default function TrainerDashboard() {
                     {student.freq.map((f, j) => (
                       <span key={j} style={{
                         width: 8, height: 8, borderRadius: '50%',
-                        background: f ? '#7C3AED' : '#E5E7EB',
+                        background: f ? '#14161F' : '#E5E7EB',
                       }} />
                     ))}
                   </div>
@@ -182,7 +182,7 @@ export default function TrainerDashboard() {
               {/* ── 5. DETAIL PANEL ────────────────────────────────── */}
               {isOpen && (
                 <div style={{
-                  margin: '-4px 20px 14px', border: '1.5px solid #7C3AED',
+                  margin: '-4px 20px 14px', border: '1.5px solid #14161F',
                   borderRadius: 16, padding: 16, background: '#fff',
                 }}>
                   {/* Privacy notice */}
@@ -192,13 +192,13 @@ export default function TrainerDashboard() {
                   }}>
                     <Shield size={14} color="#9CA3AF" style={{ flexShrink: 0, marginTop: 1 }} />
                     <span style={{ fontSize: 11, color: '#9CA3AF', lineHeight: 1.4 }}>
-                      Dados de ciclo menstrual, mood e feed social nao estao disponiveis para personal trainers.
+                      Dados de ciclo menstrual, mood e feed social não estao disponiveis para personal trainers.
                     </span>
                   </div>
 
                   {/* Workout history */}
                   <div style={{ fontSize: 12, fontWeight: 600, color: '#111827', marginBottom: 8 }}>
-                    Historico de treinos
+                    Histórico de treinos
                   </div>
                   {student.history.map((h, hi) => (
                     <div key={hi} style={{
@@ -206,16 +206,16 @@ export default function TrainerDashboard() {
                       padding: '8px 10px', background: '#F9FAFB', borderRadius: 10, marginBottom: 6,
                     }}>
                       <div style={{
-                        width: 32, height: 32, borderRadius: 8, background: '#EDE9FE',
+                        width: 32, height: 32, borderRadius: 8, background: '#FBEAE1',
                         display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                       }}>
-                        <Zap size={14} color="#7C3AED" />
+                        <Zap size={14} color="#14161F" />
                       </div>
                       <div style={{ flex: 1 }}>
                         <div style={{ fontSize: 12, fontWeight: 500, color: '#111827' }}>{h.name}</div>
                         <div style={{ fontSize: 10, color: '#9CA3AF' }}>{h.date}</div>
                       </div>
-                      <span style={{ fontSize: 11, fontWeight: 600, color: '#7C3AED' }}>{h.duration}</span>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: '#14161F' }}>{h.duration}</span>
                     </div>
                   ))}
 

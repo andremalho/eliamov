@@ -17,14 +17,14 @@ const getInitials = (name: string) =>
 const styles = {
   section: {
     marginTop: 24,
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
   } as React.CSSProperties,
   sectionTitle: {
     fontSize: 16,
     fontWeight: 700,
     color: '#111827',
     marginBottom: 12,
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
   } as React.CSSProperties,
   card: {
     display: 'flex',
@@ -36,7 +36,7 @@ const styles = {
     padding: '12px 14px',
     marginBottom: 8,
     cursor: 'pointer',
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
     textAlign: 'left' as const,
   } as React.CSSProperties,
   avatar: {
@@ -51,7 +51,7 @@ const styles = {
     fontSize: 14,
     fontWeight: 700,
     flexShrink: 0,
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
   } as React.CSSProperties,
   info: {
     flex: 1,
@@ -86,7 +86,7 @@ const styles = {
     color: '#9CA3AF',
     textAlign: 'center' as const,
     padding: '24px 0',
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: "'Figtree', sans-serif",
   } as React.CSSProperties,
 };
 

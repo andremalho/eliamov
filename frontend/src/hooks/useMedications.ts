@@ -8,7 +8,7 @@ export function useMedications(includeInactive = false) {
 
   const load = useCallback(async () => {
     try { setLoading(true); setError(null); setMedications(await medicationsApi.list(includeInactive)); }
-    catch (err: any) { setError(err.message ?? 'Erro ao carregar medicacoes'); }
+    catch (err: any) { setError(err.message ?? 'Erro ao carregar medicações'); }
     finally { setLoading(false); }
   }, [includeInactive]);
 

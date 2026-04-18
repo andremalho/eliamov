@@ -9,7 +9,7 @@ const today = () => new Date().toISOString().slice(0, 10);
 const SCALE = [1, 2, 3, 4, 5];
 
 const ENERGY_COLORS = ['#EF4444', '#F97316', '#EAB308', '#84CC16', '#22C55E'];
-const MOOD_COLORS = ['#EF4444', '#F97316', '#EAB308', '#60A5FA', '#7C3AED'];
+const MOOD_COLORS = ['#EF4444', '#F97316', '#EAB308', '#60A5FA', '#14161F'];
 
 const s = {
   card: {
@@ -20,14 +20,14 @@ const s = {
     marginBottom: 16,
   } as React.CSSProperties,
   title: {
-    fontFamily: 'DM Sans, sans-serif',
+    fontFamily: 'Figtree, sans-serif',
     fontSize: 15,
     fontWeight: 600,
     color: '#111827',
     margin: '0 0 14px',
   } as React.CSSProperties,
   label: {
-    fontFamily: 'DM Sans, sans-serif',
+    fontFamily: 'Figtree, sans-serif',
     fontSize: 12,
     fontWeight: 600,
     color: '#6B7280',
@@ -37,17 +37,17 @@ const s = {
     display: 'block',
   } as React.CSSProperties,
   muted: {
-    fontFamily: 'DM Sans, sans-serif',
+    fontFamily: 'Figtree, sans-serif',
     fontSize: 13,
     color: '#6B7280',
   } as React.CSSProperties,
   mutedSmall: {
-    fontFamily: 'DM Sans, sans-serif',
+    fontFamily: 'Figtree, sans-serif',
     fontSize: 11,
     color: '#6B7280',
   } as React.CSSProperties,
   input: {
-    fontFamily: 'DM Sans, sans-serif',
+    fontFamily: 'Figtree, sans-serif',
     fontSize: 14,
     color: '#111827',
     width: '100%',
@@ -59,7 +59,7 @@ const s = {
     boxSizing: 'border-box' as const,
   } as React.CSSProperties,
   textarea: {
-    fontFamily: 'DM Sans, sans-serif',
+    fontFamily: 'Figtree, sans-serif',
     fontSize: 14,
     color: '#111827',
     width: '100%',
@@ -73,21 +73,21 @@ const s = {
     lineHeight: 1.5,
   } as React.CSSProperties,
   submitBtn: (disabled: boolean) => ({
-    fontFamily: 'DM Sans, sans-serif',
+    fontFamily: 'Figtree, sans-serif',
     fontSize: 14,
     fontWeight: 600,
     width: '100%',
     padding: '12px 0',
     borderRadius: 12,
     border: 'none',
-    background: disabled ? '#D1D5DB' : '#7C3AED',
+    background: disabled ? '#D1D5DB' : '#14161F',
     color: '#fff',
     cursor: disabled ? 'not-allowed' : 'pointer',
     transition: 'background 0.15s',
     marginTop: 4,
   } as React.CSSProperties),
   error: {
-    fontFamily: 'DM Sans, sans-serif',
+    fontFamily: 'Figtree, sans-serif',
     fontSize: 13,
     color: '#dc2626',
     background: '#FEF2F2',
@@ -103,7 +103,7 @@ const s = {
     border: active ? `2.5px solid ${color}` : '1.5px solid #E5E7EB',
     background: active ? color : '#F9FAFB',
     color: active ? '#fff' : '#6B7280',
-    fontFamily: 'DM Sans, sans-serif',
+    fontFamily: 'Figtree, sans-serif',
     fontSize: 15,
     fontWeight: 700,
     display: 'flex',
@@ -144,7 +144,7 @@ export default function Mood() {
 
   useEffect(() => {
     refresh()
-      .catch(() => setError('Nao foi possivel carregar os registros.'))
+      .catch(() => setError('Não foi possivel carregar os registros.'))
       .finally(() => setLoading(false));
   }, []);
 
@@ -184,12 +184,12 @@ export default function Mood() {
   };
 
   return (
-    <Layout title="Humor & bem-estar" subtitle="Registre como voce esta se sentindo hoje.">
+    <Layout title="Humor & bem-estar" subtitle="Registre como você esta se sentindo hoje.">
       {loading ? (
         <div style={{ textAlign: 'center', padding: '48px 0' }}>
           <div style={{
             width: 32, height: 32, border: '3px solid #E5E7EB',
-            borderTopColor: '#7C3AED', borderRadius: '50%',
+            borderTopColor: '#14161F', borderRadius: '50%',
             animation: 'spin 0.8s linear infinite',
             margin: '0 auto 12px',
           }} />
@@ -201,32 +201,32 @@ export default function Mood() {
           {/* Summary card */}
           {summary && summary.count > 0 && (
             <section style={s.card}>
-              <p style={s.title}>Ultimos 7 dias</p>
+              <p style={s.title}>Últimos 7 dias</p>
               <div style={{ display: 'flex', gap: 8 }}>
                 <div style={s.metricBox}>
                   <Zap size={16} color="#EAB308" style={{ marginBottom: 4 }} />
-                  <div style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 16, fontWeight: 700, color: '#111827' }}>
+                  <div style={{ fontFamily: 'Figtree, sans-serif', fontSize: 16, fontWeight: 700, color: '#111827' }}>
                     {summary.avgEnergy ?? '--'}<span style={{ fontSize: 11, color: '#6B7280' }}>/5</span>
                   </div>
                   <div style={s.mutedSmall}>Energia</div>
                 </div>
                 <div style={s.metricBox}>
-                  <Smile size={16} color="#7C3AED" style={{ marginBottom: 4 }} />
-                  <div style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 16, fontWeight: 700, color: '#111827' }}>
+                  <Smile size={16} color="#14161F" style={{ marginBottom: 4 }} />
+                  <div style={{ fontFamily: 'Figtree, sans-serif', fontSize: 16, fontWeight: 700, color: '#111827' }}>
                     {summary.avgMood ?? '--'}<span style={{ fontSize: 11, color: '#6B7280' }}>/5</span>
                   </div>
                   <div style={s.mutedSmall}>Humor</div>
                 </div>
                 <div style={s.metricBox}>
                   <Moon size={16} color="#60A5FA" style={{ marginBottom: 4 }} />
-                  <div style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 16, fontWeight: 700, color: '#111827' }}>
+                  <div style={{ fontFamily: 'Figtree, sans-serif', fontSize: 16, fontWeight: 700, color: '#111827' }}>
                     {summary.avgSleep != null ? `${summary.avgSleep}` : '--'}<span style={{ fontSize: 11, color: '#6B7280' }}>h</span>
                   </div>
                   <div style={s.mutedSmall}>Sono</div>
                 </div>
                 <div style={s.metricBox}>
                   <AlertCircle size={16} color="#EF4444" style={{ marginBottom: 4 }} />
-                  <div style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 16, fontWeight: 700, color: '#111827' }}>
+                  <div style={{ fontFamily: 'Figtree, sans-serif', fontSize: 16, fontWeight: 700, color: '#111827' }}>
                     {summary.painDays}
                   </div>
                   <div style={s.mutedSmall}>Dias c/ dor</div>
@@ -238,14 +238,14 @@ export default function Mood() {
           {/* Form card */}
           <section style={s.card}>
             <p style={{
-              fontFamily: "'Cormorant Garamond', Georgia, serif",
+              fontFamily: "'Fraunces', Georgia, serif",
               fontSize: 22,
               fontWeight: 600,
               color: '#111827',
               margin: '0 0 16px',
               textAlign: 'center',
             }}>
-              Como voce esta hoje?
+              Como você esta hoje?
             </p>
 
             <form onSubmit={handleSubmit}>
@@ -278,7 +278,7 @@ export default function Mood() {
               {/* Mood scale */}
               <div style={{ marginBottom: 20 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-                  <Brain size={14} color="#7C3AED" />
+                  <Brain size={14} color="#14161F" />
                   <span style={s.label}>Humor</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'center', gap: 12 }}>
@@ -303,7 +303,7 @@ export default function Mood() {
                     <span style={s.label}>Horas de sono</span>
                   </div>
                   <span style={{
-                    fontFamily: 'DM Sans, sans-serif',
+                    fontFamily: 'Figtree, sans-serif',
                     fontSize: 16, fontWeight: 700, color: '#111827',
                     background: '#F3EEFF', borderRadius: 8, padding: '2px 10px',
                   }}>
@@ -319,7 +319,7 @@ export default function Mood() {
                   onChange={(e) => setSleepHours(Number(e.target.value))}
                   style={{
                     width: '100%',
-                    accentColor: '#7C3AED',
+                    accentColor: '#14161F',
                     height: 6,
                   }}
                 />
@@ -344,7 +344,7 @@ export default function Mood() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <AlertCircle size={16} color={pain ? '#EF4444' : '#9CA3AF'} />
                   <span style={{
-                    fontFamily: 'DM Sans, sans-serif',
+                    fontFamily: 'Figtree, sans-serif',
                     fontSize: 13,
                     fontWeight: 500,
                     color: pain ? '#DC2626' : '#6B7280',
@@ -397,7 +397,7 @@ export default function Mood() {
 
           {/* History */}
           <section style={s.card}>
-            <p style={s.title}>Historico</p>
+            <p style={s.title}>Histórico</p>
             {entries.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '24px 0' }}>
                 <Smile size={32} color="#D1D5DB" style={{ marginBottom: 8 }} />
@@ -417,7 +417,7 @@ export default function Mood() {
                   }}>
                     <div style={{ flex: 1 }}>
                       <div style={{
-                        fontFamily: 'DM Sans, sans-serif', fontSize: 13,
+                        fontFamily: 'Figtree, sans-serif', fontSize: 13,
                         fontWeight: 600, color: '#111827', marginBottom: 3,
                       }}>
                         {formatBR(entry.date)}

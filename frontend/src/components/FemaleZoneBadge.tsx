@@ -12,7 +12,7 @@ export default function FemaleZoneBadge() {
   return (
     <div className="fz-badge">
       <Shield size={14} />
-      <span>Zona exclusiva — seus dados sao privados</span>
+      <span>Zona exclusiva — seus dados são privados</span>
     </div>
   );
 }
